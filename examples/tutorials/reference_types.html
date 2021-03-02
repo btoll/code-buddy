@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Primitive Types &amp; Reference Types</title>
+<style type="text/css">
+body {
+  background: #EED;
+}
+p {
+  background: #FFF;
+  border: 1px solid #333;
+  margin: 10px;
+  padding: 10px;
+}
+ul {
+  background: #FFF;
+  border: 1px solid #333;
+  list-style-position: inside;
+  margin: 10px;
+  padding: 10px;
+}
+pre {
+  background: #EDD;
+  border: 1px solid #333;
+  margin: 10px;
+  padding: 10px;
+}
+</style>
+<script type="text/javascript">
+/*
+var x = 35;
+alert(x.toFixed(2)); //returns "35.00";
+
+var y = new Number(42);
+alert(y.toFixed(2)); //retuns "42.00";
+
+alert(typeof x); //returns "number" (data is stored on the stack);
+alert(typeof y); //returns "object" (data is stored on the heap);
+
+alert(x instanceof Number); //returns "false";
+alert(y instanceof Number); //returns "true";
+*/
+</script>
+</head>
+
+<body>
+<p><strong>The following selection was taken from <u>Professional JavaScript for Web Developers</u> by Nicholas C. Zakas (Wrox)</strong></p>
+
+<h2>Primitive types and reference values</h2>
+<p>In ECMAScript a variable can hold one or two types of values; primitive values and reference values.</p>
+
+<ul>
+  <li><em>Primitive values</em> are simple pieces of data that are stored on the <em>stack</em>, which is to say that their value is stored directly in the location that the variable accesses.</li>
+  <li><em>Reference values</em>, on the other hand, are objects that are stored in the <em>heap</em>, meaning that the value stored in the variable location is a <em>pointer</em> to a location in memory where the object is stored.</li>
+</ul>
+
+<h3>Primitive Types</h3>
+<p>ECMAScript has five <em>primitive</em> types: Undefined, Null, Boolean, Number and String. ECMA-262 defines the term <em>type</em> as a set of values, and each of the primitive types defines a range of values it can contain as well as literal representations of that type. To determine if that value is in the range of values for a particular type, ECMAScript provides the <code>typeof</code> operator. This operator can be used to determine if a value represents a primitive type and, if so, which primitive type it represents.</p>
+
+<h3>Reference Types</h3>
+<p>Reference types are commonly referred to as <em>classes</em>, which is to say that when you have a reference value, you are dealing with an object.</p>
+
+<h4>Let's look at some examples:</h4>
+<pre>
+<code>
+var x = 35;
+alert(x.toFixed(2)); //returns "35.00";
+
+var y = new Number(42);
+alert(y.toFixed(2)); //retuns "42.00";
+
+alert(typeof x); //returns "number" (data is stored on the stack);
+alert(typeof y); //returns "object" (data is stored on the heap);
+
+alert(x instanceof Number); //returns "false";
+alert(y instanceof Number); //returns "true";
+</code>
+</pre>
+
+</body>
+</html>

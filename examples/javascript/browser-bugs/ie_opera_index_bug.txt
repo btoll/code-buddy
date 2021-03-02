@@ -1,0 +1,1 @@
+IE and Opera have a bug where they won't allow an element to have "length" as the value of its id or name attributes.

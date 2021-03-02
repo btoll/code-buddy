@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Long Polling (Comet) with node.js</title>
+<link rel="stylesheet" type="text/css" href="../../../lib/css/blog_template.css" />
+</head>
+
+<body>
+
+  <div id="content">
+
+    <h1>Long Polling (Comet) with node.js</h1>
+    <h2>What's in this post?</h2>
+    <ul>
+      <li><a href="#item1">What is long polling?</a></li>
+      <li><a href="#item2">Let's see some code!</a></li>
+      <li><a href="#item3">Putting it all together</a></li>
+      <li><a href="#item4">Notes</a></li>
+      <li><a href="#item5">More information</a></li>
+    </ul>
+    
+    <h3 id="item1">What is long polling?</h3>
+    <p>Long polling can be thought of as a long-lasting HTTP connection. It is much more efficient than regular client-side polling which sends out XMLHttpRequests (XHR) at a specified, regular interval to query the server for fresh data. Instead, when using long polling, a client sends out a single XHR which listens for a server event(s). The HTTP connection is held open until that server-side event occurs, at which point the data is returned to the client and another XHR is initiated and sent to the server to establish another long-lasting HTTP connection. As such, it is necessary to have a server that can perform evented I/O (sometimes referred to as a Comet server).</p>
+    <p>Enter node.js (server-side JavaScript). Clients can subscribe to a server-side event and are then notified when that event occurs by the publisher, in this case the node.js server. It's very efficient, as new XHR are only sent when fresh data is returned by the server and no resources are wasted by continually asking the server for new data.</p>
+
+    <h3 id="item2">Let's see some code!</h3>
+    <p>First, the server-side code:</p>
+    <blockquote>
+    var sys = require(&#34;sys&#34;),
+      http = require(&#34;http&#34;),
+      url = require(&#34;url&#34;),
+      events = require(&#34;events&#34;),
+      dataStore = new events.EventEmitter();
+    
+    http.createServer(function (request, response) {
+      var uri = url.parse(request.url).pathname;
+      if (uri.indexOf(&#34;stream&#34;) &#62; -1) {
+        response.writeHead(200, {&#34;Content-Type&#34;: &#34;text/plain&#34;});
+        response.end();
+        dataStore.emit(&#34;log&#34;, url.parse(request.url).query);
+    
+      } else {
+        var listener = dataStore.addListener(&#34;log&#34;, function (logs) {
+          response.writeHead(200, {&#34;Content-Type&#34;: &#34;text/plain&#34;});
+          response.end(JSON.stringify(logs));
+        });
+      }
+    
+    }).listen(8080);
+    
+    sys.puts(&#34;Server listening on port 8080&#34;);
+    </blockquote>
+    <p>The idea here is to bind a function that will listen for the <code>log</code> event if the <code>request</code> url doesn't contain the word &quot;stream&quot; or to publish/broadcast the <code>log</code> event to all subscribers if it does. It's very important that the node.js web server does not close the connection by calling <code>response.end()</code> when the function is bound to the <code>log</code> event. This is how the connection is held open until a request comes in that contains the word &quot;stream&quot; in the url and fires the <code>log</code> event.</p>
+    <p>To see this in action, start the node.js web server and point your browser to it. Then, shut down the node.js web server and note how the client reverts back to regular polling since it's not connected anymore to a server that is holding open the connection. This should reinforce the idea that all the magic is happening on the server and that Comet needs a Comet server in order to work properly.</p>
+
+    <p>Second, the client-side code:</p>
+    <blockquote>
+    &#60;!DOCTYPE html PUBLIC &#34;-//W3C//DTD XHTML 1.0 Strict//EN&#34; &#34;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&#34;&#62;
+    &#60;html xmlns=&#34;http://www.w3.org/1999/xhtml&#34;&#62;
+    &#60;head&#62;
+    &#60;title&#62;Fun with node.js&#60;/title&#62;
+    &#60;meta http-equiv=&#34;Content-Type&#34; content=&#34;text/html; charset=UTF-8&#34; /&#62;
+    &#60;script type=&#34;text/javascript&#34; src=&#34;http://jslite.googlecode.com/files/JSLITE_2.0.min.js&#34;&#62;&#60;/script&#62;
+    &#60;script type=&#34;text/javascript&#34;&#62;
+    JSLITE.ready(function () {
+    
+      function comet() {
+        JSLITE.ajax.load({
+          url: &#34;proxy.php&#34;,
+          timeout: 40000,
+          success: function (r) {
+            JSLITE.dom.create({tag: &#34;li&#34;,
+              attr: {
+                innerHTML: r.replace(/[&#39;&#34;]/g, &#34;&#34;)
+              },
+              parent: $(&#34;logs&#34;)
+            });
+            comet();
+          },
+          abort: function () {
+            comet();
+          }
+        });
+      }
+    
+      comet();
+    
+    });
+    &#60;/script&#62;
+    &#60;/head&#62;
+    
+    &#60;body&#62;
+    &#60;ol id=&#34;logs&#34;&#62;&#60;/ol&#62;
+    &#60;/body&#62;
+    &#60;/html&#62;
+    </blockquote>
+    <p>Here, the client is using the <a href="http://jslite.benjamintoll.com/download/">jsLite JavaScript library</a> to initiate an XHR. As soon as the DOM is fully loaded, the <code>comet</code> function is called that initiates the XHR and long polling. When the server event is published the response is received (because the HTTP connection that was being held open was finally closed) and the <code>comet</code> function is called again to re-establish another long polling HTTP connection with the server. Also, note that a 40 second timeout is set and the <code>abort</code> event is subscribed to. The <code>abort</code> event is published/fired when the timeout is reached. It is then necessary to re-initiate long polling by calling <code>comet</code> to again send out an XHR.</p>
+
+    <p>Third, the PHP proxy which uses cURL to get around the XHR cross-domain restriction (because specifying a port is flagged as illegal by browsers):</p>
+    <blockquote>
+    &#60;?php
+    $url = &#34;http://192.168.1.99:8080&#34;;
+    $session = curl_init($url);
+    
+    header(&#34;Content-Type: text/html&#34;);
+    
+    $response = curl_exec($session);
+    $header_size = curl_getinfo($session, CURLINFO_HEADER_SIZE);
+    $result = substr($response, $header_size);
+    
+    echo $result;
+    
+    curl_close($session);
+    ?&#62;
+    </blockquote>
+
+    <h3 id="item3">Putting it all together</h3>
+    <p>As you can see, there is very little code needed to set this up. First, the node.js web server must be bound to an arbitrary port (port 8080 in my example) which creates a socket connection when starting the server. Then, any client web page that wants to listen to events that are pushed from the server would point to <code>http://192.168.1.99/node/long-poller/</code>, for example. Lastly, any device that can send a web request can initiate a server push by sending a request to <code>http://192.168.1.99:8080/stream?data_to_send</code>. Note that this request is handled by node.js while the URL the client points to is handled by Apache (although the embdedded XHR in the client sends its request via cURL to the node.js web server, also).</p>
+
+    <h3 id="item4">Notes</h3>
+    <p>Please bear in mind that I did this as a proof-of-concept, so the code is not production ready. Obviously, it's not a good idea to hardcode URLs, and certain sections of the code could be more robust. My intent was to get a working example of the results of a server push displayed in a web browser.</p>
+
+    <h3 id="item5">More Information</h3>
+    <ul>
+      <li><a href="http://alex.dojotoolkit.org/2006/03/comet-low-latency-data-for-the-browser/">Alex Russell's influential Comet post</a></li>
+      <li><a href="http://en.wikipedia.org/wiki/Comet_%28programming%29">Concise breakdowns of Comet implementations</a></li>
+      <li><a href="http://net.tutsplus.com/tutorials/javascript-ajax/learning-serverside-javascript-with-node-js/">Great article about getting up and running with node.js, with examples</a></li>
+      <li><a href="http://nodejs.org/">node.js</a></li>
+      <li><a href="http://jslite.benjamintoll.com/">jsLite JavaScript library</a></li>
+    </ul>
+
+  </div>
+  
+</body>
+</html>

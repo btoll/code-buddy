@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>SSH Tunneling</title>
+<link rel="stylesheet" type="text/css" href="../../lib/css/blog_template.css" />
+</head>
+
+<body>
+
+  <div id="content">
+
+    <h1>SSH Tunneling</h1>
+    <h2>What's in this post?</h2>
+    <ul>
+      <li><a href="#item1">Understanding SSH Tunneling</a></li>
+      <li><a href="#item2">Why Would I Want to Do This?</a></li>
+      <li><a href="#item3">Using SSH to Create a SOCKS Proxy</a></li>
+      <li><a href="#item4">Using an HTTP Proxy Server</a></li>
+      <li><a href="#item5">More information</a></li>
+    </ul>
+
+    <h3 id="item1">Understanding SSH Tunneling</h3>
+    <p>SSH tunneling is a way to encrypt all of your HTTP traffic by sending it through a secure channel established by an SSH connection. The packets can then be forwarded to their destination and back to your machine by either using the SSH client itself to act as a SOCKS proxy or by using an HTTP proxy on another host. This tutorial will address both scenarios.</p>
+    <p>It's assumed that Ubuntu linux is your operating system and that you have an SSH account on the remote machine.</p>
+
+    <h3 id="item2">Why Would I Want to Do This?</h3>
+    <p>Let's say that you're somewhere using a publicly-accessible wireless network. You don't know if someone malicious is also on the same network sniffing packets. Or, you could be at work behind a firewall that doesn't allow you access to your favorite website. Hey, it's none of my business!</p>
+    <p>By following this tutorial you can encrypt all of your web traffic or circumvent the firewall by sending your encrypted traffic using a common port (SSH listens on port 22 and is usually not blocked by company firewalls). You'll be cool and hip and savvy!</p>
+
+    <h3 id="item3">Using SSH to Create a SOCKS Proxy</h3>
+    <p>This the easier of the two. It's a two-step process.</p>
+    <p>First, create the tunnel and the SOCKS proxy:</p>
+    <blockquote>
+      ssh -ND 8080 username@ip-address-of-ssh-server
+    </blockquote>
+    <p>The N flag won't execute any remote commands (i.e., open a remote shell).</p>
+    <p>The D flag has SSH act as a SOCKS proxy and 8080 is the local port that you're binding the SSH connection to.</p>
+    <p>Second, configure your browser to direct all HTTP traffic to the locally-bound port. In Firefox, set the preference to use a SOCKS proxy. The SOCKS Host is <code>localhost</code> (I had to use 127.0.0.1 on my MacBook Pro to get it to work) on port 8080, but you can use any port you'd like as long as it matches what you passed to the D flag when creating the tunnel.</p>
+    <p>Now you're surfing stealth-like. Easy peasy!</p>
+
+    <h3 id="item4">Using an HTTP Proxy Server</h3>
+    <p>Using this method is slightly more involved because it involves downloading the proxy server and setting up a basic configuration.</p>
+    <p>If <code>SSH</code> and <code>Squid</code> are not already installed, use your package manager to download and install the software:</p>
+    <ul>
+      <li><code>sudo apt-get install ssh</code></li>
+      <li><code>sudo apt-get install squid3</code> (note that when I installed Squid the current version was 3)</li>
+    </ul>
+    <p>Basically, the operating system creates a socket on the local machine on a port of your choosing. The SSH client then listens on this local port for any requests which it then forwards to the remote port that was bound when the tunnel was created. The web proxy server (Squid in my case) then sends the HTTP request to the remote machine and sends the response back through the tunnel once it's received.</p>
+
+    <p>Once a tunnel is established between the client and the remote machine, a proxy server is then needed to make a TCP connection to the specified URL. Requests are sent to the local port that was bound when the tunnel was established and the SSH client then forwards the request to the remote port to which the tunnel was bound. A proxy server needs to be listening on that remote port so it can forward the HTTP request onwards.</p>
+    <p>I used <a href="http://en.wikipedia.org/wiki/Squid_%28software%29">Squid</a> as my web proxy.</p>
+
+    <h4>Installation and Configuration</h4>
+    <p>My distro installed Squid into <code>/etc/squid3</code>, and the configuration file lives at <code>/etc/squid3/squid.conf</code>. Since my goal was simply to setup SSH tunneling, I had to do very little out-of-the-box setup to suit my needs. Squid is very powerful, and if you need more than this tutorial provides there are many good tutorials on the subject.</p>
+    <p>In <code>squid.conf</code>, I needed to add a new rule to the access control list (acl) that lists the permissions for which users and system processes are granted access to the web proxy:</p>
+    <blockquote>
+      # Example rule allowing access from your local networks.
+      # Adapt to list your (internal) IP networks from where browsing
+      # should be allowed
+      acl blueboy src 192.168.1.0/24  # RFC1918 possible internal network
+    </blockquote>
+
+    <p>Next, I needed to tell Squid on which port to listen. Since I used the default port, no change was necessary, although I did change the IP to the host machine.</p>
+    <blockquote>
+      # Squid normally listens to port 3128
+      http_port 192.168.1.99:3128
+    </blockquote>
+  
+    <h4>Configuring the Browser</h4>
+    <p>For this example I used the Firefox 3.63 web browser. In preferences, go to Network -> Settings.  Select the &quot;Manual proxy configuration&quot; radio button. In the &quot;HTTP Proxy&quot; text box, enter &quot;localhost&quot; and use port 8080 (this is an arbitrary port, use whatever you wish). Then check the box to use the proxy server for all protocols. You can then close out of the dialogs.</p>
+  
+    <h4>Create the Tunnel</h4>
+    <p>Now, establish the tunnel by entering the following in a shell (note that it's verbose):</p>
+    <blockquote>
+      ssh -v -N -L 8080:192.168.1.99:3128 username@blueboy
+    </blockquote>
+    <p>Squid by default listens on port 3128. I like the verbose option so I can see everything that is happening, although it does quickly become annoying.</p>
+    <p>(Note that there seems to be a bug on Mac OS X where entering a domain name instead of the IP in the command above will give you a blank screen, i.e., if you enter <code>8080:blueboy:3128</code>.  This happens even if your local DNS is set up properly in <code>/etc/hosts</code>.)</p>
+    <p>And that's it! Simple! Now, every time you point your browser to a URL, it's actually sending the request to the SSH client listening on the local port which then forwards the request to the Squid web proxy listening on the remote server:port. Cool!</p>
+    
+    <h3 id="item5">More Information</h3>
+    <ul>
+      <li><a href="http://en.wikipedia.org/wiki/Tunneling_protocol">Tunneling protocol</a></li>
+      <li><a href="http://www.openssh.org/">OpenSSH</a></li>
+      <li><a href="http://en.wikipedia.org/wiki/SOCKS">SOCKS proxy</a></li>
+      <li><a href="http://www.squid-cache.org/">Squid</a></li>
+    </ul>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>JavaScript Object behaving as an Array</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<style type="text/css">
+p {
+  background: #CDD;
+  border: 1px solid #CCC;
+  padding: 10px;
+}
+</style>
+<script type="text/javascript">
+var obj = {
+  length: 0,
+  push: function (v) {
+    Array.prototype.push.call(this, v);
+    return this;
+  }
+};
+obj.push([1, 2, 3]).push(500);
+console.log(obj.length, obj[0], obj[1]);
+</script>
+</head>
+
+<body>
+<p><strong>Brief explanation:</strong> Calling the native object method <code>Array.prototype.push</code> and using the <code>obj</code> object as its context allows the object to be treated as if it were an array, such as modifying the <code>length</code> property.</p>
+<pre>
+<code>
+var obj = {
+  length: 0,
+  push: function (v) {
+    Array.prototype.push.call(this, v);
+    return this; //allows methods to be chained;
+  }
+};
+obj.push([1, 2, 3]).push(500);
+console.log(obj.length, obj[0], obj[1]); //results = 2 [1, 2, 3] 500;
+</code>
+</pre>
+</body>
+</html>

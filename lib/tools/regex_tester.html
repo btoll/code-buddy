@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Regular Expression Tester</title>
+<style type="text/css">
+body {
+	background-color: #FFF;
+	color: #333;
+	font-family: Arial, Helvetica, sans-serif;
+	text-align: center;
+}
+div {
+  border: 5px solid rgb(102, 153, 204);
+	margin: 0 auto;
+	padding: 10px;
+  width: 550px;
+}
+h5, form {
+  border: 2px solid #C5E1E2;
+	margin: 0;
+	padding: 5px;
+  text-align: left;
+}
+h5 {
+  background: #EED;
+	margin-bottom: 10px;
+	text-align: center;
+}
+p {
+  margin: 20px 100px;
+}
+</style>
+<script type="text/javascript">
+function demoMatchClick() {
+  var re = new RegExp(document.demoMatch.regex.value);
+  if (document.demoMatch.subject.value.match(re)) {
+    alert("Successful match");
+  } else {
+    alert("No match");
+  }
+}
+
+function demoShowMatchClick() {
+  var re = new RegExp(document.demoMatch.regex.value);
+  var m = re.exec(document.demoMatch.subject.value);
+  if (m == null) {
+    alert("No match");
+  } else {
+    var s = "Match at position " + m.index + ":\n";
+    for (i = 0; i < m.length; i++) {
+      s = s + m[i] + "\n";
+    }
+    alert(s);
+  }
+}
+
+function demoReplaceClick() {
+  var re = new RegExp(document.demoMatch.regex.value, "g");
+  document.demoMatch.result.value = 
+    document.demoMatch.subject.value.replace(re, 
+      document.demoMatch.replacement.value);
+}
+window.onload = function () {
+  document.getElementById("demoMatch").onsubmit = function () {
+	  return false;
+	};
+};
+</script>
+</head>
+<body>
+
+<div>
+<h5>JavaScript and HTML copied and pasted directly from <a href="http://www.regular-expressions.info/javascriptexample.html">this great site</a> about regex.</h5>
+<form id="demoMatch" name="demoMatch" method="post" action="">
+<p>Regexp: <input name="regex" value="\bt[a-z]+\b" size="50" type="text"></p>
+
+<p>Subject string: <input name="subject" value="This is a test of the JavaScript RegExp object" size="50" type="text"></p>
+<p><input value="Test Match" onclick="demoMatchClick()" type="submit">
+<input value="Show Match" onclick="demoShowMatchClick()" type="submit"></p>
+
+<p>Replacement text: <input name="replacement" value="replaced" size="50" type="text"></p>
+<p>Result: <input name="result" value="click the button to see the result" size="50" type="text"></p>
+<p><input value="Replace" onclick="demoReplaceClick()" type="submit"></p>
+</form>
+</div>
+
+</body>
+</html>

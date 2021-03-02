@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Sliding Menu</title>
+<style type="text/css">
+div#slidingMenu {
+  background-color: #d90;
+  border: 1px solid #789;
+  margin: 5px;
+  padding: 5px;
+  width: 350px;
+  position: absolute;
+  top: 20px;
+  left: -300px;
+}
+ul { float: left; }
+span a { float: right; }
+</style>
+<script type="text/javascript">
+var SlideMenu = {
+
+  bOpen: false,
+  oElem: null,
+
+  init: function () {
+    SlideMenu.oElem = document.getElementById("slidingMenu");
+    if (!this.bOpen) {
+      this.bOpen = true;
+      SlideMenu.slideMenu(-300, 0);
+
+    } else {
+      this.bOpen = false;
+      SlideMenu.slideMenu(0, -300);
+    }
+  },
+
+  slideMenu: function (x, z) {
+    if (x != z) {
+      if (x > z) {
+        x -= 10;
+      } else if (x < z) {
+        x += 10;
+      }
+      this.oElem.style.left = x + "px";
+      setTimeout(function () { SlideMenu.slideMenu(x, z); }, 0);
+    }
+  }
+
+};
+
+window.onload = function() {
+  var cLinks = document.getElementsByTagName("a");
+  var iLinksLength = cLinks.length;
+  for (var i = 0; i < iLinksLength; i++) {
+    cLinks[i].onfocus = function() { if(this.blur)this.blur(); };
+    cLinks[i].onclick = function() { return false; };
+  }
+  document.getElementById("main").onclick = SlideMenu.init;
+};
+</script>
+</head>
+
+<body>
+
+<div id="slidingMenu">
+  <span><a id="main" href="#">Menu</a></span>
+  <ul>
+    <li><a href="#">Google</a></li>
+    <li><a href="#">MSN</a></li>
+    <li><a href="#">Yahoo!</a></li>
+    <li><a href="#">Ask</a></li>
+  </ul>
+  <div style="clear: both;"></div>
+</div><!--end div#slidingMenu-->
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Base64 Encoding</title>
+<style type="text/css">
+body {
+  background-color: #EED;
+}
+/*punch-out for IE6 and below*/
+div.description {
+  background-color: #FFF;
+  border: 2px solid #999;
+  border-left-style: none;
+  color: #008080;
+  margin: 20px auto;
+  padding: 10px 80px 10px 0;
+  text-align: justify;
+  width: 80%;
+}
+div.description h3 { /* "punch-out" the headers*/
+  background-color: #EED;
+  border: 2px solid #999;
+  border-left-color: #EED;
+  padding: 8px 0 8px 30px;
+  width: 260px;
+}
+div.citation {
+  border-left: solid;
+  font: 11px Arial, Helvetica, sans-serif;
+}
+/*punch-out for modern browsers*/
+html > body div.description {
+  background-color: #FFF;
+  border: 2px solid #999;
+  color: #333;
+  margin: 20px auto;
+  padding: 10px 80px 10px 0;
+  text-align: justify;
+  width: 80%;
+}
+html > body div.description h3 {
+  background-color: #EED;
+  border: 2px solid #999;
+  border-left-color: #EED;
+  margin-left: -2px;
+  padding: 8px 0 8px 30px;
+  width: 260px;
+}
+div.description p {
+  padding-left: 30px;
+}
+div.description p:first-letter {
+  font: 1.2em cursive;
+}
+div.description ul {
+  font: 12px monospace;
+}
+blockquote {
+  background: #EDD;
+  border: 2px dashed #CCC;
+  color: #000;
+}
+.header {
+  border: 1px solid #000;
+  padding: 4px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="description">
+
+  <!--[if IE]>
+  <p>&nbsp;</p>
+  <![endif]-->
+  
+  <h3>Base64 Encoding</h3>
+  <p>Base64 encoding (as well as base16 and base32 encodings) is a way to represent single byte data with a limited character set. Base64 encoding does not provide any encryption but simply translates one form of data into another using a simple algorithm. It was basically invented so data could be safely transmitted without loss through 7-bit systems such as email. These encodings were created to protect against data corruption when 8-bit data might be transmitted through or by 7-bit systems.</p>
+
+  <h3>How Does It Work?</h3>
+  <p>Base64 encoding works directly on the underlying binary representation of data. You don't really base64 encode strings, you base64 encode the bytes representing the characters that make up strings. Each character in the string is represented by a single 8-bit byte; each character in a base64-encoded string is made up of just 6 bits. Base64 encoding is really nothing more than performing this conversion.</p>
+  <p>There are 65 possible characters in the base64 alphabet: the letters A through Z, a through z, the numbers 0 through 9, the plus sign (+) and the slash (/). The 65th character is the equals sign (=) and that is used to indicate padding.</p>
+
+  <h3>Data URIs</h3>
+  <p>URL is short for uniform resource locator, which is a combination of protocol (how to retrieve the data) and  the address at which a given resource exists. Every publicly-accessible resource, such as an image, JavaScript file, HTML file, or style sheet, has a URL that tells the browser from where to download the file. The browser then makes a connection and begins to download and/or execute the file.</p>
+  <p>Every URL is also a URI, which is short for uniform resource identifier. A URI indicates a protocol for retrieving information as well as additional information about the resource. That additional information may or may not be an address (if it is, then the URI is a URL) but it is always related to the specified protocol. Hence, data URIs are not URLs since they do not contain address information.</p>
+  <p>The data URI format is very simple, as can be seen here:</p>
+  <blockquote>
+  <pre>
+  <code>
+  data:[<mime type>][;charset=<charset>][;base64],&lt;encoded data&gt;
+  </code>
+  </pre>
+  </blockquote>
+  <p>Here's what an inlined image would look like using a data URI:</p>
+  <blockquote>
+  <pre>
+  <code>
+  &lt;img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAGElEQVQIW2P4DwcMDAxAfBvMAhEQMYgcACEHG8ELxtbPAAAAAElFTkSuQmCC" /&gt;
+  </code>
+  </pre>
+  </blockquote>
+  <p>You can base64 encode an image in PHP by entering the following statement in a shell: <code>php -r "echo base64_encode(file_get_contents('dexter_gordon.jpg'));"</code></p>
+
+  <h3>Why Use Them?</h3>
+  <p>Data URIs are sweet because they save you from having to make an HTTP request. One of the best ways to optimize a web application is to limit the number of HTTP requests it makes, and this is a good place to start. The bad news is that inlined images using data URIs can't be cached by the browser. The good news is that they can also be used in external CSS stylesheets.  Check this out:</p>
+  <blockquote>
+  <pre>
+  <code>
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAGElEQVQIW2P4DwcMDAxAfBvMAhEQMYgcACEHG8ELxtbPAAAAAElFTkSuQmCC");
+  </code>
+  </pre>
+  </blockquote>
+  <p>So, you take an initial performance hit by having to download the longer data URIs (more characters means more page weight), but since the stylesheets are cached this could be a performance increase if you use the image(s) a lot, i.e., as part of a class that many different elements share.</p>
+
+  <h3>What's the Bad News?</h3>
+  <p>There are cross-browser differences, especially in versions of Internet Explorer 7 and below, but these differences can be <a href="http://www.phpied.com/mhtml-when-you-need-data-uris-in-ie7-and-under/">adequately normalized</a>.</p>
+  <p>Most modern browsers support data URIs:</p>
+  <ul>
+    <li>Firefox 2+</li>
+    <li>Opera 7.2+ - data URIs must not be longer than 4100 characters</li>
+    <li>Chrome (all versions)</li>
+    <li>Safari (all versions)</li>
+    <li>Internet Explorer 8+ - data URIs must be smaller than 32k</li>
+  </ul>
+
+  <h3>References for Further Study</h3>
+  <ul>
+    <li><a href="http://tools.ietf.org/html/rfc3548">RFC 3548</a></li>
+    <li><a href="http://www.nczonline.net/blog/2009/12/08/computer-science-in-javascript-base64-encoding/">Computer science in JavaScript: Base64 encoding</a></li>
+    <li><a href="http://www.nczonline.net/blog/2009/10/27/data-uris-explained/">Data URIs explained</a></li>
+    <li><a href="http://www.phpied.com/data-urls-what-are-they-and-how-to-use/">data:urls - what are they and how to use them</a></li>
+    <li><a href="http://www.phpied.com/mhtml-when-you-need-data-uris-in-ie7-and-under/">MHTML - when you need data: URIs in IE7 and under</a></li>
+    <li><a href="http://www.websiteoptimization.com/speed/tweak/inline-images/">Inline Images with Data URLs</a></li>
+    <li><a href="http://software.hixie.ch/utilities/cgi/data/data">The data: URI kitchen</a></li>
+    <li><a href="http://www.opinionatedgeek.com/dotnet/tools/Base64Encode/">Base64 Encoder</a></li>
+    <li><a href="http://www.opinionatedgeek.com/dotnet/tools/Base64Decode/">Base64 Decoder</a></li>
+  </ul>
+  
+</div>
+
+<div class="description citation">
+  <p>Most of this post is taken from two different <a href="http://www.nczonline.net/blog/2009/12/08/computer-science-in-javascript-base64-encoding/">excellent</a> and <a href="http://www.nczonline.net/blog/2009/10/27/data-uris-explained/">educational</a> <a href="http://www.nczonline.net/">Nicholas Zakas</a> articles.</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+var SlideMenu = {
+
+  bOpen: false,
+  oElem: null,
+
+  init: function () {
+    SlideMenu.oElem = document.getElementById("slidingMenu");
+    if (!this.bOpen) {
+      this.bOpen = true;
+      SlideMenu.slideMenu(-300, 0);
+
+    } else {
+      this.bOpen = false;
+      SlideMenu.slideMenu(0, -300);
+    }
+  },
+
+  slideMenu: function (x, z) {
+    if (x != z) {
+      if (x > z) {
+        x -= 10;
+      } else if (x < z) {
+        x += 10;
+      }
+      this.oElem.style.left = x + "px";
+      setTimeout(function () { SlideMenu.slideMenu(x, z); }, 0);
+    }
+  }
+
+};
+
+window.onload = function() {
+  var cLinks = document.getElementsByTagName("a");
+  var iLinksLength = cLinks.length;
+  for (var i = 0; i < iLinksLength; i++) {
+    cLinks[i].onfocus = function() { if(this.blur)this.blur(); };
+    cLinks[i].onclick = function() { return false; };
+  }
+  document.getElementById("main").onclick = SlideMenu.init;
+};

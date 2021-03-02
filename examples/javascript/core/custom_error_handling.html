@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Exceptions and Custom Error Handling</title>
+<style type="text/css">
+body {
+  background: tan;
+}
+h2 {
+  background: #FFE;
+  border: 1px solid #CCC;
+  margin: 10px 200px;
+  padding: 5px;
+  text-align: center;
+}
+form {
+  text-align: center;
+}
+#message {
+  background: #FFC;
+  border: 1px solid #CCC;
+  color: olive;
+  margin: 20px;
+  padding: 10px;
+}
+#code {
+  background: #FFF;
+  border: 1px solid #CCC;
+  color: olive;
+  margin: 20px auto;
+  padding: 10px;
+}
+</style>
+<script type="text/javascript">
+var fnCreateDiv = function (sMessage) {
+  if (document.getElementById("message")) {
+    document.body.removeChild(document.getElementById("message"));
+  }
+  var oDiv = document.createElement("div");
+  oDiv.id = "message";
+  oDiv.innerHTML = sMessage;
+  document.getElementById("code").parentNode.insertBefore(oDiv, document.getElementById("code"));
+};
+
+var fnSentence = function (sName, iAge) {
+  
+  if (arguments.length > 2) {
+    throw {
+	  name: "ArgumentsError",
+	  message: "too many arguments",
+	  detail: arguments.length + " arguments passed, only 2 allowed",
+	  timestamp: new Date
+	}
+	
+  } else if (arguments[0].constructor !== String) {
+    throw {
+      name: "TypeError",
+	  message: "Expected type: string",
+	  detail: "Type passed: " + typeof arguments[0],
+	  timestamp: new Date
+    }
+	  
+  } else if (arguments[1].constructor !== Number) {
+    throw {
+      name: "TypeError",
+	  message: "Expected type: number",
+	  detail: "Type passed: " + typeof arguments[1],
+	  timestamp: new Date
+    }
+  }
+  
+  fnCreateDiv("My name is " + sName + " and I am " + iAge + " years old");
+};
+
+var fnTryIt = function (sName, iAge, vOther) {
+  try {
+    !vOther ? fnSentence(sName, iAge) : fnSentence(sName, iAge, vOther);
+  } catch (e) {
+   fnCreateDiv(e.name + "<br />" + e.message + "<br />" + e.detail + "<br />Error occurred " + e.timestamp);
+  }
+};
+</script>
+</head>
+
+<body>
+
+  <h2>JavaScript Custom Error Handling</h2>
+
+  <form action="">
+    <input type="button" onclick="fnTryIt('Ben', 21);" value="Both Parameters Correct" />
+    <input type="button" onclick="fnTryIt('Ben', 21, 21);" value="Too Many Parameters" />
+    <input type="button" onclick="fnTryIt(21, 21);" value="First Parameter Incorrect" />
+    <input type="button" onclick="fnTryIt('Ben', new Date);" value="Second Parameter Incorrect" />
+  </form>
+
+  <div id="code">
+    <pre>
+	<code>
+var fnCreateDiv = function (sMessage) {
+  if (document.getElementById("message")) {
+    document.body.removeChild(document.getElementById("message"));
+  }
+  var oDiv = document.createElement("div");
+  oDiv.id = "message";
+  oDiv.innerHTML = sMessage;
+  document.body.appendChild(oDiv);
+};
+
+var fnSentence = function (sName, iAge) {
+  
+  if (arguments.length > 2) {
+    throw {
+      name: "ArgumentsError",
+      message: "too many arguments",
+      detail: arguments.length + " arguments passed, only 2 allowed",
+      timestamp: new Date
+    }
+	
+  } else if (arguments[0].constructor !== String) {
+    throw {
+      name: "TypeError",
+      message: "Expected type: string",
+      detail: "Type passed: " + typeof arguments[0],
+      timestamp: new Date
+    }
+	  
+  } else if (arguments[1].constructor !== Number) {
+    throw {
+      name: "TypeError",
+      message: "Expected type: number",
+      detail: "Type passed: " + typeof arguments[1],
+      timestamp: new Date
+    }
+  }
+  
+  fnCreateDiv("My name is " + sName + " and I am " + iAge + " years old");
+};
+
+var fnTryIt = function (sName, iAge, vOther) {
+  try {
+    !vOther ? fnSentence(sName, iAge) : fnSentence(sName, iAge, vOther);
+  } catch (e) {
+    fnCreateDiv(e.name + "&lt;br /&gt;" + e.message + "&lt;br /&gt;" + e.detail + "&lt;br /&gt;Error occurred " + e.timestamp);
+  }
+};
+    </code>
+	</pre>
+  </div>
+  
+</body>
+</html>

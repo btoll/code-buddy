@@ -1,0 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Millennium Problem</title>
+<style type="text/css">
+p {
+  background: #EED;
+  border: 1px solid #CCC;
+  color: #666;
+  line-height: 1.7em;
+  padding: 10px;
+}
+</style>
+</head>
+
+<body>
+<p>When JavaScript was initially implemented in Netscape Navigator, the original Date.getYear() method returned a two-digit value (i.e., "95" for "1995"). But because of the upcoming millennium, it was decided to pass the values above 1999 as three digits, with a "1" marking the change of millennium (i.e., "101" for "2001"). The millennium problem arose when Internet Explorer decided to implement millennium dates differently, returning the full 4-digit year after 1999 but only two digits prior for 1999 and back. Most minority browsers support Netscape's (now Mozilla's) Date.getYear() behavior. While there are scripts to work around this discrepancy, the recommended solution is to use Date.getFullYear(); this method always returns a 4-digit response and is supported in modern browsers. More details and a browser compatibility list are available at <a href="http://www.quirksmode.org/js/introdate.html">http://www.quirksmode.org/js/introdate.html</a>.</p>
+</body>
+</html>

@@ -1,0 +1,61 @@
+form#theForm {
+  background-color: #eed;
+  border: 1px solid brown;
+  float: left;
+  margin: 20px 0 0 50px;
+  padding: 10px;
+  width: 450px;
+}
+div#accordion-menu {
+  float: left;
+  margin: 20px 0 0 20px;
+}
+form#theForm label {
+  clear: left;
+  float: left;
+  margin: 2px;
+  margin-left: 55px;
+  padding: 2px;
+  text-align: right;
+  width: 100px;
+}
+form#theForm input {
+  float: left;
+  margin: 2px;
+  padding: 2px;
+  width: auto;
+}
+form#theForm span {
+  background: transparent url(icn_help.gif) no-repeat;
+  float: left;
+  padding-left: 28px;
+}
+.submit {
+  margin-left: 100px;
+}
+div#scrubberErrors {
+  background-color: #ffc;
+  border: 1px solid #ccc;
+  margin: 10px;
+  padding: 10px;
+  width: 400px;
+}
+div#scrubberErrors p {
+  color: #f00;
+  font-weight: bold;
+}
+div#scrubberErrors ul {
+  font-weight: normal;
+  list-style-type: decimal;
+  margin: 15px;
+  padding-left: 30px;
+}
+div#scrubberErrors ul strong {
+  font-weight: bold;
+}
+.error {
+  color: #f00;
+}
+.defaultLabelColor {
+  color: #000;
+}

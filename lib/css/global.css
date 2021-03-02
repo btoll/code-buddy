@@ -1,0 +1,319 @@
+/******************************
+global styles and classes
+******************************/
+a:link, a:visited, a:hover, a:active {
+  color: #369;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: overline underline;
+}
+[href*="http"]:hover {
+  border-color: orange;
+  border-style: dotted;
+  border-width: 1px 0;
+  text-decoration: none; /*this declaration overrules the generic hover rule defined previously*/
+}
+[href*="http"]:after {
+  border-bottom: 1px dotted;
+  color: #999;
+  content: " [" attr(href) "] ";
+  font: 9px Verdana, serif;
+}
+[href*="http"]:hover:after {
+  background: #FFC;
+  border-bottom: 0;
+  color: #666;
+}
+a[rel="help"]:hover {
+  cursor: help;
+}
+body {
+  font: bold 14px "Trebuchet MS", Verdana, "Times New Roman", serif;
+}
+input:focus, select:focus {
+  outline: 1px solid invert;
+}
+input[type="submit"], input[type="reset"] {
+  font: caption;
+}
+.error {
+  color: #F00;
+  font-weight: bold;
+}
+.hide {
+  display: none;
+}
+/*****************************************************************************************************
+LEFT PANE
+*****************************************************************************************************/
+div#workspace, div#links {
+  margin-top: 20px;
+  width: 49%;
+}
+html>body div#workspace,
+html>body div#links {
+  background: #CCEFF7;
+  margin: 0;
+  overflow: auto;
+  padding-top: 30px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 50%;
+  width: auto;
+}
+html>body div#links {
+  background: #EDD8B1;
+  padding: 0 25px;
+  top: 0;
+  left: 50%;
+  bottom: 0;
+  right: 0;
+}
+div#instructions {
+  background: #FFF;
+  border: 1px solid #CCC;
+  color: #333;
+  font-size: 12px;
+  margin: 20px 40px 0;
+  padding: 10px;
+}
+div#instructions h5 {
+  background: #FFC;
+  border: 1px dashed #CCC;
+  font-size: 14px;
+  margin: 0;
+  padding: 5px;
+}
+div#instructions strong {
+  color: #3DBEE6;
+}
+/******************************
+Categories form and table
+******************************/
+form {
+  margin: 15px 0 0 40px;
+}
+form thead th {
+  background: #FFF;
+  border: 1px solid #000;
+  padding: 7px;
+}
+form td {
+  padding: 4px;
+}
+form td:first-child { /*target any <td> that is the first child of another element*/
+  text-align: right;
+}
+form select {
+  font: menu;
+  width: 310px;
+}
+/******************************
+Accordion menu
+******************************/
+#accordion-menu {
+  border: 2px solid #999;
+  margin-left: 30px;
+  width: 370px;
+}
+#accordion-menu div {
+  background-color: #FFF;
+}
+#accordion-menu p {
+  font: 13px "Times New Roman", Times, serif;
+  padding: 5px;
+}
+#accordion-menu a {
+  color: #6495ed;
+  font: 12px "Times New Roman", Times, serif;
+}
+#accordion-menu a.accordionHref {
+  background: #EDD8B1 url(../../images/plus.gif) 95% 50% no-repeat;
+  border-top: 2px solid #999;
+  color: #000;
+  display: block;
+  font-weight: bold;
+  /*height: 30px;*/
+  line-height: 30px;
+  padding-left: 10px;
+}
+#accordion-menu a.accordionHref:hover {
+  color: #999;
+  text-decoration: none;
+}
+#accordion-menu .first {
+  border-top: 0 !important;
+}
+#accordion-menu ul {
+  list-style-type: circle;
+}
+#accordion-menu li { /*i.e., "Debuggers"*/
+  font-size: 11px;
+}
+#accordion-menu h5 {
+  background: #CCC;
+  border: 1px dotted #999;
+  margin: 10px 10px auto;
+  padding: 5px;
+}
+#accordion-menu #accordion5 p a { /*the "Regular Expressions" accordion div*/
+  display: block;
+}
+/******************************
+Slide menu and its Menu Handle
+******************************/
+div#slideMenu {
+  position: absolute;
+  top: 210px;
+  left: -440px;
+}
+html>body div#slideMenu {
+  left: -410px;
+}
+a#menuHandle {
+  background: #EDD8B1;
+  border: 1px dashed #CCC;
+  color: white;
+  padding: 5px;
+  position: absolute;
+  top: 5px;
+  text-align: center;
+  width: 100px;
+}
+a:hover#menuHandle {
+  color: #666;
+  text-decoration: none;
+}
+a#menuHandle.opened { /*style the handle for when the slide menu is opened (visible on the screen)*/
+  background: #FFF;
+  color: #EDD8B1;
+}
+/******************************
+Splash screen
+******************************/
+div#splashScreen {
+  background: #FFF url(../../images/big_ben.jpg) 10% 50% no-repeat;
+  border: 2px solid #999;
+  opacity: 1;
+  filter: alpha(opacity=100);
+  padding: 30px 0 100px 100px;
+  position: absolute;
+  top: 100px;
+  left: 250px;
+  width: 350px;
+  z-index: 100;
+}
+div#splashScreen h1 {
+  font-size: 18px;
+  margin-left: 100px;
+}
+div#splashScreen p {
+  margin-left: 100px;
+}
+/*****************************************************************************************************
+RIGHT PANE
+*****************************************************************************************************/
+div#links h1#header {
+  background: #FFF;
+  border: 2px solid #999;
+  font-size: 12px;
+  max-height: 2.5em;
+  overflow: auto;
+  padding: 6px;
+  position: fixed;
+  top: 20px;
+  left: auto;
+  width: 42%;
+}
+div#links h1#header span:first-child {
+  color: #F00;
+}
+/******************************
+Sort boxes
+******************************/
+div#links div#sortable {
+  position: fixed;
+  top: 60px;
+  left: auto;
+}
+div#links div#sortable a {
+  background: #EED;
+  border: 1px solid #789;
+  float: left;
+  margin: .3em;
+  padding: .4em 1.6em .4em .4em;
+}
+div#links div#sortable a:hover {
+  outline: 1px solid;
+  text-decoration: none;
+}
+div#links div#sortable a.ascending {
+  background: url(../../images/down_arrow.gif) 95% 55% no-repeat;
+}
+div#links div#sortable a.descending {
+  background: url(../../images/up_arrow.gif) 95% 55% no-repeat;
+}
+div#links div#sortable a.noImage {
+  background-image: none;
+}
+/******************************
+Search results
+******************************/
+ol#results {
+  margin-top: 105px;
+}
+ol#results li>span {
+  color: #999;
+  display: block;
+  font: 11px Arial, Helvetica, sans-serif;
+}
+ol#results li a:first-child + span {
+  color: brown;
+  font-size: 12px;
+}
+ol#results li span:last-child { /*the "Last Modified" entry*/
+  margin-bottom: 7px;
+}
+ol#results a:hover {
+  background-color: #CCF;
+  text-decoration: overline underline !important; /*overrules the line-through declaration of visited links*/
+}
+ol#results a:visited {
+  text-decoration: line-through;
+}
+/******************************
+submenu color boxes
+******************************/
+li:before {
+  border: 2px solid #FFF;
+  display: block;
+  padding: 6px;
+  width: 120px;
+}
+li.demonstration:before {
+  background-color: blue;
+  content: "Demonstration";
+}
+li.readme:before {
+  background-color: tan;
+  content: "README";
+}
+li.tutorial:before {
+  background-color: tan;
+  content: "Tutorial";
+}
+li.stylesheet:before {
+  background-color: brown;
+  content: "Stylesheet";
+}
+li.javascript:before {
+  background-color: green;
+  content: "JavaScript";
+}
+li.additional:before {
+  background-color: yellow;
+  content: "Additional";
+}

@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Composite design pattern</title>
+<script type="text/javascript">
+function extend(c, p) {
+  var F = function () {};
+  F.prototype = p.prototype;
+  c.prototype = new F();
+  c.prototype.constructor = c;
+  c.superclass = p.prototype;
+}
+function Leaf(id) {
+  this.id = id;
+  this.element;
+}
+Leaf.prototype.say = function () {
+  alert("I am a " + this.id + ".");
+};
+Leaf.prototype.to = function () {
+  alert(this.id);
+};
+Leaf.prototype.speak = function (a, b) {
+  alert(a + " " + b);
+};
+function Composite(arr) {
+  this.elements = arr;
+}
+Composite.prototype.invoke = function (fn, args) {
+  for (var i = 0, len = this.elements.length; i < len; i++) {
+    Leaf.prototype[fn].apply(this.elements[i], args);
+  }
+  return this;
+};
+(function () {
+  var proto = Leaf.prototype;
+
+  Composite.createCall = function (proto, fn) {
+    proto[fn] = function () {
+      return this.invoke(fn, arguments);
+    };
+  };
+  for (var fn in proto) {
+    if (proto.hasOwnProperty(fn) && typeof proto[fn] === "function") {
+      Composite.createCall(Composite.prototype, fn);
+      /* why doesn't this work?
+      Composite.prototype[fn] = function () {
+        return this.invoke(fn, arguments);
+      };
+      */
+    }
+  }
+})();
+function Person(id) {
+  Person.superclass.constructor.call(this, id);
+}
+extend(Person, Leaf);
+var o = new Composite([
+  new Person("human"),
+  new Leaf("hydro"),
+  new Leaf("plant")
+]);
+
+o.say();
+</script>
+</head>
+
+<body>
+<pre>
+<code>
+function extend(c, p) {
+  var F = function () {};
+  F.prototype = p.prototype;
+  c.prototype = new F();
+  c.prototype.constructor = c;
+  c.superclass = p.prototype;
+}
+function Leaf(id) {
+  this.id = id;
+  this.element;
+}
+Leaf.prototype.say = function () {
+  alert(&#34;I am a &#34; + this.id + &#34;.&#34;);
+};
+Leaf.prototype.to = function () {
+  alert(this.id);
+};
+Leaf.prototype.speak = function (a, b) {
+  alert(a + &#34; &#34; + b);
+};
+function Composite(arr) {
+  this.elements = arr;
+}
+Composite.prototype.invoke = function (fn, args) {
+  for (var i = 0, len = this.elements.length; i &#60; len; i++) {
+    Leaf.prototype[fn].apply(this.elements[i], args);
+  }
+  return this;
+};
+(function () {
+  var proto = Leaf.prototype;
+
+  Composite.createCall = function (proto, fn) {
+    proto[fn] = function () {
+      return this.invoke(fn, arguments);
+    };
+  };
+  for (var fn in proto) {
+    if (proto.hasOwnProperty(fn) &#38;&#38; typeof proto[fn] === &#34;function&#34;) {
+      Composite.createCall(Composite.prototype, fn);
+      /* why doesn&#39;t this work?
+      Composite.prototype[fn] = function () {
+        return this.invoke(fn, arguments);
+      };
+      */
+    }
+  }
+})();
+function Person(id) {
+  Person.superclass.constructor.call(this, id);
+}
+extend(Person, Leaf);
+var o = new Composite([
+  new Person(&#34;human&#34;),
+  new Leaf(&#34;hydro&#34;),
+  new Leaf(&#34;plant&#34;)
+]);
+
+o.say();
+</code>
+</pre>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>tar Cheat Sheet</title>
+<style type="text/css">
+body {
+  background: #EED;
+}
+h3 {
+  background: #789;
+  border: 1px solid #CCC;
+  color: #FFF;
+  margin: 0 60px;
+  padding: 10px 0;
+  text-align: center;
+}
+p {
+  font: 14px "Trebuchet MS", Arial;
+  padding: 5px;
+}
+p.intro {
+  border: 1px solid orange;
+  border-left: 0;
+  border-right: 0;
+  font: bold 14px "Trebuchet MS", Arial;
+  margin-top: 40px;
+  padding: 5px;
+}
+pre {
+  background: #FFF;
+  border: 1px dashed #999;
+  padding: 5px; 
+}
+</style>
+</head>
+
+<body>
+<h3>tar Cheat Sheet</h3>
+
+<pre>
+<code>
+<strong>tar + bzip2</strong>
+tar cjvf my.tbz2 /dir
+
+<strong>tar + gzip</strong>
+tar czvf my.tgz /dir
+
+<strong>decompress + unpack bzip2</strong>
+tar xjvf my.tbz2
+
+<strong>decompress + unpack gzip</strong>
+tar xzvf my.tgz
+
+<strong>append files to the end of an archive (note this is a tarball, it hasn't been compressed)</strong>
+tar rf my.tar anotherfile.js
+
+<strong>list the contents of an archive (note this is a tarball, it hasn't been compressed)</strong>
+tar tf my.tar
+
+<strong>extract a file from an archive (note this is a tarball, it hasn't been compressed)</strong>
+tar xvf {my.tar} {file_to_extract}
+
+<strong>extract a directory from an archive (note this is a tarball, it hasn't been compressed)</strong>
+tar xvf {my.tar} {dir_to_extract}
+</code>
+</pre>
+</body>
+</html>

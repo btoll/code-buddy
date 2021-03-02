@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>createElem() method</title>
+<style type="text/css">
+div {
+  background: #FFF;
+  border: 1px solid #CCC;
+  margin: 10px;
+  padding: 10px;
+}
+pre {
+  background: #EED;
+  border: 1px dotted #CCC;
+  margin: 5px;
+  overflow: auto;
+  padding: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<div>
+<h3>Ability to append unlimited children elements and then append to a parent element</h3>
+<ul>
+  <li>Create an <code>attributes</code> object that will map to the attributes of the HTML element being created (these properties are attached to the element object ala DOM Level 0).</li>
+  <li>Create a <code>style</code> object that will map to the JavaScript object's representation of the HTML element.</li>
+  <li>Create unlimited children elements by creating an array of elements that's then the value of the object's <code>children</code> property.</li>
+  <li>Create a <code>parent</code> property that references an existing node in the DOM tree to which the newly-created node and its children will automatically be appended, or <a href="#inDOM">create an <code>inDOM</code> property</a> that creates a parent element on-they-fly, appends the newly created element and its children, and returns the entire structure to be inserted into the DOM at your discretion.</li>
+</ul>
+
+<pre>
+<code>
+createElem: function (obj) {
+	  
+  var e = document.createElement(obj.elem);
+  if (obj.attributes) {
+    for (var i in obj.attributes) {
+      if (i.indexOf("on") != -1) { //NOTE html elements don't natively have "on*" attributes;
+        e[i] = new Function(obj.attributes[i]); //ie6 can't handle i.setAttribute;
+      } else {
+        e[i] = obj.attributes[i];
+      }
+    }
+  }
+  if (obj.style) {
+    for (var i in obj.style) {
+      e.style[i] = obj.style[i];
+    }
+  }
+  if (obj.children) {
+    for (var i = 0; i < obj.children.length; i++) {
+      e.appendChild(obj.children[i]);
+    }
+  }
+  if (obj.parent && obj.inDOM === false) { //if a parent elem was given and is already an existing node in the DOM append the node to it...;
+    var parent = obj.parent.constructor == String ? document.createElement(obj.parent) : obj.parent;
+    parent.appendChild(e);
+    return parent;
+  } else if (obj.parent) { //...the parent isn't in the DOM yet so create it and append all the children to it..;
+    var parent = this.normalizeElement(obj.parent);
+    parent.appendChild(e);
+	return e;
+  } else { //...else return the node to be appended later into the DOM;
+    return e;
+  }
+	
+}
+</code>
+</pre>
+
+<p>You could use the method like this:</p>
+
+<pre>
+<code>
+TEST.utility.createElem({elem: "td",
+  attributes: {
+    className: "cell3",
+    id: "row" + trs.length
+  },
+  style: {
+    background: "blue",
+    padding: "10px"
+  },
+  children: [
+    TEST.utility.createElem({elem: "a", attributes: {
+      href: "#",
+      className: "button",
+      onclick: "TEST.events.rename(this); return false",
+      onfocus: "if (this.blur) this.blur();",
+      innerHTML: "Rename"
+    }}),
+    TEST.utility.createElem({elem: "a", attributes: {
+      href: "#",
+      className: "button",
+      id: "deleteRow" + deleteRowId,
+      onclick: "TEST.events.delete(this); return false",
+      onfocus: "if (this.blur) this.blur();",
+      innerHTML: "Delete"
+    }})
+  ],
+  parent: trs[trs.length - 1]
+});
+</code>
+</pre>
+
+<p>This would create a nested structure that looks like this:</p>
+
+<pre>
+<code>
+&lt;td class="cell3" id="row1" style="background: blue; padding: 10px;"&gt;
+  &lt;a href="#" class="button" onclick="TEST.events.rename(this); return false;" onfocus="if (this.blur) this.blur();"&gt;Rename&lt;/a&gt;
+  &lt;a href="#" class="button" id="deleteRow0" onclick="TEST.events.delete(this); return false" onfocus="if (this.blur) this.blur();";&gt;Delete&lt;/a&gt;
+&lt;/td&gt;
+</code>
+</pre>
+
+<p>There would then be no need to insert it into the DOM because an existing node was already provided in <code>parent</code> property of the object (thereby appending it to the node automatically).</p>
+
+<p>Alternately, if you didn't want to append the newly-created element (with or without children) immediately to the DOM, you'd not create a <code>parent</code> property but stuff the element into a variable to be inserted later at your discretion (for example, if you're creating elements on the fly and the parent elements aren't yet created):</p>
+
+<pre>
+<code>
+var newElem = TEST.utility.createElem({elem: "td",
+  attributes: {
+    className: "cell3",
+    id: "row" + trs.length
+  },
+  children: [
+    TEST.utility.createElem({elem: "a", attributes: {
+      href: "#",
+      className: "button",
+      onclick: "TEST.events.rename(this); return false",
+      onfocus: "if (this.blur) this.blur();",
+      innerHTML: "Rename"
+    }}),
+    TEST.utility.createElem({elem: "a", attributes: {
+      href: "#",
+      className: "button",
+      id: "deleteRow" + deleteRowId,
+      onclick: "TEST.events.delete(this); return false",
+      onfocus: "if (this.blur) this.blur();",
+      innerHTML: "Delete"
+    }})
+  ]
+});
+</code>
+</pre>
+
+<p>You would then append it later like this:</p>
+
+<pre>
+<code>
+trs[trs.length - 1].appendChild(newElem);
+</code>
+</pre>
+
+<p><a name="inDOM"><h3>Use of <code>inDOM</code> property</h3></a> <a href="#">Back to top</a></p>
+
+<pre>
+<code>
+var newElem = TEST.utility.createElem({elem: "td",
+  attributes: {
+    className: "cell3",
+    id: "row" + trs.length
+  },
+  style: {
+    background: "blue",
+    padding: "10px"
+  },
+  children: [
+    TEST.utility.createElem({elem: "a", attributes: {
+      href: "#",
+      className: "button",
+      onclick: "TEST.events.rename(this); return false",
+      onfocus: "if (this.blur) this.blur();",
+      innerHTML: "Rename"
+    }}),
+    TEST.utility.createElem({elem: "a", attributes: {
+      href: "#",
+      className: "button",
+      id: "deleteRow" + deleteRowId,
+      onclick: "TEST.events.delete(this); return false",
+      onfocus: "if (this.blur) this.blur();",
+      innerHTML: "Delete"
+    }})
+  ],
+  parent: "tr",
+  inDOM: false
+});
+</code>
+</pre>
+
+<p>The presence of the <code>inDOM</code> property with a value of <code>false</code> alerts the method to create the value of <code>parent</code> using the document.createElement() method rather than appending to an already existing node (since it doesn't exist yet). The parent is then returned by the method to by appended later into the DOM.</p>
+
+<p><strong>NOTE</strong> if you need to add any attributes to the parent you must do it like this:</p>
+
+<pre>
+<code>
+  parent: TEST.utility.createElem({elem: "li", attributes: {className: "foo", id: "bar", onmouseover: "alert('tulips');"}}),
+  inDOM: false
+</code>
+</pre>
+
+<p>But if you simply need an element node without any attributes or text you can do it like this:</p>
+
+<pre>
+<code>
+  parent: "tr",
+  inDOM: false
+</code>
+</pre>
+
+<p><strong>NOTE</strong> if you are using this method but forget to add the <code>inDOM</code> property (and don't set it to <code>false</code>), the method will perform the default operation of assuming that the <code>parent</code> property contains a pointer to an already-existing element node and the script will fail.</p>
+
+</div>
+
+</body>
+</html>

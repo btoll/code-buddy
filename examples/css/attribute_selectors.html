@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>CSS Tests</title>
+<style type="text/css">
+body { font: normal 12px/200% Arial, Helvetica, sans-serif; }
+div { background-color: #ffc; border: 1px solid #ccc; margin: 10px; padding: 10px; }
+div:hover { background: #ffc url(images/header_logo.gif) 50% 50% no-repeat; }
+
+*[lang|="it"] { text-decoration: overline underline; }/*one way of targeting the lang attribute*/
+*:lang(es) { color: pink; }/*another way of targeting the lang attribute*/
+
+div#first p:first-child { background-color: #edd; }
+div#first li:first-child { border: 1px solid blue; }
+div#first strong:first-child { font-style: italic; }
+div#first p + ul + p { color: #f00; }
+div#first li + li { color: green; }
+div#first ul > li { padding-left: 20px; }
+div#first input:focus { background-color: #eed; }
+
+div#first .warning { font-weight: bold; }
+div#first span.warning { color: #f00; }
+div#first .caution { background-color: silver; }
+div#first .warning.caution { font-size: 20px; } /*the order of the classes is unimportant (also, another thing IE6 and below doesn't get right)*/
+
+div#second a[title] { font-weight: bold; }
+div#second a[title][rel*="ear"] { color: brown; }
+div#second a[title][rel="external"] { background: transparent url(images/icn_info.gif) 100% 50% no-repeat; padding-right: 20px; }
+div#second p[class~="barren"] { font-style: italic; } /*target all elements with the word 'barren' in their CLASS attribute*/
+div#second p[class^="cloud"] { color: green; } /*target all elements whose attribute value begins with 'cloud'*/
+div#second p[class$="y"] { font-weight: bold; } /*target all elements whose attribute value ends with 'y'*/
+div#second p[class*="bear"] { background-color: silver; } /*target all elements whose attribute value contains the substring 'bear'*/
+
+a:link, a:visited, a:hover, a:active { text-decoration: none; }
+a:visited { text-decoration: line-through; }
+a:link:hover { text-decoration: overline underline; }
+a:visited:hover { background-color: silver; text-decoration: none; }
+a:link:lang(it) { border: 1px solid orange; }
+a:link:hover:lang(it) { background-color: #f00; text-decoration: none; }
+</style>
+</head>
+
+<body>
+
+<div id="first">
+  <p>This is the first child of the first div element.</p>
+  <ul>
+
+    <li>Braves</li>
+	<li>Marlins</li>
+	<li>Mets</li>
+	<li>Nationals</li>
+	<li><strong>Phillies</strong></li>
+  </ul>
+
+  <p>I am another paragraph.</p>
+  <p lang="it">Ciao, mondo! <span lang="es">(Hola, mundo!)</span></p>
+  <form action="">
+    <fieldset>
+	<legend>A tiny little form</legend>
+	  <label>Username <input type="text" /></label>
+
+	</fieldset>
+  </form>
+  
+	<p class="warning"><span class="caution">With plutonium, the possibility of implosion is very real</span> <span class="caution warning">and must be avoided at all costs</span>.</p>
+
+</div>
+
+<div id="second">
+  <p lang="it" class="caution">Forse si e' sbagliato, non lo so!</p>
+
+  <ol>
+    <li>Uno</li>
+	<li>Due</li>
+	<li>Tre</li>
+	<li>Quattro</li>
+	<li>Cinque</li>
+
+  </ol>
+  
+  <ul>
+    <li><a href="http://www.altavista.com/">AltaVista</a></li>
+    <li><a href="http://www.google.com/" title="Google" rel="search">Google</a></li>
+	<li><a href="http://www.msn.com/" title="MSN" rel="external">MSN</a></li>
+	<li><a href="http://www.yahoo.com/" title="Yahoo!">Yahoo!</a></li>
+	<li><a href="http://italy.benjamintoll.com/" lang="it">Un Dizionario</a></li>
+
+  </ul>
+  
+  <h3>I have to admit that I like planets (and these in particular).</h3>
+  <p class="barren rocky">Mercury</p>
+  <p class="cloudy barren">Venus</p>
+  <p class="life-bearing cloudy">Earth</p>
+
+</div>
+
+<!--[if lte IE 6]>
+<p>
+<script type="text/javascript">
+alert("Attribute selectors are not supported by this browser!");
+</script>
+</p>
+<![endif]-->
+
+</body>
+</html>

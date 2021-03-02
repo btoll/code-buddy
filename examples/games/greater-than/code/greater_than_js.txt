@@ -1,0 +1,173 @@
+var games = {}; //declare a single global symbol;
+games.greaterThan = {}; //create the namespace;
+
+games.greaterThan.createElem = function (name, elem, id, classname) {
+  var name = document.createElement(elem);
+  if (id) name.setAttribute("id", id);
+  if (classname) name.className = classname;
+  return name;
+}
+
+games.greaterThan.yellowFade = function (elem, red, green, blue) {
+  if (elem.fade) clearTimeout(elem.fade);
+  elem.style.backgroundColor = "rgb(" + red + ", " + green + ", " + blue + ")";
+  if (red == 238 && green == 238 && blue == 221) return;
+
+  var newred = red + Math.ceil((238 - red) / 10);
+  var newgreen = green + Math.ceil((238 - green) / 10);
+  var newblue = blue + Math.ceil((221 - blue) / 10);
+  var repeat = function() { games.greaterThan.yellowFade(elem, newred, newgreen, newblue); };
+
+  elem.fade = setTimeout(repeat, 50);
+}
+
+games.greaterThan.setMenu = function (id, coord) {
+  games.greaterThan._elem = document.getElementById(id);
+  if (!games.greaterThan._open) {
+    games.greaterThan._x = coord;
+    games.greaterThan._w = 0;
+    games.greaterThan._open = true;
+  } else if (games.greaterThan._open) {
+    games.greaterThan._x = 0;
+    games.greaterThan._w = coord;
+    games.greaterThan._open = false;
+  }
+  games.greaterThan.slideMenu(games.greaterThan._x, games.greaterThan._w);
+};
+
+games.greaterThan.slideMenu = function (_x, _w) {
+  if (_x != _w) {
+    if (_x > _w) _x -= 10;
+    else if (_x < _w) _x += 10;
+    games.greaterThan._elem.style.left = _x + "px";
+    setTimeout(function() { games.greaterThan.slideMenu(_x, _w); }, 0);
+  }
+  return;
+};
+
+games.greaterThan.getStyle = function (elem, name) {
+  //if the property exists in style[] then it's been set recently and is current;
+  if (elem.style[name]) return elem.style[name];
+  else if (elem.currentStyle) return elem.currentStyle[name]; //otherwise, try to use IE's method;
+  else if (document.defaultView && document.defaultView.getComputedStyle) { //or the w3c's method, if it exists;
+    //it uses the traditional 'text-align' style of rule writing instead of 'textAlign';
+	name = name.replace(/([A-Z])/g, "-$1");
+	name = name.toLowerCase();
+	
+	//get the style object and get the value of the property if it exists;
+	var s = document.defaultView.getComputedStyle(elem, "");
+    return s && s.getPropertyValue(name);
+
+  //otherwise, we're using some other browser;
+  } else return null;
+};
+
+window.onload = function() {
+
+  //set up the slide menu;
+  if (document.getElementById("menuHandle")) {
+    document.getElementById("menuHandle").onclick = function() {
+	  games.greaterThan.setMenu("slideMenu", -parseInt(games.greaterThan.getStyle(document.getElementById("rules"), "width")) - 20); //grab the width from the stylesheet (plus the additional width), convert to a negative number);
+	  return false;
+	}
+  }
+  document.getElementById("menuHandle").onfocus = function() { if(this.blur) this.blur(); };
+  
+  games.greaterThan.greaterThan = function () {
+    document.getElementById("cardTable").innerHTML = "";
+    document.getElementById("points").innerHTML = 5;
+  
+    var cards = []; //an array that holds the newly created card divs;
+    var uniqueIDs = []; //an array that holds the uniquely generated ids;
+    var inTheHole = []; //an array that holds the 2 selected cards;
+    var overturned = []; //an array that holds the cards that have been successfully overturned;
+  
+    var i = 0;
+    while (cards.length <= 19) { //ensure that 'x' number of divs wi/ unique ids will be created;
+      var z = Math.floor(Math.random() * 1001); //generates a random # between 0-1,000;
+      if (uniqueIDs.join().indexOf(z) == -1) { //if the id hasn't already been generated then add it to the array (it must be unique);
+        cards.push(games.greaterThan.createElem(i, "div", "card"+z, "cardFace"));
+	    uniqueIDs.push(z);
+	  }
+	  i++;
+    }
+
+    for (var x in cards) {
+      var p = document.createElement("p");
+	  p.appendChild(document.createTextNode(cards[x].id.replace(/card/, ""))); //trim off the number from the id;
+	  p.className = "cardValue";
+      cards[x].appendChild(p); //append the paragraph to each newly created div;
+	  document.all ? cards[x].attachEvent("onclick", showValue) : cards[x].addEventListener("click", showValue, false); //attach the event handlers;
+      document.getElementById("cardTable").appendChild(cards[x]);
+    }
+  
+    function showValue(e) {
+      var evt = window.event || e; //get the MouseEvent object;
+	  var elem = evt.srcElement || this; //get the element that the event was attached to;
+      elem.style.backgroundImage = "none";
+	  elem.firstChild.style.display = "block";
+	  document.all ? elem.detachEvent("onclick", showValue) : elem.removeEventListener("click", showValue, false); //remove the event listener;
+	  stash(elem.firstChild.firstChild.nodeValue); //send along the text from within the paragraph (it will a number);
+    }
+  
+    function stash(name) { //this function determines if the two numbers are greater or less than each other;
+      inTheHole.push(name);
+	  if (inTheHole.length == 2) {
+	
+	    if (parseInt(inTheHole[0]) < parseInt(inTheHole[1])) { //
+	      for (var j = 0; j < inTheHole.length; j++) { //remove the event listeners so they can't be clicked again;
+	        document.all ? document.getElementById("card"+inTheHole[j]).detachEvent("onclick", showValue) : document.getElementById("card"+inTheHole[j]).removeEventListener("click", showValue, false);
+		  }
+		  overturned.push("card"+inTheHole[0]);
+		  overturned.push("card"+inTheHole[1]);
+		  if (overturned.length == 20) { //all the cards have been successfully overturned;
+		    if (confirm("Congratulations, you won! Play again?")) {
+		      clearTimeout(timer);
+		      games.greaterThan.greaterThan();
+		    }
+		  } else {
+		    games.greaterThan.yellowFade(document.getElementById("scorer"), 0, 0, 221);
+		    document.getElementById("scorer").innerHTML = "Greater Than!";
+		    inTheHole = []; //reset the array;
+		  }
+
+	    } else {
+	      games.greaterThan.yellowFade(document.getElementById("scorer"), 238, 0, 0);
+		  document.getElementById("scorer").innerHTML = "Too bad, you lost a point!";
+	      for (var n = 0; n < cards.length; n++) //remove the event handlers so they can't be clicked on when the following code runs;
+		    document.all ? cards[n].detachEvent("onclick", showValue) : cards[n].removeEventListener("click", showValue, false);
+		  
+	      var timer = setTimeout(function() { // there was no match so reset their backgrounds images after 1 second;
+	        for (var i = 0; i < inTheHole.length; i++) {
+		      var a = inTheHole; //grab a reference to the inTheHole array and set the timeouts so the second card 'closes' before the first;
+		      var first = setTimeout(function() {
+			    document.getElementById("card"+a[0]).style.backgroundImage = "url(../../../images/blue.gif)";
+			    document.getElementById("card"+a[0]).firstChild.style.display = "none";
+			  }, 300);
+			  var second = setTimeout(function() {
+			    document.getElementById("card"+a[1]).style.backgroundImage = "url(../../../images/blue.gif)";
+			    document.getElementById("card"+a[1]).firstChild.style.display = "none";
+			  }, 100);
+		    }
+
+		    inTheHole = []; //reset the array;
+		    for (var m = 0; m < cards.length; m++) {
+		      if (overturned.join().indexOf(cards[m].id) == -1) //restore the event listeners to those cards that are still unturned (i.e. if the value of cards[m].id is NOT contained within the array of already overturned cards, reattach the event listener);
+		        document.all ? cards[m].attachEvent("onclick", showValue) : cards[m].addEventListener("click", showValue, false);
+		    }
+		  }, 1000);
+		
+		  document.getElementById("points").innerHTML = parseInt(document.getElementById("points").innerHTML) - 1;
+		  if (parseInt(document.getElementById("points").innerHTML) == 0) {
+		    if (confirm("You lost! Play again?")) {
+			  if (timer) clearTimeout(timer); //clear the timeout or document.getElementById("card"+a[0]) could contain a null value;
+			  games.greaterThan.greaterThan();
+		    } else document.getElementById("cardTable").style.display = "none";
+		  }
+	    }
+	  }
+    } //end function stash();
+
+  }; //end greaterThan method;
+  games.greaterThan.greaterThan(); //initiate the game;
+};

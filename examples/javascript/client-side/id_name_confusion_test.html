@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Id and Name attribute confusion in IE when using document.getElementById()</title>
+<style type="text/css">
+body {
+  background: #EED;
+}
+h3 {
+  background: #789;
+  border: 1px solid #CCC;
+  color: #FFF;
+  margin: 0 60px;
+  padding: 10px 0;
+  text-align: center;
+}
+p.intro {
+  border: 1px solid orange;
+  border-left: 0;
+  border-right: 0;
+  font: bold 14px "Trebuchet MS", Arial;
+  margin-top: 40px;
+  padding: 5px;
+}
+code, pre {
+  margin: 0;
+  padding: 0; 
+}
+label {
+  display: block;
+}
+table {
+  border: 1px solid #000;
+  margin-top: 20px;
+}
+table td {
+  padding: 5px;
+}
+#before, #after {
+  float: left;
+	margin: 0 20px;
+	width: 40%;
+}
+</style>
+<script type="text/javascript">
+function $(sName) {
+  return document.getElementById(sName);
+}
+var fixIE = function (id) {
+  var elem = typeof id === "string" ? document.getElementById(id) : id;
+  if (!elem) return null;
+  if (/msie/i.test(navigator.userAgent)) {
+    if (elem) { //make sure that it is a valid match on id;
+      if (elem.id == id) {
+        return elem;
+      } else { //otherwise find the correct element;
+        for(var i = 1, iLength = document.all[id].length; i < iLength; i++) {
+          if (document.all[id][i].id == id) {
+            return document.all[id][i];
+          }
+        }
+      }
+    };
+    return null;
+  } else {
+    return elem;
+  }
+};
+window.onload = function () {
+  $("beforeForm").onsubmit = function () {
+	  var aElems = this.elements;
+		for (var i = 0, iLength = aElems.length; i < iLength; i++) {
+		  if (aElems[i].name) {
+			  if (aElems[i].name === "country") alert("document.getElementById retrieves a(n) " + $(aElems[i].name).tagName + " HTMLElement.\nThe script will bomb in IE and go no further.");
+				if (navigator.userAgent.indexOf("IE") == -1) { //only proceed if the browser isn't ie, otherwise it'll fail;
+		      $(aElems[i].name).innerHTML = aElems[i].value;
+				}
+			}
+		}
+		return false;
+	};
+	
+	$("afterForm").onsubmit = function () {
+	  var aElems = this.elements;
+		for (var i = 0, iLength = aElems.length; i < iLength; i++) {
+		  if (aElems[i].name) {
+			  var oElem = fixIE(aElems[i].name);
+				if (aElems[i].name === "country2") alert("document.getElementById retrieves a(n) " + oElem.tagName + " HTMLElement.\nThe method now points to the correct DOM element and the script will proceed.");
+		    oElem.innerHTML = aElems[i].value;
+			}
+		}
+		return false;
+	};
+};
+</script>
+</head>
+
+<body>
+
+<h3>Id and Name <code>attribute</code> confusion in IE when using document.getElementById()</h3>
+
+<div id="before">
+  <p class="intro">Without the helper method:</p>
+
+  <form id="beforeForm" method="post" action="">
+    <label for="state">State</label><input type="text" name="state" />
+    <label for="country">Country</label><input type="text" name="country" />
+    <label for="phone">Phone</label><input type="text" name="phone" />
+    <label for="email">Email</label><input type="text" name="email" />
+	  <label><input type="submit" value="Submit" /></label>
+  </form>
+
+  <table>
+    <tbody>
+      <tr>
+		    <td>State:</td>
+        <td id="state">Pennsylvania</td>
+      </tr>
+      <tr>
+		    <td>Country:</td>
+        <td id="country">USA</td>
+      </tr>
+      <tr>
+		    <td>Phone:</td>
+        <td id="phone">717-555-1212</td>
+      </tr>
+      <tr>
+		    <td>Email:</td>
+        <td id="email">btoll@aessuccess.org</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="after">
+  <p class="intro">With the helper method:</p>
+
+  <form id="afterForm" method="post" action="">
+    <label for="state">State</label><input type="text" name="state2" />
+    <label for="country">Country</label><input type="text" name="country2" />
+    <label for="phone">Phone</label><input type="text" name="phone2" />
+    <label for="email">Email</label><input type="text" name="email2" />
+	  <label><input type="submit" value="Submit" /></label>
+  </form>
+
+  <table>
+    <tbody>
+      <tr>
+		    <td>State:</td>
+        <td id="state2">Pennsylvania</td>
+      </tr>
+      <tr>
+		    <td>Country:</td>
+        <td id="country2">USA</td>
+      </tr>
+      <tr>
+		    <td>Phone:</td>
+        <td id="phone2">717-555-1212</td>
+      </tr>
+      <tr>
+		    <td>Email:</td>
+        <td id="email2">btoll@aessuccess.org</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

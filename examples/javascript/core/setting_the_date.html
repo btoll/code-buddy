@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Setting the Date</title>
+<style type="text/css">
+code {
+  color: orange;
+}
+</style>
+</head>
+
+<body>
+<p>I found that I needed to set the date one day in the future, so this is what I did:</p>
+<pre>
+<code>
+var oNextDay = new Date();
+oNextDay.setTime(oNextDay.getTime() + 86400000);
+		
+//will output <code>Sat Jul 19 2008 14:03:51 GMT-0400 (Eastern Daylight Time)</code>
+</code>
+</pre>
+
+<p>You can see that since the Unix timestamp is being used (calculated in milliseconds), the months will automatically "roll-over":</p>
+<pre>
+<code>
+var oNextDay = new Date(Date.parse(&quot;July 31, 2008&quot;));
+oNextDay.setTime(oNextDay.getTime() + 86400000);
+
+//will output <code>Fri Aug 01 2008 00:00:00 GMT-0400 (Eastern Daylight Time)</code>
+</code>
+</pre>
+
+<p>*NOTE* Different browsers will output the Date slightly differently when the Date object's <code>toString()</code> method is invoked.</p>
+
+</body>
+</html>

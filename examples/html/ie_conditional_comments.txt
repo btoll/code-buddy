@@ -1,0 +1,19 @@
+<!--[if IE]>
+You are using IE (IE5+ and above).
+<![endif]-->
+
+<![if !IE]>
+You are NOT using IE.
+<![endif]>
+
+<!--[if IE 5.5000]>
+You are using IE 5.5!
+<![endif]-->
+
+<!--[if IE 6]>
+You are using IE 6!
+<![endif]--> 
+
+<!--[if lte IE 6]>
+You are using IE 6 or less!
+<![endif]-->

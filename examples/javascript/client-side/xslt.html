@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>JavaScript and XSLT processing</title>
+<style type="text/css">
+pre {
+  background: #EED;
+  border: 1px solid #999;
+  margin: 10px;
+  padding: 10px;
+}
+p {
+  background: #FFA;
+  border: 1px dashed #CCC;
+  margin: 10px;
+  padding: 10px;
+}
+#theList {
+  background: #EDD;
+  border: 2px solid #CCC;
+}
+</style>
+<script type="text/javascript">
+window.onload = function () {
+
+  if (window.addEventListener) {
+
+    var oXml = document.implementation.createDocument("", "", null);
+    var oXsl = document.implementation.createDocument("", "", null);
+
+    oXml.async = false;
+    oXsl.async = false;
+
+    oXml.load("../../lib/xml/code_buddy.xml");
+    oXsl.load("../../lib/xml/code_buddy.xsl");
+
+    var oProcessor = new XSLTProcessor();
+    oProcessor.importStylesheet(oXsl);
+    var oResult = oProcessor.transformToDocument(oXml);
+
+    var oSerializer = new XMLSerializer();
+    var sXml = oSerializer.serializeToString(oResult, "text/xml");
+
+  } else if (window.attachEvent) {
+
+    var oXml = new ActiveXObject("Microsoft.XMLDOM");
+    var oXsl = new ActiveXObject("Microsoft.XMLDOM");
+    
+    oXml.async = false;
+    oXsl.async = false;
+    
+    oXml.load("../../lib/xml/code_buddy.xml");
+    oXsl.load("../../lib/xml/code_buddy.xsl");
+    
+    var sXml = oXml.transformNode(oXsl);
+    
+  }
+
+  var oDiv = document.createElement("div");
+  oDiv.innerHTML = sXml;
+  document.body.appendChild(oDiv);
+
+};
+</script>
+</head>
+
+<body>
+
+<h2>JavaScript and XSLT processing</h2>
+
+<h4>Transform an XML document using an XML stylesheet by using a JavaScript XSLT processor.</h4>
+
+<h5>Note: Google Chrome and Safari <a href="http://developer.apple.com/internet/safari/faq.html#anchor21" target="_blank">don't support</a> transforming XML via scripting. XSLT support is limited to XSL page processing instructions embedded <a href="../../lib/xml/code_buddy_with_processing.xml" target="_blank">at the top of an XML page</a>.</h5> 
+
+<p><a href="../../lib/xml/code_buddy.xml" target="_blank">View the XML document</a></p>
+<p><a href="../../lib/xml/code_buddy.xsl" target="_blank">View the XSL stylesheet</a></p>
+
+<pre>
+<code>
+  if (window.addEventListener) {
+
+    var oXml = document.implementation.createDocument(&quot;&quot;, &quot;&quot;, null); <strong>(1)</strong>
+    var oXsl = document.implementation.createDocument(&quot;&quot;, &quot;&quot;, null);
+
+    oXml.async = false; <strong>(2)</strong>
+    oXsl.async = false;
+
+    oXml.load(&quot;../../lib/xml/code_buddy.xml&quot;); <strong>(3)</strong>
+    oXsl.load(&quot;../../lib/xml/code_buddy.xsl&quot;);
+
+    var oProcessor = new XSLTProcessor(); <strong>(4)</strong>
+    oProcessor.importStylesheet(oXsl);
+    var oResult = oProcessor.transformToDocument(oXml);
+
+    var oSerializer = new XMLSerializer(); <strong>(5)</strong>
+    var sXml = oSerializer.serializeToString(oResult, &quot;text/xml&quot;);
+
+  } else if (window.attachEvent) {
+
+    var oXml = new ActiveXObject(&quot;Microsoft.XMLDOM&quot;); <strong>(1)</strong>
+    var oXsl = new ActiveXObject(&quot;Microsoft.XMLDOM&quot;);
+    
+    oXml.async = false; <strong>(2)</strong>
+    oXsl.async = false;
+    
+    oXml.load(&quot;../../lib/xml/code_buddy.xml&quot;); <strong>(3)</strong>
+    oXsl.load(&quot;../../lib/xml/code_buddy.xsl&quot;);
+    
+    var sXml = oXml.transformNode(oXsl); <strong>(5)</strong>
+    
+  }
+
+  var oDiv = document.createElement(&quot;div&quot;); <strong>(6)</strong>
+  oDiv.innerHTML = sXml;
+  document.body.appendChild(oDiv);
+</code>
+</pre>
+
+<h5>Note: Since IE and Mozilla browsers implement different JavaScript engines, they will have different XML parsers and different ways to serialiaze the XML. As usual, perform object detection when branching the code.</h5>
+<p><strong>(1)</strong> Create a new XML Document (DOM) for both the XML and the XSLT.</p>
+<p><strong>(2)</strong> Don't fetch the document asynchronously (the default) or else we'd need to check the <code>readyState</code> and attach a listener to the <code>onreadystatechange</code> event of the XML DOM object.</p>
+<p><strong>(3)</strong> Load the XML and the XSLT.</p>
+<p><strong>(4)</strong> Instantiate an XSLT processor, import the stylesheet and transform the XML into a completely different DOM.</p>
+<p><strong>(5)</strong> Instantiate an object to serialize the new XML document (or simply call the  <code>transformNode</code> method in IE).</p>
+<p><strong>(6)</strong> Insert the serialized XML into the DOM.</p>
+<h4>View the results of the transformation below (or <a href="../../lib/xml/code_buddy_with_processing.xml" target="_blank">view the XML document</a> with embedded processing instructions if your browser doesn't support scripting XSLT):</h4>
+
+</body>
+</html>

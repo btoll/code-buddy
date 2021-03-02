@@ -1,0 +1,248 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Custom Logger</title>
+<link rel="stylesheet" type="text/css" href="../../../lib/css/blog_template.css" />
+<style type="text/css">
+#logged {
+  border: 1px solid #CCC;
+  font: normal 12px monospace;
+  white-space: pre;
+}
+span {
+  color: red;
+}
+.log {
+  color: blue;
+}
+</style>
+<script type="text/javascript">
+var $ = function (sElem) {
+  return document.getElementById(sElem);
+};
+
+window.onload = function () {
+
+  var Logger = (function () {
+    var methods = {};
+
+    var getValueFromType = function (type) {
+      switch (type.constructor) {
+        case String:
+          return type
+        case Array:
+          return type.join(", ");
+        case Function:
+          return type();
+        default:
+          return "Sorry, what's your type?";
+      }
+    };
+
+    var logger = function (args, state) {
+      var arr = args[0] instanceof Array ?
+        args[0] : //if the first argument is an array just return it...;
+          Array.prototype.slice.apply(args); //...otherwise turn the arguments object into a true array;
+        logTypes = [];
+
+      for (var i = 0, len = arr.length; i < len; i++) {
+        var method = arr[i]; //optimize;
+        methods[method] = state; //manage the hash;
+        logTypes.push(method);
+        Logger[method] = (function (method) {
+          return function (type) {
+            !methods[method] ? //the state is the crux; simply manage your object hash to determine how the method is called;
+              $("logged").innerHTML += "<p><span>The " + method + " log type has been disabled.</span></p>" :
+                $("logged").innerHTML += "<p>&lt;LOG&gt; " + getValueFromType(type) + "</p>";
+          };
+        }(method)); //each method var must be scoped as a local var in the closure so pass it in as a function argument;
+      }
+      $("logged").innerHTML += "<p><span class='log'>The following log types have been " + (state ? "enabled" : "disabled") + "</span>: " + logTypes.join(", ") + "</p>";
+    };
+
+    return {
+      enable: function () {
+        logger(arguments, true); //the second argument tells the private logger function how to behave;
+      },
+      disable: function () {
+        logger(arguments, false);
+      }
+    };
+  }());
+
+  //now do the logging;
+  Logger.enable(["debug", "error", "philly"]); //pass either an array of strings...;
+  Logger.enable("alfalfa", "sprouts", "jolly", "rancher"); //...or csv;
+
+  Logger.debug(["test", "is this thing on?", "jazz"]);
+  Logger.disable("debug");  Logger.debug("test2"); //this will "fail" with a helpful log message!;
+  Logger.enable("debug");
+  Logger.debug("dump");
+
+  Logger.sprouts("yummy");
+  Logger.disable("sprouts", "error", "rancher", "jolly"); //pass either csv or an array of strings;
+  Logger.sprouts("bad"); //this will "fail" with a helpful log message!;
+  Logger.enable("sprouts"); //re-enable the log type;
+  Logger.sprouts("sprouts is back!");
+
+  Logger.philly(function () { //pass a function as the argument!;
+    return "i am a function!";
+  });
+
+  //Logger.events("hello, world!"); //this will throw an exception as it hasn't been seeded as a log type;
+
+};
+</script>
+</head>
+
+<body>
+
+  <div id="content">
+
+    <h1>Custom Logger</h1>
+    <h2>What's in this post?</h2>
+    <ul>
+      <li><a href="#item1">The Use Case</a></li>
+      <li><a href="#item2">The Custom Logger Code</a></li>
+      <li><a href="#item3">The Outputted Logs</a></li>
+      <li><a href="#item4">More information</a></li>
+    </ul>
+    
+    <h3 id="item1">The Use Case</h3>
+    <p>The use case was to develop a logger which could be seeded with user-defined method names which would then become methods of a singleton. The only goal was not to have to explicitly hard-code an object with the method names, but rather be able to seed them using a pre-defined method.</p>
+    <p>For instance, I didn't want to have to do this:</p>
+    <blockquote>
+    var Logger = {
+
+      debug: function () {
+        //code here;
+      },
+
+      error: function () {
+        //code here;
+      },
+ 
+      event: function () {
+        //code here;
+      }
+
+    };
+    </blockquote>
+
+    <p>but rather:</p>
+    <blockquote>
+    Logger.enable(["debug", "error", "event"]);
+
+    Logger.debug("");
+
+    Logger.error("");
+
+    Logger.event(function () {
+      //code here;
+    });
+    </blockquote>
+
+    <p>So, this is a custom logger. It is a singleton with two public APIs:</p>
+    <ul>
+      <li><code>Logger.enable()</code></li>
+      <li><code>Logger.disable()</code></li>
+    </ul>
+    <p>Let's dig into some code.</p>
+
+    <h3 id="item2">The Custom Logger Code</h3>
+    <blockquote>
+    var Logger = (function () {
+      var methods = {};
+  
+      var getValueFromType = function (type) {
+        switch (type.constructor) {
+          case String:
+            return type
+          case Array:
+            return type.join(&#34;, &#34;);
+          case Function:
+            return type();
+          default:
+            return &#34;Sorry, what&#39;s your type?&#34;;
+        }
+      };
+  
+      var logger = function (args, state) {
+        var arr = args[0] instanceof Array ?
+          args[0] : //if the first argument is an array just return it...;
+            Array.prototype.slice.apply(args); //...otherwise turn the arguments object into a true array;
+          logTypes = [];
+  
+        for (var i = 0, len = arr.length; i &#60; len; i++) {
+          var method = arr[i]; //optimize;
+          methods[method] = state; //manage the hash;
+          logTypes.push(method);
+          Logger[method] = (function (method) {
+            return function (type) {
+              !methods[method] ? //the state is the crux; simply manage your object hash to determine how the method is called;
+                $(&#34;logged&#34;).innerHTML += &#34;&#60;p&#62;&#60;span&#62;The &#34; + method + &#34; log type has been disabled.&#60;/span&#62;&#60;/p&#62;&#34; :
+                  $(&#34;logged&#34;).innerHTML += &#34;&#60;p&#62;&#38;lt;LOG&#38;gt; &#34; + getValueFromType(type) + &#34;&#60;/p&#62;&#34;;
+            };
+          }(method)); //each method var must be scoped as a local var in the closure so pass it in as a function argument;
+        }
+        $(&#34;logged&#34;).innerHTML += &#34;&#60;p&#62;&#60;span class=&#39;log&#39;&#62;The following log types have been &#34; +
+          (state ? &#34;enabled&#34; : &#34;disabled&#34;) +
+          &#34;&#60;/span&#62;: &#34; +
+          logTypes.join(&#34;, &#34;) +
+          &#34;&#60;/p&#62;&#34;;
+      };
+  
+      return {
+        enable: function () {
+          logger(arguments, true); //the second argument tells the private logger function how to behave;
+        },
+        disable: function () {
+          logger(arguments, false);
+        }
+      };
+    }());
+    </blockquote>
+
+    <p>Now do the logging:</p>
+    <blockquote>
+    Logger.enable([&#34;debug&#34;, &#34;error&#34;, &#34;philly&#34;]); //pass either an array of strings...;
+    Logger.enable(&#34;alfalfa&#34;, &#34;sprouts&#34;, &#34;jolly&#34;, &#34;rancher&#34;); //...or csv;
+  
+    Logger.debug([&#34;test&#34;, &#34;is this thing on?&#34;, &#34;jazz&#34;]);
+    Logger.disable(&#34;debug&#34;);
+    Logger.debug(&#34;test2&#34;); //this will &#34;fail&#34; with a helpful log message!;
+    Logger.enable(&#34;debug&#34;);
+    Logger.debug(&#34;dump&#34;);
+  
+    Logger.sprouts(&#34;yummy&#34;);
+    Logger.disable(&#34;sprouts&#34;, &#34;error&#34;, &#34;rancher&#34;, &#34;jolly&#34;); //pass either csv or an array of strings;
+    Logger.sprouts(&#34;bad&#34;); //this will &#34;fail&#34; with a helpful log message!;
+    Logger.enable(&#34;sprouts&#34;); //re-enable the log type;
+    Logger.sprouts(&#34;sprouts is back!&#34;);
+  
+    Logger.philly(function () { //pass a function as the argument!;
+      return &#34;i am a function!&#34;;
+    });
+  
+    Logger.events(&#34;hello, world!&#34;); //this will throw an exception as it hasn&#39;t been seeded as a log type;
+    </blockquote>
+
+    <h3 id="item3">The Outputted Logs</h3>
+    <blockquote id="logged">
+    </blockquote>
+
+    <h3 id="item4">More Information</h3>
+    <p>A couple of things to keep in mind:</p>
+    <ul>
+      <li>This is a prototype. As such, there are some things that are hardcoded in the above code, which is obviously not a great idea and as such makes it not production ready. It was simply fun to code.</li>
+      <li>Having said that, the <code>getValueFromType()</code> function is only half-baked and is merely sketched-out to show what could be done.</li>
+      <li>This was merely an idea that was talked about at work. I'm sure there are other and better ways to do this. This is just one way.</li>
+      <li>What happens if a method is called on the Logger object that wasn't first seeded? The JavaScript parser will throw an exception, just as it should. This is the expected behavior; exceptions shouldn't be silently swallowed, after all.</li>
+      <li>You may be wondering how something this academic could be applied to the real-world. I've <a href="http://jslite.benjamintoll.com/api/#JSLITE.log">incorporated this<a/> into <a href="http://jslite.benjamintoll.com/">my JavaScript library</a> to illustrate its usefulness.</li>
+    </ul>
+
+  </div>
+  
+</body>
+</html>

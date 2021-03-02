@@ -1,0 +1,16 @@
+function getStyle(elem, name) {
+  //if the property exists in style[] then it's been set recently and is current;
+  if (elem.style[name]) return elem.style[name];
+  else if (elem.currentStyle) return elem.currentStyle[name]; //otherwise, try to use IE's method;
+  else if (document.defaultView && document.defaultView.getComputedStyle) { //or the w3c's method, if it exists;
+    //it uses the traditional 'text-align' style of rule writing instead of 'textAlign';
+	name = name.replace(/([A-Z])/g, "-$1");
+	name = name.toLowerCase();
+	
+	//get the style object and get the value of the property if it exists;
+	var s = document.defaultView.getComputedStyle(elem, "");
+    return s && s.getPropertyValue(name);
+
+  //otherwise, we're using some other browser;
+  } else return null;
+}

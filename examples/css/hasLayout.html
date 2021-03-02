@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>IE hasLayout</title>
+<style type="text/css">
+/** html div#layout { width: 1%; } the Holly hack would also work in this situation*/
+body {
+  background-color: #eed;
+}
+div#layout {
+  background-color: #ffc;
+  border: 1px solid #ccc;
+  margin: 20px auto;
+  padding: 10px;
+  width: 98%; /*this property doesn't need to be set if the Holly hack is in place*/
+}
+div#noLayout {
+  background-color: #edd;
+  border: 1px solid #ccc;
+  margin: 20px auto;
+  padding: 10px;
+}
+form div p {
+  font-weight: bold;
+  margin-bottom: 0;
+}
+/*punch-out for IE6 and below*/
+div.description {
+  background-color: #fafad2;
+  border: 2px solid #999;
+  border-left-style: none;
+  color: #008080;
+  margin: 20px auto;
+  padding: 10px 80px 10px 0;
+  text-align: justify;
+  width: 80%;
+}
+div.description h3 { /* "punch-out" the headers*/
+  background-color: #eed;
+  border: 2px solid #999;
+  border-left-color: #eed;
+  padding: 8px 0 8px 10px;
+  width: 260px;
+}
+div.citation {
+  border-left: solid;
+  font: 11px Arial, Helvetica, sans-serif;
+}
+/*punch-out for modern browsers*/
+html > body div.description {
+  background-color: #fafad2;
+  border: 2px solid #999;
+  color: #008080;
+  margin: 20px auto;
+  padding: 10px 80px 10px 0;
+  text-align: justify;
+  width: 80%;
+}
+html > body div.description h3 {
+  background-color: #eed;
+  border: 2px solid #999;
+  border-left-color: #eed;
+  margin-left: -2px;
+  padding: 8px 0 8px 10px;
+  width: 260px;
+}
+div.description p {
+  padding-left: 30px;
+}
+div.description p:first-letter {
+  font: 1.2em cursive;
+}
+div.description ul {
+  font: 12px monospace;
+}
+</style>
+<script type="text/javascript">
+window.onload = function() {
+  var links = document.getElementsByTagName("a");
+  for (var i = 0; i < links.length; i++) {
+    links[i].onfocus = function() { if(this.blur) this.blur(); };
+    if (!links[i].getAttribute("rel"))
+	  links[i].onclick = function() { return false; };
+  }
+  var inputs = document.getElementsByTagName("input");
+  for (var j = 0; j < inputs.length; j++) {
+    if (inputs[j].getAttribute("type") == "submit")
+	  inputs[j].onfocus = function() { if(this.blur) this.blur(); };
+  }
+  
+  document.getElementById("layout").getElementsByTagName("a")[0].onmouseover = function() {
+    this.currentStyle ? /*IE property*/
+	  alert("This div has layout: " + this.parentNode.currentStyle.hasLayout + ".\nThis div has layout because its width has been explicitly set to " + this.parentNode.currentStyle["width"] + ". ") :
+	    alert("The concept of layout is specific to IE on Windows");
+  }
+  
+  document.getElementById("noLayout").getElementsByTagName("a")[0].onmouseover = function() {
+    if (this.currentStyle) { //IE property;
+	  if (!this.parentNode.currentStyle["width"] || this.parentNode.currentStyle["width"] == "auto")
+	    alert("This div has layout: " + this.parentNode.currentStyle.hasLayout + ".\nThis div has no layout because neither its width nor any other property (such as height, position, float, display, et al) has been explicitly set.\nNote: setting an element's width to auto does not give it layout.");
+	  else
+	    alert("This div now has layout: " + this.parentNode.currentStyle.hasLayout + ".\nThis div now has layout because its width has been explicitly set to " + this.parentNode.currentStyle["width"] + ".");
+	 } else alert("The concept of layout is specific to IE on Windows");
+  }
+  
+  document.getElementsByTagName("form")[0].onsubmit = function() {
+    document.getElementById("noLayout").style.width = document.getElementById("setValue").value;
+	return false;
+  };
+
+};
+</script>
+</head>
+
+<body>
+
+<div id="layout">
+  <p>This container has layout.</p>
+  <a href="#">See for yourself</a>
+</div>
+
+<div id="noLayout">
+  <p>This container has no layout.</p>
+  <a href="#">See for yourself</a>
+</div>
+
+<form action="">
+  <div>
+    <p>Set the width for the bottom div:</p>
+    <label><input type="text" id="setValue" /></label>
+    <label><input type="submit" value="Submit" /></label>
+  </div>
+</form>
+
+<div class="description">
+  <h3>Having "layout"</h3>
+  <p>We all know that browsers can be buggy, and IE on Windows seems buggier than most. One of the reasons IE/Win behaves differently from other browsers is because the rendering engine uses an internal concept called "layout". Because layout is a concept particular to the internal working of the rendering engine, it is not something you would normally need to know about. However, layout problems are the root of many IE/Win rendering bugs, so it is useful to understand the concept and how it affects your CSS.</p>
+
+  <h3>What is "layout"?</h3>
+  <p>The layout concept is a hack used by IE's rendering engine to reduce its processing overhead. Ideally all elements would be in control of their own size and positioning. However, this causes huge performance problems in IE. As such, the IE/Win development team decided that by applying layout only to those elements that actually needed it, they could reduce the performance overhead substantially.</p>
+
+  <p>Elements that have layout by default include:</p>
+  <ul>
+    <li>body</li>
+    <li>html in standards mode</li>
+    <li>table</li>
+    <li>tr, td</li>
+    <li>img</li>
+    <li>hr</li>
+    <li>input, select, textarea, button</li>
+    <li>iframe, embed, object, applet</li>
+    <li>marquee</li>
+  </ul>
+
+  <p>The concept of layout is specific to IE on Windows and is not a CSS property. Layout cannot be explicitly set in the CSS, although setting certain CSS properties will give an element layout. It is possible to see if an element has layout by using the JavaScript property <code>hasLayout</code>. This will return <code>true</code> if the element has layout and <code>false</code> if it doesn't. <code>hasLayout</code> is a read-only property and so cannot be set using JavaScript.</p>
+
+  <p>Setting the following CSS properties will automatically give that element layout:</p>
+  <ul>
+    <li>position: absolute</li>
+    <li>float: left or right</li>
+    <li>display: inline-block</li>
+    <li>width: any value</li>
+    <li>height: any value</li>
+  </ul>
+
+  <h3>What effect does layout have?</h3>
+  <p>Layout is the cause of many IE/Win rendering bugs. For instance, if you have a paragraph of text next to a floated element, the text is supposed to flow around the element. However, in IE6 and below on Windows, if the paragraph has layout - by setting the height, for example - it is constrained to a rectangular shape, stopping the text from flowing around the float (Text is supposed to flow around adjacent floated elements. However, on IE/Win, if the text element has layout, this doesn't happen).</p>
+
+  <p>This can cause all kinds of problems with floated layouts. Worse still, many people who use IE as their main browser mistakenly assume this is the correct behavior and get confused when other browsers treat floats differently.
+
+  <p>Another problem revolves around how elements with layout size themselves. If the content of an element becomes larger than the element itself, the content is supposed to flow out of the element. However, in IE6 and below on Windows, elements with layout incorrectly grow to fit the size of their contents.</p>
+
+  <p>This means that <code>width</code> in IE/Win actually acts more like a <code>min-width</code>. This behavior is also the cause of many broken floated layouts in IE/Win. When the content of a floated box incorrectly forces the width of the box to grow, the box becomes too big for the available space and drops below the other floated elements.</p>
+
+  <p>Other problems include:</p>
+  <ul>
+    <li>Elements with layout not shrinking to fit</li>
+    <li>Floats being auto-cleared by layout elements</li>
+    <li>Relatively positioned elements not gaining layout</li>
+    <li>Margins not collapsing between elements with layout</li>
+    <li>The hit area of block-level links without layout only covering the text</li>
+  </ul>
+
+  <p>You will notice that many of the bug fixes for IE on Windows involve setting properties that force the element to have layout. In fact, if you come across an IE/Win bug, one of the first things you can do is try applying rules that force layout to see if that fixes the problem.</p>
+
+  <p>If you would like to learn more about IE's internal <code>hasLayout</code> property, I recommend reading "On Having Layout" at <a href="http://tinyurl.com/acg78" rel="external">http://tinyurl.com/acg78</a>.</p>
+</div>
+
+<div class="description citation">
+  <p>All excerpts taken from CSS Mastery, Advanced Web Standards Solutions (friends of ED) by Andy Budd, et al</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Function Binding</title>
+<style type="text/css">
+p {
+  background: #CCD;
+  border: 1px solid #CCC;
+  padding: 10px;
+}
+code {
+  color: #789;
+}
+</style>
+<script type="text/javascript">
+Function.prototype.bind = function () {
+  var fn = this,
+    context = arguments[0];
+
+  return function () {
+    fn.apply(context, arguments);
+  };
+};
+Function.prototype.bindAndCurry = function () {
+  var fn = this,
+    slice = Array.prototype.slice,
+    args = slice.call(arguments),
+    context = args.shift();
+
+  return function () {
+    fn.apply(context, args.concat(slice.call(arguments)));
+  };
+};
+
+var obj = {
+  set: function () {
+    this.value = true
+  }
+};
+var another = {};
+//alert(another.value);
+var fn = obj.set.bind(another);
+fn();
+//alert(another.value);
+
+var handler = {
+  message: "Event handled",
+  handleClick: function (name, event) {
+    alert(this.message + ": " + name + ". Event type: " + event.type);
+    event.preventDefault();
+  }
+};
+window.onload = function () {
+  document.getElementById("theLink").addEventListener("click", handler.handleClick.bindAndCurry(handler, "toll"), false); //"toll" is passed into handleClick as its first named argument;
+};
+</script>
+</head>
+
+<body>
+<p>Function Binding</p>
+<pre>
+<code>
+Function.prototype.bind = function () {
+  var fn = this,
+    context = arguments[0];
+
+  return function () {
+    fn.apply(context, arguments);
+  };
+};
+</code>
+</pre>
+
+<p>Function Binding and Currying</p>
+<pre>
+<code>
+Function.prototype.bindAndCurry = function () {
+  var fn = this,
+    slice = Array.prototype.slice,
+    args = slice.call(arguments),
+    context = args.shift();
+
+  return function () {
+    fn.apply(context, args.concat(slice.call(arguments)));
+  };
+};
+
+var handler = {
+  message: &#34;Event handled&#34;,
+  handleClick: function (name, event) {
+    alert(this.message + &#34;: &#34; + name + &#34;. Event type: &#34; + event.type);
+    event.preventDefault();
+  }
+};
+
+window.onload = function () {
+  document.getElementById(&#34;theLink&#34;).addEventListener(&#34;click&#34;, handler.handleClick.bindAndCurry(handler, &#34;toll&#34;), false); //&#34;toll&#34; is passed into handleClick as its first named argument;
+};
+</code>
+</pre>
+
+<a href="#" id="theLink">click me!</a>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+body {
+  background: #eed;
+}
+div#cardTable {
+  position: absolute;
+  top: 18%;
+  left: 30%;
+  width: 520px;
+}
+div#scorer {
+  color: #EED;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 20px;
+  padding: 20px;
+  position: absolute;
+  top: 2%;
+  left: 30%;
+  text-align: center;
+  width: 180px;
+}
+div.cardFace {
+  background: #eed url(../../../images/blue.gif) no-repeat;
+  float: left;
+  height: 66px;
+  margin: 10px;
+  width: 65px;
+}
+p.cardValue {
+  background: #FFF;
+  border: 1px solid #CCC;
+  display: none;
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 10px 0;
+  text-align: center;
+}
+div.scorecard {
+  background: #FFF;
+  border: 1px solid #999;
+  height: 120px;
+  margin: 20px;
+  padding: 10px;
+  width: 120px;
+}
+div.scorecard h1 {
+  font-size: 1em;
+  margin: 2px auto;
+}
+div.scorecard p {
+  color: blue;
+  font: 4em/1.2 cursive;
+  margin: 0;
+  text-align: center;
+}
+div.scorecard p#matches {
+  color: green;
+}

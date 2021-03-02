@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>The MooTools Inheritance Pattern</title>
+<style type="text/css">
+body {
+  background: #EED;
+}
+h3 {
+  background: #789;
+  border: 1px solid #CCC;
+  color: #FFF;
+  margin: 0 60px;
+  padding: 10px 0;
+  text-align: center;
+}
+p {
+  font: 14px "Trebuchet MS", Arial;
+  padding: 5px;
+}
+p.intro {
+  border: 1px solid orange;
+  border-left: 0;
+  border-right: 0;
+  font: bold 14px "Trebuchet MS", Arial;
+  margin-top: 40px;
+  padding: 5px;
+}
+p.explain {
+  background: #FFA;
+  border: 1px dashed #CCC;
+  margin: 10px;
+  padding: 10px;
+}
+pre {
+  background: #FFF;
+  border: 1px dashed #999;
+  margin: 0 0 10px;
+  padding: 5px;
+}
+code strong {
+  color: #F00;
+}
+</style>
+</head>
+
+<body>
+<h3>The Mootools Inheritance Pattern (v.1.2.4)</h3>
+
+<h4>Please note that MooTools refers extensively to classes and therefore so does this post, but JavaScript does not have a class construct!!</h4>
+
+<p class="intro">The <code>Class</code> method</p>
+<pre>
+<code>
+function Class(params){
+
+        if (params instanceof Function) params = {initialize: params};
+
+        var newClass = function(){
+                Object.reset(this); <strong>(4)</strong>
+                if (newClass._prototyping) return this; <strong>(5)</strong>
+                this._current = $empty;
+                var value = (this.initialize) ? this.initialize.apply(this, arguments) : this; <strong>(6)</strong>
+                delete this._current; delete this.caller;
+                return value; <strong>(7)</strong>
+        }.extend(this); <strong>(1)</strong>
+
+        newClass.implement(params); <strong>(2)</strong>
+
+        newClass.constructor = Class;
+        newClass.prototype.constructor = newClass; <strong>(3)</strong>
+
+        return newClass;
+
+};
+</pre>
+</code>
+
+<p class="explain"><strong>(1)</strong> Extends (in this case, extends means simply copying all the elements from one object into another(no checks to see if the property already exists in the receiving object)) the new class by passing in two properties: the <code>$family</code> object which identifies this class as a class, and the <code>implement</code> method, which augments the class constructor's prototype object.</p>
+<p class="explain"><strong>(2)</strong> The <code>implement</code> method which was just copied into the function object as described in <strong>(1)</strong> now augments the constructor's prototype by copying everything in the params object into the prototype object.</p>
+<p class="explain"><strong>(3)</strong> Reassign the constructor as the value of the prototype's <code>constructor</code>. This is necessary for correct inheritance. If this is not done, querying <code>{myInstance}.constructor</code> will not return the correct constructor that created the instance and the inheritance chain will be broken.</p>
+<p class="explain"><strong>(4)</strong> We're now inside the constructor as it's been called with the <code>new</code> operator, i.e., <code>var me = new Person("Ben", "Programmer");</code>. The <code>Object.reset</code> method makes a copy of every object and array on the constructor's prototype so every instance will have its own copy rather than share the one(s) on the prototype, which is obviously a horrible idea.</p>
+<p class="explain"><strong>(5)</strong></p>
+<p class="explain"><strong>(6)</strong> This is the meat and potatoes of the constructor. If the prototype object contains an <code>initialize</code> method (which most if not all MooTools' classes will have by convention) then call it within the scope of the new instance that's being created, passing it the arguments that were passed in when the constructor was instantiated (in our example the <code>arguments</code> pseudo-array will contain two arguments, "Ben" and "Programmer"). Note that when a new instance is being created, the first properties bound to the <code>this</code> object (the new instance) will be anything on the prototype followed by anything bound to <code>this</code> in the body of the constructor. This is why in most cases there already is an <code>initialize</code> method bound to <code>this</code>, which was copied to the constructor's prototype when the class was first created in step <strong>(2)</strong>.</p>
+<p class="explain"><strong>(7)</strong> Return the instance (note that constructor's usually don't have a return value because the instance is implicitly returned unless overridden like it is here).</p>
+
+<p class="intro">The <code>implement</code> method, inherited by every class, is the main way to augment the class' prototype. It will enumerate over the <code>parameters</code> object that is passed to it which contains all of the fields (both method and properties) that will be initialized and bound to each new class.</p>
+<pre>
+<code>
+Class.implement({
+
+        implement: function(key, value){
+
+                if ($type(key) == 'object'){ <strong>(1)</strong>
+                        for (var p in key) this.implement(p, key[p]);
+                        return this;
+                }
+
+                var mutator = Class.Mutators[key];
+
+                if (mutator){ <strong>(2)</strong>
+                        value = mutator.call(this, value);
+                        if (value == null) return this;
+                }
+
+                var proto = this.prototype;
+
+                switch ($type(value)){
+
+                        case 'function':
+                                if (value._hidden) return this;
+                                proto[key] = Class.wrap(this, key, value); <strong>(3)</strong>
+                        break;
+
+                        case 'object':
+                                var previous = proto[key];
+                                if ($type(previous) == 'object') $mixin(previous, value);
+                                else proto[key] = $unlink(value);
+                        break;
+
+                        case 'array':
+                                proto[key] = $unlink(value);
+                        break;
+
+                        default: proto[key] = value;
+
+                }
+
+                return this;
+
+        }
+
+});
+</code>
+</pre>
+
+<p>Some notes about the above code:</p>
+<ul>
+  <li><code>proto.initialize._origin === value</code></li>
+  <li><code>proto.initialize._owner === {the newClass constructor}</code> (during class creation)</li>
+  <li><code>Person.prototype.initialize._owner === Person</code> (after class creation)</li>
+</ul>
+
+<p>The <code>this</code> object in the code above refers to the <code>newClass</code> function constructor, i.e., the new class that will be returned to the developer.</p>
+<p class="explain"><strong>(1)</strong> Check the data type of the <code>key</code> function argument and if it's an object enumerate it recursively. This has the effect of adding each of the object's properties to the constructor's prototype (this is an over-simplification). When done, return the constructor.</p>
+<p class="explain"><strong>(2)</strong> <code>mutator</code> will contain a function when a class is extending another. The difference between extending and implementing is that extending inherits and implementing augments. In other words, if one class extends another it's prototype will inherit from its parent class' prototype, i.e., <code>child.constructor === Parent</code> and <code>child.__proto__ === Parent.prototype</code>. Implements, on the other hand, merely augments the class' prototype object by copying methods into it.  There is no inheritance, and the two previous checks would be <code>false</code>.</p>
+<p class="explain"><strong>(3)</strong> The <code>Class.wrap</code> class method will create a wrapper around the current class (<code>this</code>), the name of the current method (<code>key</code>) and the method itself (<code>value</code>). It then returns this wrapper and augments the constructor's prototype with the name of the method and this returned wrapper as its key (note that the method assigned to the prototype is not the original method but the wrapped function). This is important as it acts as a conduit or interface which allows for traversing the scope chain (more on this later).</p>
+
+<p class="intro">The <code>Class.wrap</code> method is used to call the parent method of the same name. This is nice if you name a method in your class the same as the name of a method in the class that your class is inheriting (extending) from (i.e., the parent class and the child class both have a method named <code>initialize</code>).</p>
+
+<pre>
+<code>
+new Native({name: 'Class', initialize: Class}).extend({
+
+        instantiate: function(F){
+                F._prototyping = true;
+                var proto = new F;
+                delete F._prototyping;
+                return proto;
+        },
+
+        wrap: function(self, key, method){
+                if (method._origin) method = method._origin;
+
+                return function(){
+                        if (method._protected && this._current == null) throw new Error('The method "' + key + '" cannot be called.');
+                        var caller = this.caller, current = this._current; <strong>(1)</strong>
+                        this.caller = current; this._current = arguments.callee; <strong>(2)</strong>
+                        var result = method.apply(this, arguments); <strong>(3)</strong>
+                        this._current = current; this.caller = caller; <strong>(4)</strong>
+                        return result;
+                }.extend({_owner: self, _origin: method, _name: key});
+
+        }
+
+});
+</code>
+</pre>
+<p class="explain"><strong>(1) </strong>Make a temporary copy of the methods bound to &quot;this&quot;.</p>
+<p class="explain"><strong>(2) </strong>Replace the methods bound to &quot;this&quot; with the current values of the method currently being invoked. Especially important is storing <code>arguments.callee</code> in <code>this._current</code>. This allows the scope chain to be traversed, which the engine doesn't allow direct access to but allows indirect access to via closures. The first time this wrapped method is called will be in the most recent scope, the call object at the front of the scope chain (also known as the activation object). It's stored in <code>this.caller</code>, and this is passed up the scope chain to the next call object when <code>this</code> is passed as the scope in <code>method.apply(this, arguments);</code>. The previous call object is bound to this scoped object in the <code>caller</code> property. So, the next time through, <code>arguments.callee</code> will be a pointer to the next call object which is then again passed up the scope chain via the invocation of the <code>method</code> method as was just explained. And all the while each call object has the original class, method and method name bound to it via the <code>_owner</code>, <code>_origin</code> and <code>_name</code> properties, respectively, which were bound to the function and hence to its execution context and accessed via closure each time <code>Class.wrap</code> was invoked during class creation. Each time <code>method</code> is invoked, these values will change. Whew!!!</p>
+<p class="explain"><strong>(3) </strong>Call the class method, i.e., &quot;initialize&quot;.</p>
+<p class="explain"><strong>(4) </strong>Restore the original values of the properties by copying them back from their temporary variables.</p>
+
+<p>The <code>self</code> object refers to the class that is being built, i.e., <code>newClass</code></p>
+<p>The problem with this approach is that you create a &quot;parent&quot; method for every method that's defined in your class because you never know which methods in the parent class have the same name and will thus be overwritten. Preserving each method in a closure is basically a safety precaution.</p>
+
+<p class="intro">The code below assigns the <code>Class</code> type as a class method on every class that's created. The <code>newClass</code> constructor is assigned as the constructor on the new class' prototype object like usual so the prototype chain isn't broken.</p>
+<pre>
+<code>
+newClass.constructor = Class;
+newClass.prototype.constructor = newClass;
+</code>
+</pre>
+
+<pre>
+<code>
+var Person = new Class({
+  initialize: function (name, job) {
+    this.name = name;
+    this.job = job;
+  }
+});
+</code>
+</pre>
+<p>A couple of examples will help to illustrate what's going on here:</p>
+<ul>
+  <li><code>Person.constructor === Class</code></li>
+  <li><code>Person.prototype.constructor === Person</code></li>
+</body>
+</html>

@@ -1,0 +1,142 @@
+form#theForm {
+  background-color: #eed;
+  border: 1px solid brown;
+  float: left;
+  margin: 20px 0 0 50px;
+  padding: 10px;
+  width: 450px;
+}
+div#accordion-menu {
+  float: left;
+  margin: 20px 0 0 20px;
+}
+form#theForm label {
+  clear: left;
+  float: left;
+  margin: 2px;
+  margin-left: 55px;
+  padding: 2px;
+  text-align: right;
+  width: 100px;
+}
+form#theForm input {
+  float: left;
+  margin: 2px;
+  padding: 2px;
+  width: auto;
+}
+form#theForm span {
+  background: transparent url(icn_help.gif) no-repeat;
+  float: left;
+  padding-left: 28px;
+}
+.submit {
+  margin-left: 100px;
+}
+div#scrubberErrors {
+  background-color: #ffc;
+  border: 1px solid #ccc;
+  margin: 10px;
+  padding: 10px;
+  width: 400px;
+}
+div#scrubberErrors p {
+  color: #f00;
+  font-weight: bold;
+}
+div#scrubberErrors ul {
+  font-weight: normal;
+  list-style-type: decimal;
+  margin: 15px;
+  padding-left: 30px;
+}
+div#scrubberErrors ul strong {
+  font-weight: bold;
+}
+.error {
+  color: #f00;
+}
+.defaultLabelColor {
+  color: #000;
+}
+div#tooltip {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-top-width: 4px;
+  color: #cd5c5c;
+  display: none;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1.3;
+  margin: 0;
+  overflow: auto;
+  padding: 10px;
+  position: absolute;
+  top: 0; /*not necessary*/
+  left: 0; /*not necessary*/
+  width: 250px;
+  z-index: 100;
+}
+div#tooltip a.tooltipClose {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  color: #ccc;
+  float: right;
+  padding: 4px;
+  text-decoration: none;
+}
+
+div#tooltip a.tooltipClose:hover {
+  background-color: #fff8dc;
+  border-color: #789;
+  color: #789;
+}
+/****accordion****/
+div#accordion-menu { width: 380px; }
+div#accordion-menu { border: 2px solid #789; } /*set the bottom border for the last accordion box*/
+#accordion-menu a {
+  display: block;
+  height: 30px;
+  line-height: 30px;
+  background-color: #efefef;
+  border-top: 2px solid #789;
+  font-weight: bold;
+  text-align: center;
+}
+#accordion-menu a:link,
+#accordion-menu a:visited,
+#accordion-menu a:hover,
+#accordion-menu a:active {
+  color: #369;
+  text-decoration: none;
+}
+#accordion-menu a:hover { background-color: #edd; }
+#accordion-menu .first { border-top: 0; }
+#accordion-menu h4 {
+  margin: 0;
+  padding: 2px;
+  background-color: #ccc;
+  border-top: 1px solid #789;
+  border-bottom: 1px solid #789;
+}
+#accordion-menu ul { list-style-type: circle; }
+/************ style each accordion div ************/
+.opened {
+  padding: 5px;
+  background-color: #eed;
+  border-top: 1px dotted #789;
+}
+.closed { background-color: transparent; }
+/*****style the table*****/
+#accordion-menu table {
+  margin: 10px auto;
+}
+#accordion-menu table th, td.messages {
+  background-color: #dea;
+  font-weight: bold;
+}
+#accordion-menu table th, #accordion-menu table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}

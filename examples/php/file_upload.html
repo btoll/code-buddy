@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Transform Vehicle Make into Vehicle Categories via PHP</title>
+<style type="text/css">
+div {
+  background: #FFC;
+  border: 1px solid #CCC;
+  padding: 10px;
+}
+label {
+  display: block;
+}
+input[type="submit"] {
+  margin: 10px 0 0 145px;
+}
+pre {
+  background: #EDD;
+  border: 1px solid #999;
+  margin: 10px;
+  padding: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div>
+  <p>The code shows a simple file upload with minimal security checks. Certainly, if this was production code it should be more robust. Rather, the point of this post is simply to show the PHP $_FILES associative array and other plumbing functions that occur when uploading a file and moving it to a safer location (not a temp directory) on your server.</p>
+  <p>This code accepts an XML document with a known structure and transforms it into another XML document, saving it with a predetermined filename to the local filesystem. It provides basic error checking and establishes a link to the newly-created file in its 'success' message.</p>
+  <p>The numbers are where the code blocks would be in the page.</p>
+</div>
+<p><strong><a href="#header">(1)</a> The meat of the code.</strong></p>
+<p><strong><a href="#error">(2)</a> The error code.</strong></p>
+
+<p><strong><a href="#form">(3)</a> The HTML form.</strong></p>
+<form method="post" enctype="multipart/form-data" action="" onsubmit="return false;">
+  <input type="hidden" name="MAX_FILE_SIZE" value="300000" />
+  <label>Choose a file to upload <input type="file" id="uploadedFile" name="uploadedFile" /></label>
+  <input type="submit" name="upload" value="Upload File" />
+</form>
+
+<p><strong><a href="#success">(4)</a> The success code.</strong></p>
+
+<pre>
+<code>
+<strong><a name="header">(1)</a> <a href="#">Back to top</a></strong>
+&lt;?php
+/*
+NOTE: if POST size exceeds server limit then $_POST and $_FILES arrays become empty. You can track this using $_SERVER['CONTENT_LENGTH'].!!!
+$_FILES is an associative array composed of:
+  $_FILES['userfile']['name'] = The original name of the file on the client machine;
+  $_FILES['userfile']['type'] = The mime type of the file, if the browser provided this information. An example would be &quot;image/gif&quot;. This mime type is however not checked on the PHP side and therefore don't take its value for granted.
+  $_FILES['userfile']['size'] = The size, in bytes, of the uploaded file.
+  $_FILES['userfile']['tmp_name'] = The temporary filename of the file in which the uploaded file was stored on the server.
+  $_FILES['userfile']['error'] = The error code  associated with this file upload. This element was added in PHP 4.2.0
+*/
+if (isset($_POST['upload'])) {
+
+  $error = &quot;&quot;;
+  $success = &quot;&quot;;
+  if (empty($_FILES['uploadedFile']['name'])) {
+    $error = &quot;&lt;strong&gt;You must choose a file.&lt;/strong&gt;&quot;;
+  } elseif ($_FILES['uploadedFile']['type'] !== &quot;text/xml&quot;) {
+    $error = &quot;&lt;strong&gt;Wrong file type. Files must have MIME type 'text/xml'.&lt;/strong&gt;&quot;;
+  } else {
+    $upload_file = &quot;../uploads/&quot; . basename($_FILES['uploadedFile']['name']);
+    if (!move_uploaded_file($_FILES['uploadedFile']['tmp_name'], $upload_file)) { //if it's a valid uploaded file then move it to its destination;
+      $error = &quot;&lt;strong&gt;Possible file upload attack!&lt;/strong&gt;&quot;;
+    } else {
+ 
+      $oXMLDoc = new DOMDocument();
+      $oXMLDoc-&gt;load($upload_file);
+      $cNodes = $oXMLDoc-&gt;getElementsByTagName(&quot;data&quot;);
+      $aStringNodes = array();
+      foreach ($cNodes as $oData) {
+        $oCode = $oData-&gt;getElementsByTagName(&quot;code&quot;);
+        $sCode = $oCode-&gt;item(0)-&gt;nodeValue;
+        $sCode = strstr($sCode, &quot;-&quot;) ? substr($sCode, 0, strpos($sCode, &quot;-&quot;)) : $sCode;
+        $oDescription = $oData-&gt;getElementsByTagName(&quot;description&quot;);
+
+        /*if the string contains a comma only extract the contents after the string (there has to be a better way of doing this)*/
+        $sDescription = $oDescription-&gt;item(0)-&gt;nodeValue;
+        $sDescription = strstr($sDescription, &quot;,&quot;) ? trim(strstr($oDescription-&gt;item(0)-&gt;nodeValue, &quot;,&quot;), &quot;, &quot;) : $sDescription;
+ 
+        $aStringNodes[$sCode] = $sDescription; //creating an associative array guarantees that each key will be unique;
+      }
+
+      /*now create the new XML document*/
+      $oNewXMLDoc = new DOMDocument(&quot;1.0&quot;);
+      $oNewXMLDoc-&gt;formatOutput = true;
+      $oRoot = $oNewXMLDoc-&gt;createElement(&quot;root&quot;);
+      foreach ($aStringNodes as $key=&gt;$value) {
+        $oData = $oNewXMLDoc-&gt;createElement(&quot;data&quot;);
+
+        $oCode = $oNewXMLDoc-&gt;createElement(&quot;code&quot;);
+        $oCode-&gt;appendChild($oNewXMLDoc-&gt;createTextNode($key));
+
+        $oDescription = $oNewXMLDoc-&gt;createElement(&quot;description&quot;);
+        $oDescription-&gt;appendChild($oNewXMLDoc-&gt;createTextNode($value));
+
+        $oData-&gt;appendChild($oCode);
+        $oData-&gt;appendChild($oDescription);
+        $oRoot-&gt;appendChild($oData);
+      }
+      $oNewXMLDoc-&gt;appendChild($oRoot); //finally, append all the nodes to the DocumentElement;
+      if (!file_put_contents(&quot;vehicleCategories.xml&quot;, $oNewXMLDoc-&gt;saveXML())) { //identical to calling fopen(), fwrite() and fclose() successively to write data to a file;
+        $error = &quot;&lt;strong&gt;File could not be written to disk.&lt;/strong&gt;&quot;;
+      } else {
+        $success = &quot;&lt;strong&gt;File 'vehicleCategories.xml' successfully created and written to disk. &lt;a href=\&quot;vehicleCategories.xml\&quot; target=\&quot;_blank\&quot;&gt;View&lt;/a&gt; it here.&lt;/strong&gt;&quot;;
+      }
+    }
+  }
+}
+?&gt;
+</code>
+</pre>
+
+<pre>
+<code>
+<strong><a name="error">(2)</a> <a href="#">Back to top</a></strong>
+&lt;?php
+if (isset($error)) {
+  echo &quot;&lt;p&gt;$error&lt;/p&gt;&quot;;
+}
+?&gt;
+</code>
+</pre>
+
+<pre>
+<code>
+<strong><a name="form">(3)</a> <a href="#">Back to top</a></strong>
+&lt;form method=&quot;post&quot; enctype=&quot;multipart/form-data&quot; action=&quot;&quot; onsubmit=&quot;return false;&quot;&gt;
+  &lt;input type=&quot;hidden&quot; name=&quot;MAX_FILE_SIZE&quot; value=&quot;300000&quot; /&gt;
+  &lt;label&gt;Choose a file to upload &lt;input type=&quot;file&quot; id=&quot;uploadedFile&quot; name=&quot;uploadedFile&quot; /&gt;&lt;/label&gt;
+  &lt;input type=&quot;submit&quot; name=&quot;upload&quot; value=&quot;Upload File&quot; /&gt;
+&lt;/form&gt;
+</code>
+</pre>
+
+<pre>
+<code>
+<strong><a name="success">(4)</a> <a href="#">Back to top</a></strong>
+&lt;?php
+if (isset($success)) {
+  echo &quot;&lt;p&gt;$success&lt;/p&gt;&quot;;
+}
+?&gt;
+</code>
+</pre>
+
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Flanagan's Handler module</title>
+<style type="text/css">
+#slidingDoorsMenu {
+  background: url(../../images/tabs_back.jpg) left bottom repeat-x;
+  font-size: 12px;
+  height: 28px;
+  width: 100%;
+}
+#slidingDoorsMenu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  padding-left: 5px;
+}
+#slidingDoorsMenu li {
+  background: url(../../images/tabs_right_down.jpg) right top no-repeat;
+  float: left;
+  margin: 0 5px;
+  margin-bottom: -2px;
+  padding: 0;
+}
+#slidingDoorsMenu a {
+  background: url(../../images/tabs_left_down.jpg) left top no-repeat;
+  color: #00a9e0;
+  display: block;
+  font-weight: normal;
+  padding: 9px 9px 6px 9px;
+  text-decoration: none;
+}	
+#slidingDoorsMenu #selected {
+  background-image: url(../../images/tabs_right_up.jpg);
+}
+#slidingDoorsMenu #selected a {
+  background-image: url(../../images/tabs_left_up.jpg);
+  color: #333;
+  font-weight: bold;
+  padding: 6px 9px 8px 9px;
+}
+div#slidingDoors {
+  border: 1px solid #ccc;
+  border-top: 0;
+	margin: 0;
+	padding: 0;
+}
+pre {
+  margin: 0;
+	padding: 0;
+}
+div div {
+  background: #FFF;
+	color: #000;
+  padding: 0 10px;
+}
+.hide {
+  display: none;
+}
+</style>
+<script type="text/javascript">
+function $(sName) {
+  return document.getElementById(sName);
+}
+function getElementsByClassName(classname, rootElem, searchBy) {
+  if (!classname) return false; //exit the function if no classname is provided;
+  var a = [];
+  var re = new RegExp('\\b' + classname + '\\b');
+  if (rootElem)
+    var els = document.getElementById(rootElem).getElementsByTagName(searchBy);
+  else
+    var els = document.getElementsByTagName("*") || document.all;
+	
+  for (var i = 0, j = els.length; i < j; i++) {
+    if (re.test(els[i].className)) {
+      a.push(els[i]);
+    }
+  }
+  return a;
+}
+window.onload = function () {
+  (function () {
+  	this.hookup = function (obj) {
+	  	if (obj.parentNode.id == "selected") return false; //exit if the tab is already selected;
+	  
+	  	var lis = $("slidingDoorsMenu").getElementsByTagName("li");
+    	for (var i = 0; i < lis.length; i++) {
+      	lis[i].id = ""; //clear the id of all elements;
+	  	}
+    	obj.parentNode.id = "selected"; //now set the id for the selected tab;
+   
+    	//now iterate through the divs and hide all but the one that matches the text of the selected href;
+    	var divs = getElementsByClassName("slidingDoor");
+    	for (var j = 0; j < divs.length; j++) {
+      	divs[j].id == obj.rel ? divs[j].className = divs[j].className.replace(/hide/, "") : divs[j].className += " hide";
+	  	}
+		};
+	
+  	var menubar = $("slidingDoorsMenu");
+  	var hrefs = menubar.getElementsByTagName("a");
+  	for (var i = 0; i < hrefs.length; i++) {
+    	hrefs[i].onclick = function(that) {
+      	return function () {
+        	that.hookup(this);
+        	return false;
+      	};
+    	}(this); //pass in the parent function's scope so the closure has access to this.hookup();
+			hrefs[i].onfocus = function () { if (this.blur) this.blur(); };
+  	}
+	})();
+};
+</script>
+</head>
+
+<body>
+
+<h3>David Flanagan's Handler module :: portable event-handler registration functions</h3>
+
+<div id="slidingDoorsMenu">
+  <ul>
+	  <li id="selected"><a href="#" rel="modulePattern">Module Pattern</a></li>
+	  <li><a href="#" rel="original">Original</a></li>
+  </ul>
+</div><!--end div#slidingDoorsMenu-->
+
+<div id="slidingDoors">
+  <div id="modulePattern" class="slidingDoor">
+  <pre>
+	<code>
+	<div>
+/*David Flanagan's Handler module,
+allows for portable event-handler registration functions.
+
+**************************************************************
+NOTE: this has been altered to fit Crockford's module pattern.
+**************************************************************
+
+******************
+For documentation refer to pages 414 - 419 of the rhino book
+******************
+*/
+var Handler = (function () {
+	
+  var _find = function (element, eventType, handler) {
+    var handlers = element._handlers;
+    if (!handlers) return -1;
+		
+    var d = element.document || element;
+    var w = d.parentWindow;
+		
+    for (var i = handlers.length; i &gt;= 0; i--) {
+      var handlerId = handlers[i];
+      var h = w._allHandlers[handlerId];
+			
+      if (h &amp;&amp; h.eventType == eventType &amp;&amp; h.handler == handler) {
+        return i;
+      }
+    }
+		
+    return -1
+  };
+	
+  var _removeAllHandlers = function () {
+    var w = this;
+    for (var id in w._allHandlers) {
+      var h = w._allHandlers[id];
+      h.element.detachEvent(&quot;on&quot; + h.eventType, h.wrappedHandler);
+      delete w._allHandlers[id];
+    }
+  };
+
+  var _uid = (function () {
+    var _counter = 0;
+    return function () { return &quot;h&quot; + _counter++; };
+  })();
+	
+  return {
+		
+    add: function (element, eventType, handler) {
+      if (document.addEventListener) {
+        element.addEventListener(eventType, handler, false);
+				
+      } else if (document.attachEvent) {
+
+        if (_find(element, eventType, handler) != -1) return;
+		
+        var wrappedHandler = function (e) {
+          if (!e) e = window.event;
+			
+          var event = {
+            _event: e,
+            type: e.type,
+            target: e.srcElement,
+            currentTarget: element,
+            relatedTarget: e.fromElement ? e.fromElement : e.toElement,
+            eventPhase: (e.srcElement == element) ? 2 : 3,
+				
+            clientX: e.clientX, clientY: e.clientY,
+            screenX: e.screenX, screenY: e.screenY,
+				
+            altKey: e.altKey, ctrlKey: e.ctrlKey,
+            shiftKey: e.shiftKey, charCode: e.keyCode,
+				
+            stopPropagation: function () { this._event.cancelBubble = true; },
+            preventDefault: function () { this._event.returnValue = false; }
+          };
+			
+          if (Function.prototype.call) {
+            handler.call(element, event);
+          } else {
+            element._currentHandler = handler;
+            element._currentHandler(event);
+            element._currentHandler = null;
+					}
+        };
+		
+        element.attachEvent(&quot;on&quot; + eventType, wrappedHandler);
+		
+        var h = {
+          element: element,
+          eventType: eventType,
+          handler: handler,
+          wrappedHandler: wrappedHandler
+        };
+		
+        var d = element.document || element;
+        var w = d.parentWindow;
+		
+        var id = _uid();
+        if (!w._allHandlers) w._allHandlers = {};
+        w._allHandlers[id] = h;
+		
+        if (!element._handlers) element._handlers = [];
+        element._handlers.push(id);
+		
+        if (!w._onunloadHandlerRegistered) {
+          w._onunloadHandlerRegistered = true;
+          w.attachEvent(&quot;onunload&quot;, _removeAllHandlers);
+        }
+		
+      }
+    },
+	
+    remove: function (element, eventType, handler) {
+      if (document.removeEventListener) {
+        element.removeEventListener(eventType, handler, false);
+				
+      } else if (document.detachEvent) {
+				
+        var i = _find(element, eventType, handler);
+        if (i == -1) return;
+		
+        var d = element.document || element;
+        var w = d.parentWindow;
+		
+        var handlerId = element._handlers[i];
+        var h = w._allHandlers[handlerId];
+		
+        element.detachEvent(&quot;on&quot; + eventType, h.wrappedHandler);
+        element._handlers.splice(i, 1);
+        delete w._allHandlers[handlerId];
+		
+      }
+    }
+		
+  }; //end return object;
+	
+})();
+  </div>
+  </code>
+	</pre>
+  </div>
+
+  <div id="original" class="slidingDoor hide">
+  <pre>
+	<code>
+	<div>
+/*David Flanagan's Handler module,
+allows for portable event-handler registration functions
+******************
+For documentation refer to pages 414 - 419 of the rhino book
+******************
+*/
+var Handler = {};
+if (document.addEventListener) {
+	
+  Handler.add = function (element, eventType, handler) {
+    element.addEventListener(eventType, handler, false);
+  };
+	
+  Handler.remove = function (element, eventType, handler) {
+    element.removeEventListener(eventType, handler, false);
+  };
+
+} else if (document.attachEvent) {
+	
+  Handler.add = function (element, eventType, handler) {
+
+    if (Handler._find(element, eventType, handler) != -1) return;
+		
+    var wrappedHandler = function (e) {
+      if (!e) e = window.event;
+			
+      var event = {
+        _event: e,
+        type: e.type,
+        target: e.srcElement,
+        currentTarget: element,
+        relatedTarget: e.fromElement ? e.fromElement : e.toElement,
+        eventPhase: (e.srcElement == element) ? 2 : 3,
+				
+        clientX: e.clientX, clientY: e.clientY,
+        screenX: e.screenX, screenY: e.screenY,
+				
+        altKey: e.altKey, ctrlKey: e.ctrlKey,
+        shiftKey: e.shiftKey, charCode: e.keyCode,
+				
+        stopPropagation: function () { this._event.cancelBubble = true; },
+        preventDefault: function () { this._event.returnValue = false; }
+      };
+			
+      if (Function.prototype.call) {
+        handler.call(element, event);
+      } else {
+        element._currentHandler = handler;
+        element._currentHandler(event);
+        element._currentHandler = null;
+      }
+    };
+		
+    element.attachEvent("on" + eventType, wrappedHandler);
+		
+    var h = {
+      element: element,
+      eventType: eventType,
+      handler: handler,
+      wrappedHandler: wrappedHandler
+    };
+		
+    var d = element.document || element;
+    var w = d.parentWindow;
+		
+    var id = Handler._uid();
+    if (!w._allHandlers) w._allHandlers = {};
+    w._allHandlers[id] = h;
+		
+    if (!element._handlers) element._handlers = [];
+    element._handlers.push(id);
+		
+    if (!w._onunloadHandlerRegistered) {
+      w._onunloadHandlerRegistered = true;
+      w.attachEvent("onunload", Handler._removeAllHandlers);
+    }
+		
+  };
+	
+  Handler.remove = function (element, eventType, handler) {
+		
+    var i = Handler._find(element, eventType, handler);
+    if (i == -1) return;
+		
+    var d = element.document || element;
+    var w = d.parentWindow;
+		
+    var handlerId = element._handlers[i];
+    var h = w._allHandlers[handlerId];
+		
+    element.detachEvent("on" + eventType, h.wrappedHandler);
+    element._handlers.splice(i, 1);
+    delete w._allHandlers[handlerId];
+		
+  };
+	
+  Handler._find = function (element, eventType, handler) {
+		
+    var handlers = element._handlers;
+    if (!handlers) return -1;
+		
+    var d = element.document || element;
+    var w = d.parentWindow;
+		
+    for (var i = handlers.length; i >= 0; i--) {
+      var handlerId = handlers[i];
+      var h = w._allHandlers[handlerId];
+			
+      if (h && h.eventType == eventType && h.handler == handler) {
+        return i;
+      }
+    }
+		
+    return -1
+		
+  };
+	
+  Handler._removeAllHandlers = function () {
+		
+    var w = this;
+		
+    for (var id in w._allHandlers) {
+      var h = w._allHandlers[id];
+      h.element.detachEvent("on" + h.eventType, h.wrappedHandler);
+      delete w._allHandlers[id];
+    }
+		
+  };
+	
+  Handler._counter = 0;
+  Handler._uid = function () { return "h" + Handler._counter++; };
+	
+};
+  </div>
+	</code>
+	</pre>
+	
+  </div>
+</div><!--end div#slidingDoors-->
+
+</body>
+</html>

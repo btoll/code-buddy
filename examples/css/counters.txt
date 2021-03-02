@@ -1,0 +1,9 @@
+div#parentDiv {
+  counter-reset: docs; /*salt the counter*/
+}
+.sort:before {
+  border: 0;
+  color: #000;
+  content: counter(docs) ". ";
+  counter-increment: docs;
+}

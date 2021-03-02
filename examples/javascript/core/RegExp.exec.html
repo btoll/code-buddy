@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>RegExp.exec()</title>
+<style type="text/css">
+p {
+  background: #FFC;
+  border: 1px solid #CCC;
+  margin: 10px;
+  padding: 10px;
+}
+pre {
+  background: #EED;
+  border: 1px dotted #CCC;
+  margin: 10px;
+  overflow: auto;
+  padding: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<h3>RegExp.exec()</h3>
+
+<p>When using <code>RegExp.exec()</code> method, you can loop through the search string by using it within a <code>for</code> loop <em><strong>only if its <code>g</code> flag is set</strong></em>. This is very powerful (and slow) and will return an <code>Array</code> containing the results of the match (where the first element is the entire matched string and the subsequent elements map to each parenthesized subexpression) or <code>null</code> if no match was found.</p>
+
+<pre>
+var x;
+var re = /\/\*\*(?:\r\n){1}(.|\r\n)*?&lt;\/source&gt;/g;
+while (x = /\/\*\*(?:\r\n){1}(.|\r\n)*?&lt;\/source&gt;/g.exec(sResponse)) {
+  alert(x);
+}
+</pre>
+
+<p>The reason this works is because the <code>RegExp.index</code> property and <code>RegExp.index</code> property are moved ahead as each search is found.</p>
+<ul>
+  <li><code>RegExp.lastIndex</code>
+	  <blockquote>If the regex has a <code>g</code> flag, the searching begins not at position 0 of the string but at position <code>RegExp.lastIndex</code> (which is initially zero).  If the match is successful, then <code>RegExp.lastIndex</code> will be set to the position of the first character after the match. An unsuccessful match resets <code>RegExp.lastIndex</code> to 0.  <strong>JavaScript: The Good Parts, by Douglas Crockford, pp. 86</strong></blockquote>
+	</li>
+	<li><code>RegExp.index</code>
+	  <blockquote>The value returned by <code>RegExp.exec()</code> also has two other properties. The <code>index</code> property specifies the character position of the first character of the matched text. <strong>JavaScript: The Definitive Guide, by David Flanagan, pp. 690</strong></blockquote>
+	</li>
+</ul>
+
+<p><strong>BUG ALERT:</strong> In IE 6, the following code doesn't work:</p>
+<pre>
+var x;
+while (x = /\/\*\*(?:\r\n){1}(.|\r\n)*?<\/source>/g.exec(sResponse)) {
+  alert(x);
+}
+</pre>
+
+<p>For some reason, <code>RegExp.lastIndex</code> and <code>RegExp.index</code> are not moved ahead, so the code will create an infinite loop. The solution is to stuff the RegExp literal or RegExp object into a variable and then invoke the <code>exec()</code> method on it, i.e.:</p>
+<pre>
+var x;
+var re = new RegExp("\\/\\*\\*(?:\\r\\n){1}(.|\\r\\n)*?<\\/source>", "g");
+
+ <strong>- or -</strong>
+
+var re = /\/\*\*(?:\r\n){1}(.|\r\n)*?<\/source>/g;
+
+while (x = re.exec(sResponse)) {
+  alert(x);
+}
+</pre>
+
+</body>
+</html>

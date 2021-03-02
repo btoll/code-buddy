@@ -1,0 +1,27 @@
+function removeElementsByClassName(classname, rootElem, searchBy) {
+
+  /*
+  classname String (required);
+  rootElem String || Object;
+  searchBy String;
+  */
+
+  var specificElems = null;
+  
+  if (!classname) {
+    throw new Error("You must provide a class name when calling this method.");
+  }
+  if (rootElem && searchBy) {
+    var specificRoot = rootElem.constructor === String ? document.getElementById(rootElem) : rootElem;
+    var specificElems = specificRoot.getElementsByTagName(searchBy);
+  }
+  var elems = specificElems || document.getElementsByTagName("*") || document.all;
+	
+  var elemsLength = elems.length;
+  for (var i = 0; i < elemsLength; i++) {
+    if (elems[i].className && elems[i].className.indexOf(classname) != -1) {
+      elems[i].className = elems[i].className.replace(classname, "");
+    }
+  }
+
+}

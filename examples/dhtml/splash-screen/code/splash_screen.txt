@@ -1,0 +1,49 @@
+var FadeOut = {
+
+  getStyle: function (oElem, sName) {
+    //if the property exists in style[] then it's been set recently and is current;
+    if (oElem.style[sName]) {
+      return oElem.style[sName];
+    } else if (oElem.currentStyle) {
+      return oElem.currentStyle[sName]; //otherwise, try to use IE's method;
+    } else if (document.defaultView && document.defaultView.getComputedStyle) { //or the w3c's method, if it exists;
+      //it uses the traditional 'text-align' style of rule writing instead of 'textAlign';
+      sName = sName.replace(/([A-Z])/g, "-$1");
+      sName = sName.toLowerCase();
+	
+      //get the style object and get the value of the property if it exists;
+      var s = document.defaultView.getComputedStyle(oElem, "");
+      return s && s.getPropertyValue(sName);
+
+    //otherwise, we're using some other browser;
+    } else {
+      return null;
+    }
+  },
+
+  fadeOut: function (oElem) {
+
+    /*fade out the splash screen and remove it from the DOM*/
+    var vOpaque = document.addEventListener ? FadeOut.getStyle(oElem, "opacity") : FadeOut.getStyle(oElem, "filter");
+    if (document.attachEvent) {
+      vOpaque = parseInt(vOpaque.replace(/.*=(.+)\)/g, function (a, b) { return b; }));
+    }
+
+    if (vOpaque > 0) { //fade the elem;
+      document.addEventListener ? oElem.style.opacity = vOpaque - .05 : oElem.style.filter = "alpha(opacity=" + (vOpaque - 5) + ")";
+      oElem.fade = setTimeout(function() { FadeOut.fadeOut(oElem); }, 120);
+    } else if (vOpaque <= 0) {
+      clearTimeout(oElem.fade);
+      document.body.removeChild(oElem);
+    }
+
+
+  },
+
+  splashScreen: function () {
+    setTimeout(function() { FadeOut.fadeOut(document.getElementById("splashScreen")); }, 2000);
+  }
+
+};
+
+window.onload = function() { FadeOut.splashScreen(); };

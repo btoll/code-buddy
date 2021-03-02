@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Inheritance</title>
+<style type="text/css">
+body {
+  background: #EED;
+}
+h3 {
+  background: #789;
+  border: 1px solid #CCC;
+  color: #FFF;
+  margin: 0 60px;
+  padding: 10px 0;
+  text-align: center;
+}
+p {
+  border: 1px solid orange;
+  border-left: 0;
+  border-right: 0;
+  font: bold 14px "Trebuchet MS", Arial;
+  margin-top: 40px;
+  padding: 5px;
+}
+div {
+  background: #FFF;
+  border: 1px dashed #999;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+code, pre {
+  margin: 0;
+  padding: 0;
+}
+</style>
+<script type="text/javascript">
+window.onload = function () {
+
+  function a() {
+    a.superclass.constructor.call(this); //inherit the instance properties (a.superclass.constructor is a pointer to b());
+    this.job = "world-class athlete"; //overrides the parent's (inherited) instance property;
+  }
+
+  function b() {
+    this.job = "programmer";
+	  this.name = "Ben";
+  }
+	b.prototype.message = function () {
+	  alert("Hello, world!");
+	};
+  b.prototype.title = function () {
+    alert(this.name + " is a " + this.job + ".");
+  };
+
+  function extend(subClass, superClass) {
+    var F = function () {}; //the proxy;
+    //F.prototype = new superclass(); //instantiating would also inherit the instance properties (not what we want, the prototype object should contain only methods);
+    //- also, this prevents a new, throwaway instantiation of the parent class from being done which could be computationally expensive
+    F.prototype = superClass.prototype; //we just want the instance methods;
+    subClass.prototype = new F(); //instantiating inherits the instance methods;
+    subClass.prototype.constructor = subClass; //point the constructor at the subclass instead of at Function;
+    subClass.superclass = superClass.prototype; //add a pointer to the superclass' instance methods, so now if more methods are added to the superclass' prototype object the subclass will automatically inherit them;
+  }
+
+  extend(a, b);
+  var x = new a();
+
+  var cButtons = document.getElementsByTagName("button");
+  //cButtons[0].onclick = x.title; //can't invoke like this b/c "this" in b.prototype.title() will then incorrectly refer to the HTMLElement to which it's bound;
+  cButtons[0].onclick = function () { x.title(); };
+  cButtons[1].onclick = x.message; //it's ok to invoke this way b/c "this" isn't in b.prototype.message();
+
+};
+</script>
+</head>
+
+<body>
+
+<h3>Inheritance in JavaScript</h3>
+
+<p>Setting a breakpoint and stepping through this is the best way to understand what is going on.</p>
+
+<div>
+<pre>
+<code>
+function a() {
+  a.superclass.constructor.call(this); //inherit the instance properties (a.superclass.constructor is a pointer to b());
+  this.job = &quot;world-class athlete&quot;; //overrides the parent's (inherited) instance property;
+}
+
+function b() {
+  this.job = &quot;programmer&quot;;
+  this.name = &quot;Ben&quot;;
+}
+
+b.prototype.message = function () {
+  alert(&quot;Hello, world!&quot;);
+};
+
+b.prototype.title = function () {
+  alert(this.name + &quot; is a &quot; + this.job + &quot;.&quot;);
+};
+
+function extend(subClass, superClass) {
+
+  var F = function () {}; //the proxy;
+
+  /*instantiating would also inherit the instance properties
+    (not what we want, the prototype object should contain only methods)
+		- also, this prevents a new, throwaway instantiation of the parent
+		class from being done which could be computationally expensive
+  */
+  //F.prototype = new superClass();
+
+  F.prototype = superClass.prototype; //we just want the instance methods;
+
+  subClass.prototype = new F(); //instantiating inherits the instance methods;
+
+  subClass.prototype.constructor = subClass; //point the constructor at the subclass instead of at Function;
+
+  /*add a pointer to the superclass' instance methods, so now if more methods are added
+    to the superclass' prototype object the subclass will automatically inherit them;
+  */
+  subClass.superclass = superClass.prototype;
+
+}
+</code>
+</pre>
+</div>
+
+<div>
+<pre>
+<code>
+<strong>This is the code I used in this demo:</strong>
+
+extend(a, b);
+var x = new a();
+
+var cButtons = document.getElementsByTagName(&quot;button&quot;);
+/*
+  //cButtons[0].onclick = x.title;
+  can't invoke like this b/c &quot;this&quot; in b.prototype.title()
+  will then incorrectly refer to the HTMLElement to which it's bound
+*/
+cButtons[0].onclick = function () { x.title(); };
+cButtons[1].onclick = x.message; //it's ok to invoke this way b/c &quot;this&quot; isn't in b.prototype.message();
+</code>
+</pre>
+</div>
+
+<button>x.title()</button>
+<button>x.message()</button>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Function Decompilation</title>
+<link rel="stylesheet" type="text/css" href="../../../lib/css/blog_template.css" />
+</head>
+
+<body>
+
+  <div id="content">
+
+    <h1>Function Decompliation</h1>
+    <h2>What's in this post?</h2>
+    <ul>
+      <li><a href="#item1">Function Decompilation</a></li>
+      <li><a href="#item2">What's this code doing, and what advantages are gained by doing it?</a></li>
+      <li><a href="#item3">More information</a></li>
+    </ul>
+    
+    <h3 id="item1">Function Decompilation</h3>
+    <p>Take a look at the code below:</p>
+    <blockquote>
+      var fnTest = /xyz/.test(function () { xyz; }) ?
+        /\b_super\b/ :
+          /.*/;
+
+      /*
+        code snipped for brevity
+      */
+
+      for (var name in prop) {
+        // Check if we're overwriting an existing function
+        prototype[name] = typeof prop[name] == "function" && typeof _super[name] == "function" && fnTest.test(prop[name]) ?
+          (function(name, fn){
+            return function() {
+              var tmp = this._super;
+
+              // Add a new ._super() method that is the same method
+              // but on the super-class
+              this._super = _super[name];
+ 
+              // The method only need to be bound temporarily, so we
+              // remove it when we're done executing
+              var ret = fn.apply(this, arguments);       
+              this._super = tmp;
+
+              return ret;
+            };
+          })(name, prop[name]) :
+            prop[name];
+      }
+    </blockquote>
+    <p>The first time I saw <a href="http://ejohn.org/blog/simple-javascript-inheritance/">this code</a> I thought, &quot;Huh?&quot; Then, after some digging, I began to see what a cool optimization trick it is.</p>
+
+    <h3 id="item2">What's this code doing, and what advantages are gained by doing it?</h3>
+    <p>First, I had to understand the context within which it is used. In certain inheritance patterns such as Base2 and MooTools, the parent's method can be called within a child class' method by invoking _super(), or some permutation of it. The reason for this is pretty well understood; since functions are first-class objects in JavaScript, they are essentially just a data type that can be stored in a variable, and as such can be overwritten. For example, even though the signatures are different, the second method below will overwrite and obliterate the first:</p>
+    <blockquote>
+    function func() {
+      return "Hello, world!";
+    }
+
+    function func(place) {
+      return "Hello, " + place + "!";
+    }
+
+    /*
+      declaring the functions anonymously and assigning them to vars helps to illustrate the fact that
+      functions are merely statements that can be assigned to a variable and as such can be overwritten
+    */
+
+    var func = function () {
+      return "Hello, world!";
+    };
+
+    var func = function (place) {
+      return "Hello, " + place + "!";
+    };
+    </blockquote>
+    <p>There are <a href="../core/Function.prototype.html">some tricks</a> you can employ to get around this, but because of the nature of the language there is so such thing as method overloading in JavaScript. So the aforementioned libraries (and others) will store the same-named parent method in a closure so it is saved in memory even though it's been overwritten. This of course comes at a performance cost, but depending on how it's implemented it can be mitigated. For example, MooTools v.1.2.4 wraps every method in a class definition in a closure when it creates its &quot;classes&quot;. I believe the reasoning is that the developer never knows which method will be overwritten by a child class. However, this can be very inefficient, as usually only a small number of methods are same-named when subclassing.</p>
+    <p>On the other hand, libraries such as Base2 use the ingenious optimization method shown above. The regular expression is testing whether or not the client's browser can inspect the textual body of a function (what Dean Edwards refers to as the &quot;decompilation of functions&quot;). If it can, you can perform an optimization by only wrapping an overridden method if it actually calls <code>this._super()</code> somewhere in its body. Since it requires an additional closure and function call overhead to support <code>_super</code>, it's nice to skip that step if it isn't needed.</p>
+    <p>For the sake of leaving no stone unturned, it's important to note that <code>xyz</code> is an arbitrary search pattern; you could use anything you wish. Just make sure the pattern is repeated in the function body. Also, in the &quot;if&quot; condition of the ternary operator above, <code>_super</code> is being returned as part of the regular expression pattern. This should be whatever method name you use that calls a parent class' overridden method.</p>
+    <p>Lastly, for the browsers that support the inpsection of the textual body of a function, it can be determined at run-time if the method is calling <code>_super</code>. If not, the method is not wrapped and is simply add to the prototype object. If the browser does not support function decompliation, then the regexp will be <code>/.*/</code> which will match everything and so every method will be wrapped. So, modern browsers that support function decompilation will get the performance benefit and older browsers that don't support it will not.</p>
+
+    <h3 id="item3">More Information</h3>
+    <ul>
+      <li>I had first seen this in a <a href="http://ejohn.org/blog/simple-javascript-inheritance/">post by John Resig</a>. In the comments section, Dean Edwards advises him to use this optimization.</li>
+      <li>He cites <a href="http://dean.edwards.name/weblog/2007/12/base2-intro/">Dean Edwards' base2 library</a> as inspiration for his blog post.</li>
+      <li>He also cites <a href="http://www.prototypejs.org/">the Prototype library</a> as inspiration for his blog post.</li>
+    </ul>
+
+  </div>
+  
+</body>
+</html>

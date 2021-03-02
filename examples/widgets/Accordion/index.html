@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>CSS :: Accordion</title>
+<link rel="stylesheet" type="text/css" href="accordion.css" />
+<script type="text/javascript" src="accordion.js"></script>
+</head>
+
+<body>
+<!--this version creates an anchor on the fly when JavaScript is present/enabled-->
+<!--there's now no need for a separate html page b/c an anchor won't be present if JavaScript isn't present/enabled-->
+<div id="accordion-menu">
+
+  <h4 class="first">Everybody's working for the weekend.</h4>
+  <div id="accordion1">
+    <p>Here is some text.</p>
+    <p>Here is some more text.</p>
+  </div>
+
+  <h4>Not on my shift, buddy-roo.</h4>
+  <div id="accordion2">
+    <p>Here is a list of my favorite things:</p>
+    <ul>
+      <li>Baseball</li>
+	  <li>Football</li>
+	  <li>Guitar</li>
+	  <li>Programming</li>
+    </ul>
+  </div>
+  
+  <h4>E-A-G-L-E-S</h4>
+  <div id="accordion3">
+    <p>Better luck next year!</p>
+  </div>
+  
+  <h4>A List Apart</h4>
+  <div id="accordion4">
+    <p>We all know the problems that arise when we try to build multi-column layouts in which the columns are of equal height. It has been well documented elsewhere, so I won't go into the details here.</p>
+
+    <p>A project I recently worked on required an elastic layout with two columns of equal height, each with a different background color. As usual, there was no way to tell which column would be taller. I immediately thought of Dan Cederholm's Faux Columns, but I needed an elastic layout. I also looked at the One True Layout, but this seemed buggy and required too much extra markup and too many hacks for my taste. I even thought about using JavaScript to make sure the columns were of equal height, but that just felt wrong. Out of desperation, I almost (gasp!) used a table.</p>
+  </div>
+
+</div><!--end div#accordion-menu-->
+
+</body>
+</html>

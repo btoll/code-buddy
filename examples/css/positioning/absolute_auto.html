@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Static//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-static.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Absolutely positioned elements with auto offsets</title>
+<style type="text/css">
+p {
+  margin: 20px 2em;
+  padding: 2em;
+}
+p span {
+  position: absolute;
+  top: auto;
+  left: 0;
+}
+</style>
+</head>
+
+<body>
+
+<p>Elements can be positioned outside their containing block.  This is similar to the way in which floated elements can use <span>[1]</span>negative margins to float outside of their parent’s content area.  It also suggests that the term "containing block" should really be "positioning context".</p>
+
+<p>The idea behind positioning is fairly simple.  It allows you to <span>[2]</span>define exactly where element boxes will appear relative to where they would ordinarily be – or relative to a parent element, another element, or even to the browser window itself.</p>
+
+</body>
+</html>

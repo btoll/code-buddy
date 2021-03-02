@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>JavaScript Compressor</title>
+<style type="text/css">
+body {
+  background: #EED;
+  text-align: center;
+}
+h1 {
+  background: #FFF;
+  border: 2px solid #999;
+  font-size: 22px;
+  margin: 0 auto;
+  padding: 4px 6px 4px 4px;
+  width: 125px;
+}
+h1 span {
+  color: olive;
+  font-family: cursive;
+  font-style: italic;
+}
+p {
+  margin-bottom: 0;
+}
+p.warning {
+  font-weight: bold;
+  margin-top: 0;
+}
+p.warning span {
+  color: #F00;
+}
+div {
+  margin: 0 auto;
+  width: 90%;
+}
+textarea {
+  border: 1px solid #789;
+  color: #789;
+  font-weight: bold;
+  margin: 20px auto;
+  height: 170px;
+  width: 100%;
+}
+textarea:focus {
+  outline: 2px solid invert;
+}
+textarea#treated {
+  background: #F0F0F0;
+}
+div#stats {
+  margin-left: 80px;
+  text-align: left;
+  width: 200px;
+}
+div#stats label {
+  clear: left;
+  float: left;
+  width: 100px;
+}
+div#stats input {
+  float: left;
+}
+</style>
+<script type="text/javascript">
+/*
+OUTSTANDING ISSUES:
+1. Issues with C-style comments over multiple lines.
+  - at present, the first regex that strips out these comments runs at line 82 and the next at line 107.  This is probably rather inefficient but necessary, b/c a C-style comment broken over multiple lines will become concatenated and the next time through will be removed.
+2. Regular expression literals, such as var pattern = /\d* \//;
+  - this will not be flagged as a regex but will be seen as an inline comment and the space will not be preserved.
+3. Test for multi-line strings and multi-line regexs (if they're legal).
+4. Include the equality operators (===, !==) in the regex that checks for operators.
+*/
+
+//var thePattern = /\/.*\//;
+
+function jsCompress() {
+  var oldSize = document.getElementById("untreated").value.length;
+  var skinned = document.getElementById("untreated").value;
+  
+  var literals = {}; //declare the hash table for the regex literals;
+  var y = 0;
+  
+  /*
+  if (skinned.match(/(?:[=:,]){1,}\s{0,}\/.*\/(?:[\/;|;])/))
+    skinned = skinned.replace(/(?:[=:,]){1,}\s{0,}\/.*\/(?:[\/;|;])/g, function(a) { ++y; literals[y] = a; return "``{"+y+"}``"; }); //create a placeholder for the regex literals;
+  */
+	
+  var regexs = {}; //declare the hash table;
+  var x = 0; //declare the incrementer that will serve as the lookup key;
+  if (skinned.match(/\(\/.*?\/(?:[i|g|m]{0,}){0,}(?:[;,)]{1,}){1,}/g)) //matches a regex plus it's surrounding parens;
+    skinned = skinned.replace(/\(\/.*?\/(?:[i|g|m]{0,}){0,}(?:[;,)]{1,}){1,}/g, function(a) { ++x; regexs[x] = a; return "~{"+x+"}~"; }); //for each matched expression create a key/value pair in the hash table object and return a placeholder;
+
+  skinned = skinned.replace(/\/\*.*?\*\//g, ""); //strip out any comments of the "/* ... *\/" type (non-greedy);
+  skinned = skinned.replace(/\/\/.*/g, ""); //strip out any comments of the "//" type;
+  skinned = skinned.replace(/\b(abstract|boolean|byte|case|catch|char|const|continue|debugger|default|delete|do|double|else|enum|export|extends|false|final|finally|float|for|function|goto|if|implements|import|in|instanceof|int|interface|long|native|new|null|package|private|protected|public|return|short|static|super|switch|synchronized|throw|throws|transient|true|try|typeof|var|void|volatile|while|with)\b/g, "~nbsp~$1~nbsp~"); //define the keywords and assign them placeholders (~nbsp~) to be replaced later with spaces (only where there are word boundaries);
+
+  var allLines = skinned.split("\n"); //create an array at the linefeeds;
+  var stripped = [];
+  for (var i = 0; i < allLines.length; i++) {
+    if (allLines[i].match(/\(\/(?!(?:[a-zA-Z]|\s))/g)) //negative lookahead; if (/ is not followed by a letter or whitespace, than replace the placeholder w/ nothing; this removes any placeholders assigned in the regex above surrounding the keywords in a regex;
+	  allLines[i] = allLines[i].replace(/~nbsp~/g, "");
+	  
+	if (allLines[i].indexOf("'") != -1 || allLines[i].indexOf('"') != -1) {
+	  allLines[i] = allLines[i].replace(/^\s*|\s*$/g, ""); //trim all whitespace from the beginning and end of string;
+
+	  if (allLines[i].match(/["|'].*\s?["|']/)) //if there is whitespace between any quotes...
+		allLines[i] = allLines[i].replace(/\s/g, "~nbsp~"); //...assign the placeholder;
+
+      stripped.push(allLines[i]);
+	  continue; //force another iteration to prevent duplicate array elements;
+	}
+    stripped.push(allLines[i].replace(/\s/g, "")); //if the line doesn't contain quotes just remove all whitespace;
+  }
+  skinned = stripped.join("\n").replace(/\n/g, "");
+  skinned = skinned.replace(/\/\*.*?\*\//g, ""); //strip out any comments of the "/* ... *\/" type (non-greedy); this was done before, it's a 'mop-up' feature;
+  skinned = skinned.replace(/~nbsp~/g, " "); //replace the placeholder w/ a space;
+  skinned = skinned.replace(/\s*(\(|\)|{|}|:|;|\?|\|\||&&|=|\+|!|,|\/|\*|<|>)\s*/g, "$1"); //remove all whitespace before and after the following chars: ( ) { } : ; ? || && = + ! , / * < >
+  skinned = skinned.replace(/^\s+|\s+$/g, "").replace(/\s{2,}/g, " "); //replace all double spaces with a single space;
+  //skinned = skinned.replace(/~{(\d*)}~/g, function (a, b) { return regexs[b]; }); //replace the regex placeholder w/ the value from the hash table; the value of the subexpression serves as the hash value's key;
+  //skinned = skinned.replace(/``{(\d*)}``/g, function (a, b) { return literals[b]; });
+  
+  //display the results;
+  document.getElementById("treated").value = skinned;
+  document.getElementById("oldSize").value = oldSize;
+  document.getElementById("newSize").value = skinned.length;
+  document.getElementById("ratio").value = (Math.round(skinned.length / oldSize * 1000) / 10) + "%";
+  document.getElementById("stats").style.display = "block";
+}
+
+window.onload = function() {
+
+  (function () {
+    document.getElementById("untreated").focus();
+	var links = document.getElementsByTagName("a");
+    for (var i = 0; i < links.length; i++)
+	  links[i].onfocus = function() { if(this.blur) this.blur(); };
+    var buttons = document.getElementsByTagName("button");
+    for (var i in buttons)
+      buttons[i].onfocus = function() { if(this.blur) this.blur(); };
+    document.getElementById("compress").onclick = function() { jsCompress(); };
+    document.getElementById("clear").onclick = function() {
+      document.getElementById("untreated").value = "";
+	  document.getElementById("treated").value = "";
+	  document.getElementById("untreated").focus();
+    };
+    document.getElementById("selectAll").onclick = function() { document.getElementById("treated").select(); };
+    document.getElementById("theForm").onsubmit = function() { return false; };
+  })();
+  
+};
+</script>
+</head>
+
+<body>
+
+<h1>JS<span>Compress</span></h1>
+<p>The basic functionality for this JavaScript compressor was inspired by Douglas Crockford's <a href="http://fmarcia.info/jsmin/test.html">JSMin</a> and Dean Edward's <a href="http://dean.edwards.name/packer/">Packer</a>.</p>
+<p class="warning"><span>Warning!</span> Compression is a one-way trip, so please backup all files before running them through the compressor!</p>
+<form id="theForm" action="stripper.html">
+  <div>
+    <textarea id="untreated"></textarea>
+    <button id="compress">Compress</button>
+    <button id="clear">Clear</button>
+    <textarea id="treated"></textarea>
+	<button id="selectAll">Select All</button>
+  </div>
+  <div id="stats" style="display: none;">
+    <h2>Stats</h2>
+    <label for="oldSize">Old Size</label> <input type="text" id="oldSize" size="5" />
+	<label for="newSize">New Size</label> <input type="text" id="newSize" size="5" />
+	<label for="ratio">Ratio</label> <input type="text" id="ratio" size="5" />
+  </div>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>JavaScript Validation Form</title>
+<link rel="stylesheet" type="text/css" href="reset.css" />
+<link rel="stylesheet" type="text/css" href="demo.css" />
+<script type="text/javascript" src="housekeeping.js"></script>
+<script type="text/javascript" src="validate.js"></script>
+<script type="text/javascript" src="Scrubber.js"></script>
+</head>
+
+<body>
+
+<div style="display: none;" id="scrubberErrors">
+</div>
+
+<form id="theForm" method="post" action="index.html">
+  <label for="last_name">Last Name</label><input class="required-alphanumeric" type="text" name="last_name" id="last_name" tabindex="1" />
+  <label for="first_name">First Name</label><input class="required-alpha" type="text" name="first_name" id="first_name" tabindex="2" />
+  <label for="address1">Address 1</label><input class="required-alphanumeric" type="text" name="address1" id="address1" tabindex="3" />
+  <label for="address2">Address 2</label><input class="attention-alphanumeric" type="text" name="address2" id="address2" tabindex="4" />
+  <label for="city">City</label><input class="required" type="text" name="city" id="city" tabindex="5" />
+  <label for="state">State</label><input class="required" type="text" name="state" id="state" tabindex="6" />
+  <label for="zipcode">Zipcode</label><input class="required-zipcode" type="text" name="zipcode" id="zipcode" tabindex="7" />
+  <label for="ssn">SSN</label><input class="required-ssn" type="text" name="ssn" id="ssn" tabindex="8" />
+  <label for="phone">Phone</label><input class="required-phone" type="text" name="phone" id="phone" tabindex="9" />
+  <label for="email">Email</label><input class="required-email" type="text" name="email" id="email" tabindex="10" />
+  <label for="url">URL</label><input class="attention-url" type="text" name="url" id="url" tabindex="11" />
+  <label for="date">Date</label><input class="required-date" type="text" name="date" id="date" tabindex="12" />
+  <input class="submit" type="submit" name="submit" value="Submit" tabindex="13" />
+  <div style="clear: both;"></div>
+</form>
+
+
+<div id="accordion-menu">
+ <form id="cookieForm" action="index.html">
+  <h4>Scrubber Configuration</h4>
+  <div id="1">
+    <table>
+	  <thead>
+	    <tr>
+		  <th>Name</th>
+		  <th>Value</th>
+		</tr>
+	  </thead>
+	  <tbody>
+	    <tr>
+		  <td><label for="div">Error Div</label></td>
+		  <td><input type="checkbox" id="div" name="div" tabindex="14" /></td>
+		</tr>
+		<tr>
+		  <td><label for="divHeader">Div Header</label></td>
+		  <td><input type="text" id="divHeader" name="divHeader" tabindex="15" /></td>
+		</tr>
+		<tr>
+		  <td><label for="yellowFade">Yellow Fade</label></td>
+		  <td><input type="checkbox" id="yellowFade" name="yellowFade" tabindex="16" /></td>
+		</tr>
+		<tr>
+		  <td><label for="useSpan">Use Span</label></td>
+		  <td><input type="checkbox" id="useSpan" name="useSpan" tabindex="17" /></td>
+		</tr>
+		<tr>
+		  <td><label for="keepOpen">Don't Close Scrubber Config</label></td>
+		  <td><input type="checkbox" id="keepOpen" name="keepOpen" tabindex="18" /></td>
+		</tr>
+		<tr>
+		  <td class="messages" colspan="2">Custom Error Messages</td>
+		</tr>
+		<tr>
+		  <td><label for="zipcode2">Zipcode</label></td>
+		  <td><input type="text" id="zipcode2" name="zipcode2" tabindex="19" /></td>
+		</tr>
+		<tr>
+		  <td><label for="email2">Email</label></td>
+		  <td><input type="text" id="email2" name="email2" tabindex="20" /></td>
+		</tr>
+		<tr>
+		  <td><label for="url2">URL</label></td>
+		  <td><input type="text" id="url2" name="url2" tabindex="21" /></td>
+		</tr>
+		<tr>
+		  <td><label for="date2">Date</label></td>
+		  <td><input type="text" id="date2" name="date2" tabindex="22" /></td>
+		</tr>
+		<tr>
+		  <td colspan="2"><input type="submit" name="submit" value="Apply Configuration" tabindex="23" /></td>
+		</tr>
+      </tbody>
+	</table>
+  </div>
+ </form>
+</div><!--end div#accordion-menu-->
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+function insertAfter(newElement, targetElement) {
+  var parent = targetElement.parentNode;
+  parent.lastChild == targetElement ? parent.appendChild(newElement) : parent.insertBefore(newElement, targetElement.nextSibling);
+}

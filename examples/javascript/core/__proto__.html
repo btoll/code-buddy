@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>The secret __proto__ link in JavaScript</title>
+<style type="text/css">
+body {
+  background-color: #EED;
+}
+/*punch-out for IE6 and below*/
+div.description {
+  background-color: #FFF;
+  border: 2px solid #999;
+  border-left-style: none;
+  color: #008080;
+  margin: 20px auto;
+  padding: 10px 80px 10px 0;
+  text-align: justify;
+  width: 80%;
+}
+div.description h3 { /* "punch-out" the headers*/
+  background-color: #EED;
+  border: 2px solid #999;
+  border-left-color: #EED;
+  padding: 8px 0 8px 30px;
+  width: 260px;
+}
+div.citation {
+  border-left: solid;
+  font: 11px Arial, Helvetica, sans-serif;
+}
+/*punch-out for modern browsers*/
+html > body div.description {
+  background-color: #FFF;
+  border: 2px solid #999;
+  color: #333;
+  margin: 20px auto;
+  padding: 10px 80px 10px 0;
+  text-align: justify;
+  width: 80%;
+}
+html > body div.description h3 {
+  background-color: #EED;
+  border: 2px solid #999;
+  border-left-color: #EED;
+  margin-left: -2px;
+  padding: 8px 0 8px 30px;
+  width: 260px;
+}
+div.description p {
+  padding-left: 30px;
+}
+div.description p:first-letter {
+  font: 1.2em cursive;
+}
+div.description ul {
+  font: 12px monospace;
+}
+blockquote {
+  background: #EDD;
+  border: 2px dashed #CCC;
+  color: #000;
+  font: 14px monospace;
+  white-space: pre;
+}
+</style>
+<script type="text/javascript">
+  function Shape() {}
+  Shape.prototype.name = "Shape";
+  Shape.prototype.sides = 0;
+  Shape.prototype.toString = function () {
+    return this.name;
+  };
+
+  function Square(width, height) {
+    this.width = width;
+    this.height = height;
+  };
+
+  //inheritance;
+  var F = function () {};
+  F.prototype = Shape.prototype;
+  Square.prototype = new F();
+  Square.prototype.constructor = Square;
+  Square.uber = Shape.prototype;
+    
+  //augment Square's prototype object;
+  Square.prototype.name = "Square";
+  Square.prototype.sides = 4;
+  Square.prototype.getArea = function () {
+    return this.width * this.height;
+  };
+
+  var x = new Square(20, 15);
+
+  console.log(x.getArea());
+  console.log(x.__proto__ === Square.prototype); //true;
+  console.log(x.constructor === Square.prototype.constructor); //true;
+  console.log(x.__proto__.constructor === Square); //true;
+
+  console.log(x instanceof Shape); //observe that our instance is in Shape's inheritance chain;
+  //now overwrite the superclass' prototype object;
+  Shape.prototype = null;
+
+  //note the secret __proto__ link still correctly points to the object's prototype, i.e., it cannot be deleted;
+  console.log(x.__proto__.__proto__.constructor === Shape); //true;
+  console.log(x.__proto__.__proto__.toString()); //Shape;
+</script>
+</head>
+
+<body>
+
+<div class="description">
+
+  <!--[if IE]>
+  <p>&nbsp;</p>
+  <![endif]-->
+  
+  <h3>__proto__</h3>
+  <p>The JavaScript engine uses a secret link named <code>__proto__</code> (the word &quot;proto&quot; with two underscores before and after) to look-up the inherited properties from an object's prototype. Note that Internet Explorer does not support this property, so it's best to only use this property as a learning tool.</p>
+
+  <h3>Sshhh, it's a secret.</h3>
+  <p>The secret link points to the prototype's object from which the new instance where inherit. For example, take a gander at this code:</p>
+  <blockquote>
+    function Shape() {}
+    Shape.prototype.name = &quot;Shape&quot;;
+    Shape.prototype.sides = 0;
+    Shape.prototype.toString = function () {
+      return this.name;
+    };
+    
+    function Square(width, height) {
+      this.width = width;
+      this.height = height;
+    };
+    
+    //<a href="inheritance.html" target="_blank">inheritance</a>;
+    var F = function () {};
+    F.prototype = Shape.prototype;
+    Square.prototype = new F();
+    Square.prototype.constructor = Square;
+    Square.uber = Shape.prototype;
+    
+    //augment Square's prototype object;
+    Square.prototype.name = &quot;Square&quot;;
+    Square.prototype.sides = 4;
+    Square.prototype.getArea = function () {
+      return this.width * this.height;
+    };
+    
+    var x = new Square(20, 15);
+    <a href="http://getfirebug.com/logging.html" target="_blank">console.log</a>(x.getArea()); //300;
+    console.log(x.__proto__ === Square.prototype); //true;
+    console.log(x.constructor === Square.prototype.constructor); //true;
+    console.log(x.__proto__.constructor === Square); //true;
+
+    console.log(x instanceof Shape); //observe that our instance is in Shape's inheritance chain;
+    //now overwrite the superclass' prototype object;
+    Shape.prototype = null;
+
+    //note the secret __proto__ link still correctly points to the object's prototype, i.e., it cannot be deleted;
+    console.log(x.__proto__.__proto__.constructor === Shape); //true;
+    console.log(x.__proto__.__proto__.toString()); //Shape;
+  </blockquote>
+  
+  <p>JavaScript is a prototypal-based object-oriented programming language. This means that objects inherit from objects, not from classes.</p>
+
+  <h3>Prototype chaining</h3>
+  <p>Inheritance in JavaScript can occur through the instantiation of an instance using the <code>new</code> operator when invoking a constructor (i.e., when simulating class-based inheritance). For example:</p>
+  <blockquote>
+    var x = new Square(20, 15);
+  </blockquote>
+  
+  <p>The new instance <code>x</code> returned by the <code>new</code> operator will have the secret <code>__proto__</code> link to it's prototype's object, in this case <code>Shape.prototype</code>. That is, <code>x.__proto__ === Square.prototype</code>.</p>
+  <p>By chaining these secret links together it becomes clear how prototypal inheritance is achieved by objects inheriting from other objects. So objects can essentially share common functionality, thereby promoting code re-use and establishing a shared blueprint among a team of developers. For example, the JavaScript engine will "look-up" the prototype chain if it doesn't find an instance property:</p>
+  <blockquote>
+    console.log(x.__proto__); //Square;
+    console.log(x.__proto__.__proto__); //Shape;
+    console.log(typeof x.__proto__.__proto__); //"object";
+  </blockquote>
+
+  <p>One last note. As some of the code on this page demonstrates, even when a prototype object in the instance's prototype chain is nulled out, the secret <code>__proto__</code> property link remains intact.  Observe again:
+  <blockquote>
+    console.log(x instanceof Shape); //observe that our instance is in Shape's inheritance chain;
+    //now overwrite the superclass' prototype object;
+    Shape.prototype = null;
+
+    //note the secret __proto__ link still correctly points to the object's prototype, i.e., it cannot be deleted;
+    console.log(x.__proto__.__proto__.constructor === Shape); //true;
+    console.log(x.__proto__.__proto__.toString()); //Shape;
+  </blockquote>
+  
+</div>
+
+<div class="description citation">
+  <p>Thanks to Stoyan Stefanov and <a href="http://www.packtpub.com/object-oriented-javascript-applications-libraries/book" target="_blank">his excellent book</a>.</p>
+</div>
+</body>
+</html>

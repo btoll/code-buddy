@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>augmenting Function.prototype</title>
+<style type="text/css">
+body {
+  background: #EED;
+}
+h3 {
+  background: #789;
+  border: 1px solid #CCC;
+  color: #FFF;
+  margin: 0 60px;
+  padding: 10px 0;
+  text-align: center;
+}
+p {
+  font: 14px "Trebuchet MS", Arial;
+  padding: 5px;
+}
+p.intro {
+  border: 1px solid orange;
+  border-left: 0;
+  border-right: 0;
+  font: bold 14px "Trebuchet MS", Arial;
+  margin-top: 40px;
+  padding: 5px;
+}
+div {
+  background: #FFF;
+  border: 1px dashed #999;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+code, pre {
+  margin: 0;
+  padding: 0; 
+}
+</style>
+</head>
+
+<body>
+<h3>{ augmenting Function.prototype }</h3>
+
+<p class="intro">1) The defaults() method allows for a developer to specify what a function's default values should be. This can be done in any number of ways:</p>
+<ul>
+  <li>if (!e) e = &quot;sDefaultValue&quot;;</li>
+	<li>var e = e || &quot;sDefaultValue&quot;;</li>
+	<li>if (typeof e = = = &quot;undefined&quot;) e = &quot;sDefaultValue&quot;;</li>
+</ul>
+<p>In the defaults() method, the default values are passed as function arguments. The function is then invoked as a method of the "foobar" function. The first example is just the code and the second example is expanded with comments. While it may not be feasible as production code, it is worth careful study and again demonstrates the expressiveness and power of the language.</p>
+
+<div>
+<pre>
+<code>
+Function.prototype.defaults = function() {
+  var func = this;
+  if (func.length &lt; arguments.length) {
+    throw Error(&quot;too many arguments&quot;);
+  }
+	
+  var arr = Array.prototype.slice.apply(arguments).concat(
+    Array(func.length - arguments.length));
+
+  return function() {
+    return func.apply(arguments, Array.prototype.slice.apply(arguments).concat(
+      arr.slice(arguments.length, arr.length)));
+  };
+};
+</code>
+</pre>
+</div>
+
+<div>
+<pre>
+<code>
+Function.prototype.defaults = function() {
+  var func = this; //refers to the function that &quot;defaults&quot; is a method of, in this case &quot;foobar&quot;;
+
+  if (func.length &lt; arguments.length) {
+    throw Error(&quot;too many arguments&quot;);
+  }
+	
+  /*
+  if func.length == arguments.length then as many arguments were passed to &quot;default&quot; as were expected by &quot;foobar&quot;;
+  if func.length &lt; arguments.length then more arguments were passed to &quot;default&quot; then were expected by &quot;foobar&quot;;
+  if func.length &gt; arguments.length then fewer arguments were passed to &quot;default&quot; then were expected by &quot;foobar&quot;;
+
+    1. create an array of undefined values (or not, depending on the number of arguments passed to &quot;defaults&quot;;
+    2. turn the arguments object into an array (note any undefined values must come last in the array);
+    3. concat the arrays;
+  
+  NOTE:
+    - arr.length will always equal func.length;
+    - if there was one argument passed, arr will be ["default_a", undefined, undefined] when func.length == 3;
+  */
+  var arr = Array.prototype.slice.apply(arguments).concat(
+    Array(func.length - arguments.length));
+
+  return function() {
+    /*now we're inside the &quot;foobar&quot; function*/
+    /*&quot;this&quot; refers to the global object and arguments refers to the &quot;foobar&quot; function arguments*/
+    /*
+      1. return an array;
+      2. turn the arguments object into an array;
+      3. concat the arrays;
+      4. invoke the &quot;foobar&quot; function as a method of itself, passing the context and the arrays concatenated in #3;
+    */
+    return func.apply(arguments, Array.prototype.slice.apply(arguments).concat(
+      arr.slice(arguments.length, arr.length)));
+  };
+};
+
+<strong>You can invoke it like this:</strong>
+
+var foobar = function(a, b) {
+  console.log(a);
+  console.log(b);
+}.defaults(&quot;default_a&quot;, &quot;default_b&quot;);
+
+foobar(); //you can add as many function arguments as you want but the max that can be
+received by the function are the number of arguments defined by it (in this example 2
+b/c &quot;foobar&quot; has two function arguments);
+</code>
+</pre>
+</div>
+
+<p class="intro">2) The assert() method allows for a developer to enforce strict data typing and forces the number of function arguments to equal the number of arguments in the method signature:</p>
+
+<p>Again, while it may not be feasible as production code, it is worth careful study and again demonstrates the expressiveness and power of the language.</p>
+<div>
+<pre>
+<code>
+Function.prototype.assert = function() {
+
+  var func = this;
+  var args = Array.prototype.slice.call(arguments);
+	
+  return function() {
+    if (func.length != arguments.length) {
+      throw Error(&quot;function arguments do not equal number of expected arguments&quot;);
+    }
+
+    for (var i = 0, iLength = arguments.length; i &lt; iLength; i++) {
+      if (arguments[i].constructor !== args[i]) {
+        throw Error(&quot;Wrong data type for function argument &quot; + (i + 1) + &quot;.&quot;);
+      }
+    }
+
+    return func.apply(this, arguments); //finally, invoke the parent function;
+  };
+
+};
+
+<strong>You can invoke it like this:</strong>
+
+var x = function (a, b) {
+  console.log(&quot;My name is &quot; + a.join(&quot; &quot;) + &quot;.&quot;);
+  console.log(&quot;Well, hello &quot; + b.getFullYear() + &quot;!&quot;);
+}.assert(Array, Date); //pass in the object which is the constructor of each data type;
+
+x(["Ben", "Toll"], new Date);
+</code>
+</pre>
+</div>
+
+<p class="intro">3) The overload() method allows for a developer to implement true method overloading in JavaScript:</p>
+
+<p><strong>NOTE:</strong> <code>Function.prototype.overload</code> works because everytime it's invoked it creates a closure which captures all the function arguments and the arguments object for each function.  So even though in this particular example three "find" methods are created, to the JavaScript engine they're different because the method signature is different.
+<code>Function.prototype.overload</code> is able to determine the correct "find" method to invoke by the number of function arguments it was defined with.  Here's the key line:</p>
+<blockquote>
+  <code>if (that.length == arguments.length) {</code>
+</blockquote>
+<p>Remember, the length property of a function will return the number of arguments a function was defined with, while the length property of the arguments object returns the number of arguments that were actually passed to the function.</p>
+<div>
+<pre>
+<code>
+Function.prototype.overload = function (obj, sName) {
+
+  /*
+  obj == the class within which the method is invoked;
+  this == refers to the anonymous function which the overload method is a method of;
+  old == refers to the old method (could be null);
+  */
+  var old = obj[sName];
+  var that = this;
+  /*i first tried this.args as an array with the
+    Array.push method but ie7 didn't like it*/
+  if (!obj._args) obj._args = {};
+  obj._args[this.length] = true; //store each method's function length;
+  obj[sName] = function () {
+    if (obj._args[arguments.length]) {
+      if (that.length == arguments.length) {
+        return that.apply(this, arguments);
+      } else if (typeof old == &quot;function&quot;) {
+        return old.apply(this, arguments);
+      }
+    } else {
+      throw Error(&quot;does not match method signature&quot;);
+    }
+  };
+
+};
+
+<strong>You can invoke it like this:</strong>
+
+function JavaScripters() {
+  var aScripters = [&quot;Dean Edwards&quot;, &quot;Sam Stephenson&quot;, &quot;John Resig&quot;, &quot;Douglas Crockford&quot;, &quot;Jack Slocum&quot;];
+
+  (function () {
+    return aScripters;
+  }).overload(this, &quot;find&quot;);
+
+  (function (name) {
+    var ret = [];
+    for (var i = 0, iLength = aScripters.length; i &lt; iLength; i++) {
+      if (aScripters[i].indexOf(name) &gt; -1) {
+        ret.push(aScripters[i]);
+      }
+    }
+    return ret;
+  }).overload(this, &quot;find&quot;);
+
+  (function (first, last) {
+    var ret = [];
+    for (var i = 0, iLength = aScripters.length; i &lt; iLength; i++) {
+      if (aScripters[i] == (first + &quot; &quot; + last)) {
+        ret.push(aScripters[i]);
+      }
+    }
+    return ret;
+  }).overload(this, &quot;find&quot;);
+
+}
+var scripters = new JavaScripters();
+console.log(scripters.find());
+console.log(scripters.find(&quot;Slocum&quot;));
+console.log(scripters.find(&quot;Sam&quot;, &quot;Stephenson&quot;));
+</code>
+</pre>
+</div>
+
+</body>
+</html>

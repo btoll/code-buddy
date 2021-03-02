@@ -1,0 +1,109 @@
+/**********************************************************************/
+/*Scrubber*//*Scrubber*//*Scrubber*//*Scrubber*//*Scrubber*//*Scrubber*/
+/**********************************************************************/
+
+/*only create one symbol so we don't clutter up the global namespace*/
+var scrubber; //declare a single global symbol 'scrubber';
+if (!scrubber) scrubber = {}; //if undefined, make it an object;
+scrubber.Class = {}; //now create the scrubber.Class namespace;
+scrubber.Class.validate = validate; //assign the the function contained in 'validate.js' to the object property;
+scrubber.Class.passed = []; //a collection of all elements that have been marked in the html to have some level of validation checked and have passed;
+scrubber.Class.allErrors = []; //a collection of all elements that have been marked in the html to have some level of validation checked and have failed;
+scrubber.Class.formSubmit = false; //if true then the form has been submitted and will allow the error div list to contain more than just one error (like onblur);
+scrubber.Class.allGood = false; //if set to true then the form has been successfully submitted w/o errors (last step);
+
+/*******************************/
+//configure the global variables;
+/*******************************/
+scrubber.Class.formName = "theForm"; //supply the name of the form that contains the elements that scrubber will work on;  when I was just using LABELs I could get this dynamically using the parentNode of 'this', but using a table will break that so this will have to be hardcoded by the programmer;
+scrubber.Class.defaultBackground = "#fff"; //default color for the input text boxes (no errors);
+scrubber.Class.defaultLabel = "#000"; //default color for the labels (no errors);
+scrubber.Class.defaultErrorBackground = "#ffc"; //default error color for the input text boxes;
+scrubber.Class.defaultErrorLabel = "#f00"; //default error color for the labels;
+//scrubber.Class.tables = true; //the form uses a TABLE as opposed to LABELs (just nice to have the option);
+
+//define our custom object;
+scrubber.Class.custom = {
+  div: false,
+  yellowFade: false,
+  changeElementColors: true, //should the LABELs and text INPUTs change to indicate an error?;
+  useSpan: true, //should the error message be placed in a SPAN to the right of the appropriate input box?;
+  messages: { //establish custom error messsages for failed validation;
+    alpha: " can only contain letters.",
+	alphanumeric: " can only contain letters and numbers.",
+	blank: " cannot be blank.",
+	date: " is not a valid calendar date.",
+	decimal: " can only contain numbers and one period.",
+	email: " must be a valid email address.",
+	numeric: " can only contain numbers.",
+	phone: " is not a valid telephone number.",
+	ssn: " is not a valid Social Security Number.",
+	url: " is not a valid website address.",
+	zipcode: " is not a valid zipcode."
+  },
+  divID: "scrubberErrors",
+  divHeader: "Please remedy the following:",
+  toolbox: "toolbox.html", //if using Tooltip, this is the location of the Toolbox;
+  noErrorColor: [255, 255, 255],
+  fadeColor: [100, 100, 100],
+  errorColor: [255, 255, 204],
+  labelColor: [255, 0, 0]
+};
+
+function validate(obj) {
+
+  if (document.all) {
+	obj = obj.srcElement ?
+	  obj = { //roll an object when the event handler is on blur;
+	    form: document.getElementById(scrubber.Class.formName), //the form ID;
+	    elem: obj.srcElement, //'this' keyword still refers to the global object in attachEvent so use IE proprietary object property;
+	    handler: "blur" //this will distinguish between the 'onblur' & 'onsubmit' event handlers in the scrubber Class;
+	  }
+	  : obj; //use the form object when the form is submitted;
+
+  } else {
+	obj = obj.constructor === Event ?
+	  obj = { //roll an object when the event handler is on blur;
+		form: document.getElementById(scrubber.Class.formName), //the form ID;
+	    elem: this,
+		handler: "blur" //this will distinguish between the 'onblur' & 'onsubmit' event handlers in the scrubber Class;
+	  }
+	  : obj; //use the form object when the form is submitted;
+  }
+
+  var scrub = new Scrubber(obj);
+  var div = scrubber.Class.custom ? (scrubber.Class.custom.divID || "scrubberErrors") : "scrubberErrors"; //if there's no custom object use the default div ID; if there is a custom object but no 'divID' use the default div ID;
+
+  if (scrub.validate()) {
+
+    var errors = scrub.getErrors();
+    if (!errors) { //'errors' will be undefined if there is no argument passed to this.getErrors() or if 'div' = 'true' and there is a divID provided;
+	  return false;
+	} else if (errors.constructor === String) { //this block will be fired if 'div' = 'true' but there is no divID provided; the method returned the HTML string;
+      document.getElementById(div).innerHTML = errors;
+      document.getElementById(div).style.display = "block";
+	  return false;
+	}
+	
+  } else if (scrubber.Class.allGood) { //no errors, allow the browser to submit the form;
+    document.getElementById(div).innerHTML = "Form passed validation!";
+    document.getElementById(div).style.display = "block";
+	return false; //remove these lines when in production;
+  }
+
+}
+
+function yellowFade(elem, red, green, blue) {
+
+  if (elem.fade) clearTimeout(elem.fade);
+  elem.style.backgroundColor = "rgb(" + red + ", " + green + ", " + blue + ")";
+  if (red == 255 && green == 255 && blue == 204) return;
+
+  var newred = red + Math.ceil((255 - red) / 10);
+  var newgreen = green + Math.ceil((255 - green) / 10);
+  var newblue = blue + Math.ceil((204 - blue) / 10);
+  var repeat = function() { yellowFade(elem, newred, newgreen, newblue); };
+
+  elem.fade = setTimeout(repeat, 100);
+
+}

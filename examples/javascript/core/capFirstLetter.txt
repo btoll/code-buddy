@@ -1,0 +1,11 @@
+function capFirstLetter(str) {
+  //replace all . or _ or - with a space and
+  //then capitalize the first letter of each word;
+
+  var re = /[\s|_|\-|\.](\w)/g;
+
+  str = str.replace(re, function (a, b) {
+    return " " + b.toUpperCase();
+  });
+  return str.charAt(0).toUpperCase() + str.slice(1);`
+}

@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Augmenting Array.prototype</title>
+<style type="text/css">
+body {
+  background: #EED;
+}
+h3 {
+  background: #789;
+  border: 1px solid #CCC;
+  color: #FFF;
+  margin: 0 60px;
+  padding: 10px 0;
+  text-align: center;
+}
+p {
+  border: 1px solid orange;
+  border-left: 0;
+  border-right: 0;
+  font: bold 14px "Trebuchet MS", Arial;
+  margin-top: 40px;
+  padding: 5px;
+}
+div {
+  background: #FFF;
+  border: 1px dashed #999;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+code, pre {
+  margin: 0;
+  padding: 0; 
+}
+</style>
+<script type="text/javascript">
+Array.prototype.forEach = function (callback, oOptional) {
+  for (var i = 0, iLength = this.length; i < iLength; i++) {
+    if (i in this) { //skip over any holes in the array;
+      callback.apply(oOptional || this, [this[i], i, this]);
+	  }
+  }
+};
+
+var createElem = function (obj) {
+	  
+  var e = document.createElement(obj.elem);
+  if (obj.attributes) {
+    for (var i in obj.attributes) {
+      if (i.indexOf("on") != -1) { //NOTE html elements don't natively have "on*" attributes;
+        e[i] = new Function(obj.attributes[i]); //ie6 can't handle i.setAttribute;
+      } else {
+        e[i] = obj.attributes[i];
+      }
+    }
+  }
+  if (obj.style) {
+    for (var i in obj.style) {
+      e.style[i] = obj.style[i];
+    }
+  }
+  if (obj.children) {
+    for (var i = 0; i < obj.children.length; i++) {
+      e.appendChild(obj.children[i]);
+    }
+  }
+  if (obj.parent && obj.inDOM === false) { //if a parent elem was given and is already an existing node in the DOM append the node to it...;
+    var parent = obj.parent.constructor == String ? document.createElement(obj.parent) : obj.parent;
+    parent.appendChild(e);
+    return parent;
+  } else if (obj.parent) { //...the parent isn't in the DOM yet so create it and append all the children to it..;
+    var parent = obj.parent;
+    parent.appendChild(e);
+	return e;
+  } else { //...else return the node to be appended later into the DOM;
+    return e;
+  }
+	
+};
+
+var fnListBuilder = function (arr) {
+
+  var fn = function (element, index, array) {
+    /*"this" will refer either to the Array on which the method is called or to the option Object if it's passed as the second arg;
+      - this allows us to pass either one array objects or two;
+	  - one array: value and text are the same;
+	  - two arrays: value is contained in the second array;
+    */
+    arr[0].options[arr[0].options.length] = new Option(array[index], this[index], false, false);
+  };
+
+  arr[1].forEach(fn, arr[2]);
+  
+};
+
+window.onload = function () {
+  var aPlaces = ["Philadelphia", "Atlanta", "Florida", "New York", "Washington"];
+  var aTeams = ["Phillies", "Braves", "Marlins", "Mets", "Nationals"];
+  var oElem = createElem({elem: "select", attributes: {id: "myList"}, parent: document.body}); 
+  fnListBuilder([oElem, aTeams, aPlaces]);
+};
+</script>
+</head>
+
+<body>
+
+<h3>{ augmenting Array.prototype }</h3>
+
+<p>The first four functions are native to core JavaScript but are not supported by Internet Explorer 5 and below. This demonstrates the expressiveness and power of the language.</p>
+
+<div>
+<pre>
+<code>
+Array.prototype.pop = function () {
+  /* - Array.splice returns an array of deleted elements;
+     - we're only interested in the first (and only) element of the new array;
+  */	
+  return this.splice(this.length - 1, 1)[0];
+};
+</code>
+</pre>
+</div>
+
+<div>
+<pre>
+<code>
+Array.prototype.push = function () {
+  /* - Array.slice can accept an array as its only parameter;
+     - Array.slice returns an array;
+     - concat the two arrays;
+     - the new array will be passed to Array.splice;
+     - Array.splice(start, deleteCount, item...);
+     - also could be written:
+       Array.protoype.splice.apply(this, [this.length, 0].concat(Array.prototype.slice.apply(arguments)));
+  */
+  this.splice.apply(this, [this.length, 0].concat(this.slice.apply(arguments)));
+  return this.length;
+};
+</code>
+</pre>
+</div>
+
+<div>
+<pre>
+<code>
+Array.prototype.shift = function () {  
+  //Array.splice returns an array of deleted elements;
+  return this.splice(0, 1)[0];
+};
+</code>
+</pre>
+</div>
+
+<div>
+<pre>
+<code>
+Array.prototype.unshift = function () {
+  this.splice.apply(this, [0, 0].concat(Array.prototype.slice.apply(arguments)));
+  return this.length;
+};
+</code>
+</pre>
+</div>
+
+<p>The next three functions are implemented in JavaScript 1.6 and supported by all major browsers except Internet Explorer.  However, by augmenting Array.prototype they can be used in all browsers.</p>
+
+<div>
+<pre>
+<code>
+Array.prototype.forEach = function (callback, oOptional) {
+  for (var i = 0, iLength = this.length; i < iLength; i++) {
+    if (i in this) { //skip over any holes in the array;
+      callback.apply(oOptional || this, [this[i], i, this]);
+    }
+  }
+};
+</code>
+</pre>
+</div>
+
+<div>
+<pre>
+<code>
+Array.prototype.indexOf = function (vItem, iFromIndex) {
+
+  var i = 0;
+  
+  if (arguments[1]) {
+    /*exit early if the start position (index) is greater
+      than or equal to the length of the array*/
+    if (arguments[1] &gt;= this.length) {
+      return -1;
+
+    /*the index is negative so it will be taken as the
+      offset from the end of the array*/
+    } else if (arguments[1] &lt; 0) {
+      i = this.length + arguments[1];
+
+    /*else set it to the value of the second argument*/
+    } else {
+      i = arguments[1];
+    }
+  }
+  
+  for (var iLength = this.length; i &lt; iLength; i++) {
+    if (this[i] === vItem) {
+      return i;
+    }
+  }
+  return -1; //no match, return -1 (not found);
+
+};
+</code>
+</pre>
+</div>
+
+<div>
+<pre>
+<code>
+Array.prototype.lastIndexOf = function (vItem, iFromIndex) {
+
+  var i = this.length;
+
+  if (arguments[1]) {
+    /*the index is negative so it will be taken as
+      the offset from the end of the array
+      -NOTE that even when negative the array is searched back to front*/
+    if (arguments[1] < 0) {
+      i = this.length + arguments[1];
+
+    /*if equal to or greater than the array, reset to the length of the array*/
+    } else if (arguments[1] >= i) {
+      i = this.length;
+
+    /*else set it to the value of the second argument*/
+    } else {
+      i = arguments[1];
+    }
+  }
+  
+  for (var j = i - 1; 0 < j; j--) { //NOTE "i" is already declared and defined above;
+    if (this[j] === vItem) {
+      return j;
+    }
+  }
+  return -1; //no match, return -1 (not found);
+
+};
+</code>
+</pre>
+</div>
+
+<p>Look! It's as easy as 1-2-3 to make a list!  Imagine the possiblities! Wow!</p>
+
+<div>
+<pre>
+<code>
+var listBuilder = function (arr) {
+
+  var fn = function (element, index, array) {
+    /*&quot;this&quot; will refer either to the Array on which the method is called or to the option Object if it's passed as the second arg;
+      - this allows us to pass either one array objects or two;
+      - one array: value and text are the same;
+      - two arrays: value is contained in the second array;
+    */
+    arr[0].options[arr[0].options.length] = new Option(array[index], this[index], false, false);
+  };
+
+  arr[1].forEach(fn, arr[2]);
+  
+};
+</code>
+</pre>
+</div>
+
+<div>
+<pre>
+<code>
+window.onload = function () {
+  var aPlaces = [&quot;Philadelphia&quot;, &quot;Atlanta&quot;, &quot;Florida&quot;, &quot;New York&quot;, &quot;Washington&quot;];
+  var aTeams = [&quot;Phillies&quot;, &quot;Braves&quot;, &quot;Marlins&quot;, &quot;Mets&quot;, &quot;Nationals&quot;];
+  var oElem = <a href="createElem.html">createElem</a>({elem: &quot;select&quot;, attributes: {id: &quot;myList&quot;}, parent: document.body}); 
+  listBuilder([oElem, aTeams, aPlaces]); //aPlaces is optional;
+};
+</code>
+</pre>
+
+</body>
+</html>

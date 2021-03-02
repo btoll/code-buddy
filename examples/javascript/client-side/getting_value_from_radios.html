@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Getting the value from a set of radio buttons</title>
+<style type="text/css">
+form {
+  background: #FFC;
+  border: 1px solid #CCC;
+  margin: 10px;
+  padding: 10px;
+}
+p {
+  background: #EED;
+  border: 2px solid #EDD;
+  padding: 10px;
+  width: 25%;
+}
+code {
+  font-weight: normal;
+}
+</style>
+<script type="text/javascript">
+window.onload = function () {
+  document.getElementById("theForm").onsubmit = function () {
+    var radios = document.getElementById("theForm").getElementsByTagName("input");
+	for (var i = 0; i < radios.length; i++) {
+	  if (radios[i].type == "radio" && radios[i].checked) {
+	    alert("You selected:\n\n" + radios[i].value.toUpperCase());
+	  }
+	}
+	return false;
+  };
+  
+  document.getElementById("baseballForm").onsubmit = function () {
+  
+    var insBefore = true;
+	
+    if (document.getElementById("before").checked) {
+	  if (this.firstChild.nodeName == "P")
+	    this.removeChild(this.firstChild);
+	} else {
+      if (this.lastChild.nodeName == "P")
+	    this.removeChild(this.lastChild);
+	  insBefore = false;
+    }
+	
+    var teams = document.baseball.team; //JavaScript creates an array of same-named elements;
+	for (var i = 0; i < teams.length; i++) {
+	  if (teams[i].checked) {
+		var team = document.createElement("p");
+		team.appendChild(document.createTextNode("You selected the " + teams[i].value.toUpperCase() + "."));
+		if (insBefore) //insert the children as the form's firstChild;
+		  teams[i].form.insertBefore(team, teams[i].form.firstChild);
+		else //insert the children as the form's lastChild;
+		  teams[i].form.appendChild(team);
+	  }
+	}
+	return false;
+  };
+  
+};
+</script>
+</head>
+
+<body>
+
+<h2>Getting the value from a set of radio buttons</h2>
+<form name="theForm" id="theForm" action="">
+  <input type="radio" name="sport" id="baseball" value="Baseball" /> <label for="baseball">Baseball</label>
+  <input type="radio" name="sport" id="football" value="Football" /> <label for="football">Football</label>
+  <input type="radio" name="sport" id="golf" value="Golf" /> <label for="golf">Golf</label>
+  <input type="radio" name="sport" id="rugby" value="Rugby" /> <label for="rugby">Rugby</label>
+  <input type="radio" name="sport" id="soccer" value="Soccer" /> <label for="soccer">Soccer</label>
+  <p><input type="submit" value="Submit" /></p>
+</form>
+
+<hr />
+
+<h4>Another way of determining which radio button was selected is to enumerate through the array that JavaScript creates from same-named form elements (i.e., radio buttons). Also, each form element can refer to its containing form by its <code>form</code> property.</h4>
+
+<form name="baseball" id="baseballForm" action="">
+  <input type="radio" name="team" value="phillies" checked="checked" /> Phillies
+  <input type="radio" name="team" value="mets" /> Mets
+  <input type="radio" name="team" value="braves" /> Braves
+  <br /><br />
+  <input type="radio" id="before" name="where" value="before" checked="checked" /> Insert as <strong>firstChild</strong> of form.<br />
+  <input type="radio" id="after" name="where" value="after" /> Insert as <strong>lastChild</strong> of form.
+  <input type="submit" value="Submit" />
+</form>
+
+
+
+</body>
+</html>

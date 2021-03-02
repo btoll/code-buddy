@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>PHP5 Exception Handling</title>
+</head>
+
+<body>
+<pre>
+<code>
+&lt;?php
+
+function logger($e, $bLog = true, $bMail = false) {
+  $errors = &lt;&lt;&lt;EOD
+      &lt;ul style=&quot;background: #FFA; border: 2px solid #000; list-style: none; margin: 10px; padding: 10px;&quot;&gt;
+        &lt;li&gt;&lt;strong&gt;Message:&lt;/strong&gt; {$e-&gt;getMessage()}&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;File:&lt;/strong&gt; {$e-&gt;getFile()}&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Line:&lt;/strong&gt; {$e-&gt;getLine()}&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Stack trace:&lt;/strong&gt; {$e-&gt;getTraceAsString()}&lt;/li&gt;
+      &lt;/ul&gt;
+EOD;
+  echo $errors;
+  if ($bLog) {
+    error_log($e, 0, &quot;/usr/local/www/log/php5-error_log&quot;);
+  }
+  if ($bMail) {
+    $headers = &quot;MIME-Version: 1.0\n&quot;;
+    $headers .= &quot;Content-type: text/html; charset=iso-8859-1\n&quot;;
+    $headers .= &quot;X-Mailer: php\n&quot;;
+    $headers .= &quot;From: Admin &lt;benjam72@yahoo.com&gt;\n&quot;;
+    error_log($errors, 1, &quot;benjam72@yahoo.com&quot;, $headers);
+  }
+}
+
+//first, build a bridge from the old error-handling system to the new;
+class NativePHPException extends Exception {}
+function PHPErrorHandler($errno, $errstr, $errfile, $errline) {
+  throw new NativePHPException($errstr, $errno);
+}
+
+$old_error_handler = set_error_handler(&quot;PHPErrorHandler&quot;);
+//fopen(&quot;/tmp/shazaam&quot;, &quot;r&quot;);
+//set_error_handler($old_error_handler); //to return to old, ordinary way of handling errors;
+
+class DivisionByZeroException extends Exception {}
+class WrongParameterTypeException extends Exception {}
+
+class AddTwoNumbers {
+
+  private $total;
+
+  function __construct($x, $y) {
+    if (!is_integer($x)) {
+      throw new WrongParameterTypeException(&quot;WrongParameterTypeException::Parameter must be of type integer&quot;);
+    }
+    if (!is_integer($y)) {
+      throw new WrongParameterTypeException(&quot;WrongParameterTypeException::Parameter must be of type integer&quot;);
+    }
+    if ($y == 0) {
+      throw new DivisionByZeroException(&quot;DivisionByZeroException&quot;);
+    }
+    $this-&gt;total = $x + $y;
+  }
+
+  public function getTotal() {
+    return $this-&gt;total;
+  }
+
+}
+
+try {
+  $z = new AddTwoNumbers(&quot;a&quot;, 0);
+  echo $z-&gt;getTotal();
+} catch (WrongParameterTypeException $e) {
+  logger($e);
+} catch (DivisionByZeroException $e) {
+  logger($e, false);
+}
+
+?&gt;
+</code>
+</pre>
+
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Code Buddy</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="copyright" content="&copy; copyright 2007-2009, Benjamin Toll" />
+<meta name="description" content="Code Buddy is a code repository and web application development learning center." />
+<link rel="stylesheet" type="text/css" href="lib/css/global.css" />
+<script type="text/javascript" src="lib/js/utility.js"></script>
+<script type="text/javascript" src="lib/js/global.js"></script>
+<script type="text/javascript" src="lib/js/events.js"></script>
+<script type="text/javascript" src="lib/js/searchEngine.js"></script>
+<script type="text/javascript" src="lib/js/xhr.js"></script>
+</head>
+
+<body>
+
+  <div id="workspace">
+    <form method="post" action="index.html">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="3">Search Code Buddy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><label name="types">Category</label></td>
+            <td><select id="selectType" name="types"><option value="Select All">Select All</option></select></td>
+          </tr>
+          <tr style="display: none;">
+            <td><label name="searchBy">Search By</label></td>
+            <td><input type="radio" id="searchByPhrase" name="searchBy" checked="checked" /> Phrase <input type="radio" id="searchByFilename" name="searchBy" /> Filename</td>
+          </tr>
+          <tr>
+            <td><label for="phrase">Search</label></td>
+            <td><input type="text" id="phrase" name="phrase" /></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td><input type="submit" id="search" name="search" value="Search" /><input type="reset" name="clear" value="Clear" /></td>
+          </tr>
+        </tbody>
+      </table>
+      <a id="menuHandle" href="#">Show Menu</a>
+    </form>
+
+    <div id="instructions">
+      <h5>Welcome to <strong>Code Buddy</strong>, a code repository and web application development learning center!</h5>
+      <p>You can search Code Buddy in the following ways:</p>
+      <ol>
+        <li>By category - Choose a category from the Category drop-down list</li>
+        <li>By keyword or phrase - Enter your search phrase in the "Search" box</li>
+        <li>By keyword or phrase within a selected Category</li>
+      </ol>
+      <p>Any successful matches will appear in the right-hand pane, at which time they can be sorted by "Filename", "Description" or "Last Modified" date.</p>
+      <p>NOTE that the "Search" box accepts regular expressions. All the searches will be case insensitive and global (since it's searching a single string, the responseText from the Ajax request. Do not include the RegExp literal operator (the beginning and ending '/').</p>
+      <p>Clicking on "Show Menu" will slide out the help menu. This contains useful tools, book recommendations, contact information and more.</p>
+      <p><a href="#">Show more</a></p>
+
+      <div class="hide">
+        <p>Code Buddy was successfully tested on the following browsers and platforms:</p>
+        <ul>
+          <li>Firefox 2 and Internet Explorer 6 and 7 on Windows XP Professional</li>
+          <li>Firefox 2, Safari 3 and Opera 9 on OS X (Leopard)</li>
+          <li>Firefox 2 and Konqueror 3 on Linux (Ubuntu)</li>
+        </ul>
+        <p>IE 6 does not have adequate support for CSS 2.1 and therefore will not render Code Buddy in a visually pleasing manner. If you're using IE 6, please update your browser.</p>
+        <p>Known issues:</p>
+        <ul>
+          <li>In Opera, the slider menu behaves erratically</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="slideMenu">
+      <div id="accordion-menu">
+	
+        <h4 class="first">About Code Buddy</h4>
+        <div id="accordion1">
+          <p>Code Buddy &trade; was developed out of the need for a central repository of frequently used code and web development knowledge. It is an Ajax-driven app with an <a href="lib/xml/code_buddy.xml">XML document</a> acting as its database.</p>
+	  <p>In addition, Code Buddy &trade; takes advantage of CSS2.1's <a href="http://www.w3.org/TR/REC-CSS2/selector.html#attribute-selectors" rel="help">attribute selectors</a> and its other delightful samplings for a more satisfying user experience. Feel free to <a href="lib/css/global.css">view the stylesheet</a>.</p>
+          <p>If your browser is Internet Explorer 6 or below, there is a reason for why it is not rendering a visually-pleasing Code Buddy. You can ask why this is so <a href="mailto:Bill_Gates@microsoft.com">here</a>.</p>
+          <p>If you feel inclined to contact me with suggestions or accolades, send a nice email to <a href="mailto:benjam72@yahoo.com">benjam72@yahoo.com</a>.</p> 
+          <p>Please visit <a href="http://www.benjamintoll.com/">my website</a> for more software and information.</p>
+        </div>
+	  
+        <h4>Code Buddy Recommends</h4>
+        <div id="accordion2">
+          <h5>Ajax</h5>
+	  <ul>
+	    <li><a href="http://www.peachpit.com/title/0321472667">Bulletproof Ajax</a></li>
+	    <li><a href="http://www.apress.com/book/view/1590599411">Practical DWR 2 Projects</a></li>
+	  </ul>
+          <h5>CSS</h5>
+	  <ul>
+	    <li><a href="http://www.oreilly.com/catalog/csstdg3/">CSS: The Definitive Guide, Third Edition</a></li>
+	    <li><a href="http://www.friendsofed.com/book.html?isbn=1590596145">CSS Mastery: Advanced Web Standards Solutions</a></li>
+	    <li><a href="http://www.peachpit.com/title/073571245X">Eric Meyer on CSS: Mastering the Language of Web Design</a></li>
+	    <li><a href="http://www.peachpit.com/title/0735714258">More Eric Meyer on CSS</a></li>
+	  </ul>
+	  <h5>DOM Scripting</h5>
+	  <ul>
+	    <li><a href="http://www.friendsofed.com/book.html?isbn=1590595335">DOM Scripting: Web Design with JavaScript and the Document Object Model</a></li>
+	  </ul>
+	  <h5>HTML</h5>
+	  <ul>
+	    <li><a href="http://www.oreilly.com/catalog/html6/">HTML &amp; XHTML: The Definitive Guide, Sixth Edition</a></li>
+	    <li><a href="http://www.friendsofed.com/book.html?isbn=1590597656">HTML Mastery: Semantics, Standards, and Styling</a></li>
+	  </ul>
+          <h5>JavaScript</h5>
+	  <ul>
+	    <li><a href="http://oreilly.com/catalog/9780596802806/">High Performance JavaScript</a></li>
+	    <li><a href="http://www.oreilly.com/catalog/jscript5/">JavaScript: The Definitive Guide, Fifth Edition</a></li>
+	    <li><a href="http://oreilly.com/catalog/9780596517748/">JavaScript: The Good Parts</a></li>
+	    <li><a href="http://www.phpied.com/now-available-oojs/">Object-Oriented JavaScript</a></li>
+	    <li><a href="http://www.quirksmode.org/book/">ppk On JavaScript</a></li>
+	    <li><a href="http://www.apress.com/book/view/159059908x">Pro JavaScript Design Patterns</a></li>
+	    <li><a href="http://www.apress.com/book/bookDisplay.html?bID=10163">Pro JavaScript Techniques</a></li>
+	    <li><a href="http://www.wrox.com/WileyCDA/WroxTitle/Professional-JavaScript-for-Web-Developers.productCd-047022780X.html">Professional JavaScript for Web Developers, Second Edition</a></li>
+	  </ul>
+          <h5>Linux</h5>
+          <ul>
+            <li><a href="http://nostarch.com/howlinuxworks.htm">How Linux Works</a></li>
+          </ul>
+	  <h5>PHP</h5>
+	  <ul>
+	    <li><a href="http://manning.com/reiersol/">PHP in Action</a></li>
+	  </ul>
+	  <h5>Web Standards</h5>
+	  <ul>
+	    <li><a href="http://www.peachpit.com/title/0321385551">Designing with Web Standards, 2nd Edition</a></li>
+	  </ul>
+        </div>
+	  
+        <h4>Help</h4>
+        <div id="accordion3">
+          <p>The search box above accepts regular expressions.  If you like, here is an <a href="http://en.wikipedia.org/wiki/Regular_expressions" rel="help">introduction</a> with links to many other good articles.</p> 
+          <p>To use one of the provided regular expressions in the Regular Expressions menu, simply click on the hyperlink and it will be automatically placed into the search box.</p>
+          <p>Clicking on the the sort boxes above the filenames will sort the selections by ascending or descending order.</p>
+        </div>
+	  
+        <h4>Tools</h4>
+        <div id="accordion4">
+          <h5>CSS</h5>
+	  <ul>
+	    <li><a href="lib/tools/csscompress.html">CSSCompress</a></li>
+	    <li><a href="http://jigsaw.w3.org/css-validator/">W3C CSS Validator</a></li>
+	  </ul>
+          <h5>JavaScript</h5>
+	  <ul>
+            <li>Debuggers
+              <ul>
+                <li><a href="http://webkit.org/blog/61/introducing-drosera/">Drosera</a></li>
+                <li><a href="http://www.getfirebug.com/">Firebug</a></li>
+                <li><a href="http://www.mozilla.org/projects/venkman/">Venkman</a></li>
+                <li><a href="http://webkit.org/">WebKit</a></li>
+              </ul>
+            </li>
+	    <li><a href="lib/tools/jscompress.html">JSCompress (beta)</a></li>
+	    <li><a href="http://jslint.com/">JSLint</a></li>
+	  </ul>
+	  <h5>(X)HTML</h5>
+	  <ul>
+	    <li><a href="lib/tools/htmlify.html">HTMLify()</a></li>
+	    <li><a href="http://validator.w3.org/checklink">W3C Link Checker</a></li>
+	    <li><a href="http://validator.w3.org/">W3C Markup Validator</a></li>
+	  </ul>
+          <h5>Miscellaneous</h5>
+	  <ul>
+	    <li><a href="lib/tools/regex_tester.html">Regular Expression Tester</a></li>
+	    <li><a href="lib/tools/code_conventions.doc">JavaScript Code Conventions</a></li>
+	    <li><a href="http://www.lipsum.com/">Lorem Ipsum generator</a></li>
+	  </ul>
+        </div>
+	  
+        <h4>Regular Expressions</h4>
+        <div id="accordion5">
+          <p><a href="#">Date</a><span>[0-9]{2}([-\/.]?)[0-9]{2}\1([0-9]{2,4})</span></p>
+          <p><a href="#">Email</a><span>[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})</span></p>
+          <p><a href="#">SSN</a><span>[0-9]{3}-?[0-9]{2}-?[0-9]{4}</span></p>
+          <!--<p><a href="#">URL</a><span>((http|ftp|https):\/\/)?(www.?\.)?.+\..{2,3}</span></p>-->
+          <p><a href="#">Zipcode</a><span>[0-9]{5}-?([0-9]{4})?</span></p>
+        </div>
+	  
+      </div><!--end div#accordion-menu-->
+    </div><!--end div#slideMenu-->
+
+  </div><!--end div#workspace-->
+
+  <div id="links">
+    <h1 id="header">Search results will be displayed below.</h1>
+    <div id="sortable" class="hide">
+      <a href="#" id="filename">Filename</a>
+      <a href="#" id="description">Description</a>
+      <a href="#" id="lastModified">Last Modified</a>
+    </div>
+    <ol id="results">
+    </ol>
+  </div><!--end div#links-->
+
+  <div id="splashScreen">
+    <h1>Code Buddy</h1>
+    <p>by <a href="http://www.benjamintoll.com/">benjamintoll.com</a></p>
+    <p>&copy; Copyright 2007 - 2011</p>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+// Replaces target attribute
+function targetBlank() {
+  if (document.getElementsByTagName) {
+    var a = document.getElementsByTagName("a");
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].getAttribute("rel") && a[i].getAttribute("rel") == "external" || a[i].getAttribute("rel") == "pdf") {
+        a[i].onclick = function() {
+          var child = window.open(this.getAttribute('href'));
+          return !child ? true /*failed to open*/: false; /*success*/
+        };
+      }
+    }
+  }
+}

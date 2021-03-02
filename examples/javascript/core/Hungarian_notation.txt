@@ -1,0 +1,12 @@
+a = array
+b = boolean
+c = collection
+i = integer
+f = float
+fn = function
+o = object
+re = regular expression
+s = string
+v = variant
+
+Hungarian notation prefixes I generally use in my JavaScript applications.

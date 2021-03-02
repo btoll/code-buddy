@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Creating and Applying a Patch File</title>
+<style type="text/css">
+body {
+  background: #EED;
+}
+h3 {
+  background: #789;
+  border: 1px solid #CCC;
+  color: #FFF;
+  margin: 0 60px;
+  padding: 10px 0;
+  text-align: center;
+}
+p {
+  font: 14px "Trebuchet MS", Arial;
+  padding: 5px;
+}
+p.intro {
+  border: 1px solid orange;
+  border-left: 0;
+  border-right: 0;
+  font: bold 14px "Trebuchet MS", Arial;
+  margin-top: 40px;
+  padding: 5px;
+}
+pre {
+  background: #FFF;
+  border: 1px dashed #999;
+  padding: 5px; 
+}
+</style>
+</head>
+
+<body>
+<h3>Creating and Applying a Patch File</h3>
+
+<p class="intro">Creating the Patch File</p>
+<p>Many times I've needed to copy changes I've made from one file to another file or one file to many other files. This can be a tedious and lengthy process, depending upon the changes. The use case often appears when I need to copy changes I've made to a working copy of svn. Of course, once changes are made and committed to svn it's better practice to do a merge to another branch rather than a patch.</p>
+<pre>
+<code>
+diff -wu file1 file2 > patchfile
+</code>
+</pre>
+<p>This will create a patch file that has context for when the patch is applied later. See the diff man page for more information.</p>
+
+<p class="intro">Applying the Patch File</p>
+<pre>
+<code>
+patch -p0 < patchfile
+</code>
+</pre>
+<p>The number after <code>-p</code> has to do with the depth level in relation to the active directory that the patch was taken in. As long as you're in the same directory in relation to the file to be patched as you were when you created the diff, you can use <code>-p0</code>. Things get a little trickier if you're not. See the patch man page for more information.</p>
+<p>Note that you don't have to explicitly reference the file to be patched.  This information was captured when you created the patch file previously using the <code>diff</code> command.</p>
+</body>
+</html>

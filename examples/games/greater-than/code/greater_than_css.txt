@@ -1,0 +1,78 @@
+body {
+  background: #EED;
+}
+div#cardTable {
+  position: absolute;
+  top: 10%;
+  left: 30%;
+  width: 500px;
+}
+div.cardFace {
+  background: #EED url(../../../images/blue.gif) no-repeat;
+  float: left;
+  height: 66px;
+  margin: 10px;
+  width: 65px;
+}
+p.cardValue {
+  background: #FFF;
+  border: 1px solid #CCC;
+  display: none;
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 10px 0;
+  text-align: center;
+}
+div#scorecard {
+  background: #FFF;
+  border: 1px solid #999;
+  height: 120px;
+  margin: 20px;
+  padding: 10px;
+  width: 120px;
+}
+div#scorecard h1 {
+  font-size: 1em;
+  margin: 2px auto;
+}
+div#scorecard p {
+  color: blue;
+  font: 4em/1.2 cursive;
+  margin: 0;
+  text-align: center;
+}
+div#scorer {
+  color: #EED;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 20px;
+  padding: 20px;
+  text-align: center;
+  width: 180px;
+}
+div#rules {
+  background: #FFF;
+  border: 1px dotted #CCC;
+  float: left;
+  padding: 10px;
+  width: 300px;
+}
+/****Slide menu****/
+div#slideMenu {
+  clear: both;
+  position: absolute;
+  top: 300px;
+  left: -320px;
+}
+a#menuHandle {
+  background-color: #CCC;
+  border: 1px dashed #999;
+  display: block;
+  float: left;
+  height: 20px;
+  text-align: center;
+  width: 40px;
+}
+a#menuHandle img {
+  border: 0;
+}

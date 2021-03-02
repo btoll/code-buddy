@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Safari and innerHTML bug</title>
+<link rel="stylesheet" type="text/css" href="test.css" />
+<style type="text/css">
+#theDiv {
+  background: #FFC;
+  border: 1px solid #CCC;
+  margin: 20px;
+  padding: 20px;
+}
+pre {
+  background: tan;
+  border: 1px solid #333;
+  margin: 20px;
+  padding: 5px;
+}
+</style>
+<script type="text/javascript">
+window.onload = function () {
+  if (document.getElementById("theDiv")) {
+
+    document.getElementById("false").onclick = function () {
+      var oldDiv = document.getElementById("theDiv");
+      var newDiv = oldDiv.cloneNode(false);
+      newDiv.innerHTML = oldDiv.innerHTML;
+      oldDiv.parentNode.replaceChild(newDiv, oldDiv);
+      newDiv.style.background = "#EDD";
+/*
+      if (document.getElementById("theDiv")) {
+      //if (newDiv) {
+        alert(document.getElementById("theDiv"));
+        //alert(theDiv);
+      } else {
+        alert("this element no longer exists in the DOM");
+      }
+*/
+    };
+
+    document.getElementById("true").onclick = function () {
+      var oldDiv = document.getElementById("theDiv");
+      var newDiv = oldDiv.cloneNode(true);
+      newDiv.style.background = "#EED";
+      oldDiv.parentNode.replaceChild(newDiv, oldDiv);
+    };
+  }
+};
+</script>
+</head>
+
+<body>
+
+<h1>Safari and innerHTML bug</h1>
+
+<div id="theDiv">
+  <form action="">
+    <ul id="menu">
+      <li><a href="http://www.google.com">Google</a></li>
+      <li><a href="http://www.phillies.com">Phillies</a></li>
+      <li><a href="http://www.philadelphiaeagles.com">Eagles</a></li>
+      <li><a href="http://www.benjamintoll.com">benjamintoll.com</a></li>
+
+    </ul>
+    <select name="states">
+      <option value="AZ">Arizona</option>
+      <option value="NM">New Mexico</option>
+      <option value="PA" selected="selected">Pennsylvania</option>
+    </select>
+
+    <p>
+
+    <input type="radio" name="sport" value="baseball"> Baseball
+    <input type="radio" name="sport" value="football" checked="checked"> Football
+    <input type="radio" name="sport" value="golf"> Golf
+    </p>
+
+    <p>
+    <input type="checkbox" name="guitar" value="lesPaul"> Les Paul
+    <input type="checkbox" name="guitar" value="prs"> PRS
+    <input type="checkbox" name="guitar" value="stratocaster" checked="checked"> Stratocaster
+    </p>
+
+</div>
+
+<p><input type="button" value="Clone Node (false)" id="false"></input></p>
+<p><input type="button" value="Clone Node (true)" id="true"> (In IE this will reset the drop-down list)</input></p>
+
+<h2>Problem:</h2>
+<ul>
+  <li>When the descendant nodes are cloned (element.cloneNode("true")), IE doesn't hold the "selected" form element list values.</li>
+  <li>So, to get around this annoyance, don't clone the descendant nodes (element.cloneNode("false")) and then assign the value of the old div's "innerHTML" property to the new cloned node's "innerHTML" property.
+    <pre>
+      <code>
+
+        var oldDiv = document.getElementById("theDiv");
+        var newDiv = oldDiv.cloneNode(false);
+        newDiv.innerHTML = oldDiv.innerHTML;
+      </code>
+    </pre>
+  </li>
+  <li>This works fine except in Safari (I tested it in version 2.0.4).  Safari doesn't seem to then be able to reference any id of or within the new cloned node.</li>
+  <li>One way to get around this is to reference every element by its class name (obviously inefficient).</li>
+</ul> 
+
+<h2>The issue and how to resolve:</h2>
+<ul>
+
+  <li>For a brief moment, when the innerHTML property's value is copied from one element to the other, two divs are created with identical IDs. This is enough to confuse Safari (which will return "null" when the element is referenced). By contrast, other browsers such as Firefox and IE are far more forgiving.</li>
+  <li>The solution seems to be: don't copy from element to element. Instead, hold the contents in a variable until it's safe to reinsert them into the page.</li>
+</ul>
+
+<pre>
+  <code>
+    var oldDiv = document.getElementById("theDiv");
+    var newDiv = oldDiv.cloneNode(false);
+    var tempHTML = oldDiv.innerHTML;
+    oldDiv.innerHTML = null;
+    newDiv.innerHTML = tempHTML;
+  </code>
+</pre>
+
+</body>
+
+</html>

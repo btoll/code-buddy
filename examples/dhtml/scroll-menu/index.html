@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Scroll Menu</title>
+<script type="text/javascript" src="accordion.js"></script>
+<style type="text/css">
+body {
+  background-color: #ffc;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+div#wrapper {
+  background-color: #FFF;
+  border-top: 1px solid transparent;
+  border-left: 1px dotted #666;
+  border-right: 1px dotted #666;
+  height: 800px;
+  margin: 0 auto;
+  padding: 0;
+  text-align: left;
+  width: 80%;
+}
+div#menubar {
+  width: 90%;
+}
+div#content {
+  color: #1e90ff;
+  font-size: 11px;
+  margin-left: 40px;
+  width: 80%;
+}
+ul#nav {
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+  color: #008b8b;
+  font: normal 11px Georgia, sans-serif;
+  height: 20px;
+  line-height: 20px;
+  list-style: none;
+  margin: 20px 0 0 40px;
+  padding: 0 0 5px 0;
+  width: 100%:
+}
+ul#nav li {
+  float: left;
+  margin: 0;
+  padding-right: 20px;
+}
+ul#nav li a {
+  color: #008b8b;
+  text-decoration: none;
+}
+div#accordion-menu {
+  color: #008b8b;
+  font: normal 11px Georgia, sans-serif;
+  margin: 0 0 0 40px;
+  padding: 0 0 5px 0;
+}
+div#accordion-menu ul {
+  clear: left;
+  list-style: none;
+  margin: 0;
+  padding: 1% 0;
+}
+div#accordion-menu ul li {
+  float: left;
+  margin: 0;
+  padding-right: 20px;
+  width: 28%;
+}
+div#accordion-menu ul li a {
+  color: #008b8b;
+  text-decoration: none;
+}
+.opened { background-color: #eed; border-bottom: 1px solid #ccc; }
+.closed { border-bottom: 0; }
+</style>
+</head>
+
+<body>
+
+<div id="wrapper">
+
+  <div id="menubar">
+    <ul id="nav">
+      <li><a href="#" rel="services">SERVICES</a></li>
+      <li><a href="#" rel="work">WORK</a></li>
+      <li><a href="#" rel="clients">CLIENTS</a></li>
+      <li><a href="#" rel="blog">BLOG</a></li>
+      <li><a href="#" rel="contact">CONTACT</a></li>
+    </ul><!--end ul#nav-->
+
+    <div id="accordion-menu">
+
+      <div id="menu-services">
+        <ul>
+	  <li><a href="#">SEARCH ENGINE MARKETING</a></li>
+	  <li><a href="#">DATA/SHOPPING FEEDS</a></li>
+	  <li><a href="#">SOCIAL MEDIA OPTIMIZATION CONSULTATION</a></li>
+	</ul>
+        <ul>
+	  <li><a href="#">MEDIA PLANNING, BUYING &amp; STRATEGY</a></li>
+	  <li><a href="#">SEARCH ENGINE OPTIMIZATION</a></li>
+	  <li><a href="#">WEB DEVELOPMENT/CREATIVE</a></li>
+	</ul>
+        <ul>
+	  <li><a href="#">AFFILIATE/PERFORMANCE MARKETING</a></li>
+	  <li><a href="#">EMERGENCY MEDIA STRATEGY &amp; CONSULTING</a></li>
+	</ul>
+      </div>
+
+      <div id="menu-work">
+        <ul>
+	  <li><a href="#">BLAH BLAH BLAH</a></li>
+	  <li><a href="#">BLAH BLAH BLAH</a></li>
+	  <li><a href="#">BLAH BLAH BLAH</a></li>
+	</ul>
+        <ul>
+	  <li><a href="#">BLAH BLAH BLAH</a></li>
+	  <li><a href="#">BLAH BLAH BLAH</a></li>
+	  <li><a href="#">BLAH BLAH BLAH</a></li>
+	</ul>
+        <ul>
+	  <li><a href="#">BLAH BLAH BLAH</a></li>
+	  <li><a href="#">BLAH BLAH BLAH</a></li>
+	</ul>
+      </div>
+
+      <div id="menu-clients">
+        <ul>
+	  <li><a href="#">BASEBALL</a></li>
+	  <li><a href="#">FOOTBALL</a></li>
+	  <li><a href="#">HOCKEY</a></li>
+	</ul>
+        <ul>
+	  <li><a href="#">SOCCER</a></li>
+	  <li><a href="#">GOLF</a></li>
+	  <li><a href="#">TENNIS</a></li>
+	</ul>
+        <ul>
+	  <li><a href="#">BADMINTON</a></li>
+	  <li><a href="#">BASKETBALL</a></li>
+	</ul>
+      </div>
+
+      <div id="menu-blog">
+        <ul>
+	  <li><a href="#">sports</a></li>
+	  <li><a href="#">entertainment</a></li>
+	  <li><a href="#">politics</a></li>
+	</ul>
+        <ul>
+	  <li><a href="#">garden</a></li>
+	  <li><a href="#">programming</a></li>
+	  <li><a href="#">leisure</a></li>
+	</ul>
+      </div>
+
+      <div id="menu-contact">
+        <ul>
+          <li>benjam72 [at] yahoo [dot] com</li>
+        </ul>
+      </div>
+
+    </div><!--end div#accordion-menu-->
+  </div><!--end div#menubar-->
+
+  <div id="content">
+    <p>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit, amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur? [33] At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet, ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.</p>
+  </div><!--end div#content-->
+
+</div><!--end div#wrapper-->
+
+</body>
+</html>

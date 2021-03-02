@@ -1,0 +1,19 @@
+function cleanWhitespace(element) {
+  var element = (element && element.constructor === String ? document.getElementById(element) : element) || document;
+  var nodesLength = element.childNodes.length;
+  for (var i = 0; i < nodesLength; i++) {
+    var childNode = element.childNodes[i];
+    if (childNode.nodeType == 3 && !/\S/.test(childNode.nodeValue)) {
+      element.removeChild(element.childNodes[i]);
+      i--;
+    }
+    if (childNode.nodeType == 1) {
+      arguments.callee(childNode);
+    }
+  }
+  if (arguments.length > 1) { //override;
+    for (var i = 1; arguments[i] != null; i++) {
+      arguments.callee(arguments[i]);
+    }
+  }
+}

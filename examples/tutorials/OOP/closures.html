@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+<style type="text/css">
+a {
+  display: block;
+}
+</style>
+<script type="text/javascript">
+function foo() {
+  var id = 0;
+  return function() { return id++; };
+}
+var x = foo();
+var rel = "I'm a global variable!";
+window.onload = function() {
+  function test(myVar) {
+    this.myVar = myVar;
+	this.rel = "I'm a locally-scoped variable!";
+    var links = document.getElementsByTagName("a");
+	that = this; //make a reference to the closure's parent object;
+    for (var i = 0; i < links.length; i++) {
+      links[i].onclick = function() {
+	    alert(x()); //x is incremented by one each time; the local variable id in the foo function remembers its value;
+		alert(that.myVar); //refers to the myVar variable passed to the function object when it was invoked;
+		alert(this.rel); //refers to the HTML element attribute;
+	  };
+    }
+  }
+  test("Philadelphia");
+  //alert(rel);
+};
+</script>
+</head>
+
+<body>
+<a href="#" rel="external">click me</a>
+<a href="#" rel="external">click me</a>
+<a href="#" rel="external">click me</a>
+<a href="#" rel="external">click me</a>
+<a href="#" rel="external">click me</a>
+<a href="#" rel="external">click me</a>
+<a href="#" rel="external">click me</a>
+<a href="#" rel="external">click me</a>
+</body>
+</html>

@@ -1,0 +1,44 @@
+p {
+ margin: 0;
+ padding: 10px 0;
+}
+#slidingDoorsMenu {
+  background: #F4F4F4 url(../../../images/tab_background.jpg) repeat-x bottom;
+  float: left;
+  font-size: 93%;
+  line-height: normal;
+  width: 100%;
+}
+#slidingDoorsMenu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#slidingDoorsMenu li {
+  background: url(../../../images/tab_right.jpg) no-repeat right top;
+  float: left;
+  margin: 0 4px;
+  padding: 0;
+}
+#slidingDoorsMenu a {
+  background: url(../../../images/tab_left.jpg) no-repeat left top;
+  display: block;
+  padding: 5px 15px 4px;
+}
+#slidingDoorsMenu #selected {
+  background-image: url(../../../images/tab_right_selected.jpg);
+}
+#slidingDoorsMenu #selected a {
+  background-image: url(../../../images/tab_left_selected.jpg);
+  padding-bottom: 5px;
+}
+div#slidingDoors {
+  background: #F4F4F4;
+  border: 1px solid #CCC;
+  border-top: 0;
+  padding: 70px;
+  width: 500px;
+}
+.hide {
+  display: none;
+}

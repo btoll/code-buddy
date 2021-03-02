@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Tooltip</title>
+<style type="text/css">
+body { 
+	background-color: #DBDBDB; 
+	color: #000;
+	font: 12px Arial, Helvetica, sans-serif; 
+	margin: 20px 0; 
+	margin-left: 50%;
+	padding: 0; 
+	position: absolute;
+	top: 0;
+	left: -300px;
+	width: 600px;
+}
+body * {
+	margin: 0;
+	padding: 0;
+}
+h1 { 
+	border-bottom: 2px solid #333; 
+	color: #333; 
+	font-size: 16px; 
+	font-weight: bold; 
+	padding: 0 3px 3px 3px; 
+	margin: 0; 
+	margin-bottom: 10px; 
+}
+h2 { 
+	color: #999; 
+	font-size: 14px; 
+	font-weight: bold; 
+	margin: 0; 
+	margin-bottom: 10px; 
+}
+h3 { 
+	border-top: 1px solid #999;
+	border-bottom: 1px solid #999;
+	color: #666; 
+	font-size: 12px; 
+	font-weight: bold; 
+	margin: 0; 
+	margin-bottom: 10px; 
+	padding: 5px 0;
+}
+p, dl, ol {
+	margin-bottom: 15px;
+}
+dt {
+	color: #333;
+	font-weight: bold;
+	margin-top: 10px;
+}
+dd {
+	background: url(../Copy of ver-2/images/bullet.gif) no-repeat 0 6px;
+	margin-bottom: 5px;
+	margin-left: 10px;
+	padding-left: 8px;
+}
+ol {
+	margin-left: 25px;
+}
+blockquote {
+	background-color: #F1F1F1;
+	border: 1px solid #CCC;
+	margin: 15px auto;
+	padding: 10px;
+}
+
+#content {
+	border: 1px solid #999;
+	background-color: #FFF;
+	margin-bottom: 40px;
+	padding: 20px;
+	float: left;
+}
+.bold {
+	font-weight: bold;
+}
+.center {
+	text-align: center;
+}
+.strike {
+	color: red;
+	text-decoration: line-through;
+}
+</style>
+</head>
+<body>
+
+<div id="content">
+<h1>Tooltip</h1>
+<h2>This document serves four purposes:</h2>
+<ol>
+  <li><a href="#link1">A (very) brief explanation of Tooltip.</a></li>
+  <li><a href="#link2">Steps to implement Tooltip into your code.</a></li>
+  <li><a href="#link3">Known issues.</a></li>
+  <li><a href="#link4">More information.</a></li>
+</ol>
+
+  <h3>1. <a name="link1">A (very) brief explanation of Tooltip.</a></h3>
+  <p>Simply put, Tooltip is a popup contextual help box that can contain either plain text or HTML. Tooltip can be configured to be placed directly over the link or relative to where the mouse clicks on the target area. Note that Tooltip must have a parent element relatively positioned for it to consistently launch directly over the link. Tooltip began as an alternative to a large and unwieldy JavaScript library that was serving as the standard tooltip for sites designed by CEU.</p>
+
+  <h3>2. <a name="link2">Steps to implement Tooltip into your code.</a></h3>
+  <ol>
+    <li><strong>Include Tooltip in the link that's launching it.</strong>
+	<p>First, the anchor that is launching Tooltip must have the word 'tooltip' plus the tooltip number included as part of the href (i.e. tooltip23, tooltip0, tooltip5). Also, there could be a descriptive class name included within the anchor element (depending on how Tooltip should be displayed).</p>
+      <blockquote>
+	    <code>
+        &lt;a href=&quot;lib/toolbox.html<strong>#tooltip3</strong>&quot; class=&quot;foobar <strong>Tooltip_id-content</strong> eagles&quot;&gt;My Super-cool Tooltip&lt;/a&gt;
+		</code>
+      </blockquote>
+    <p>Note that Tooltip may be included in an anchor with more than one class and that the order is unimportant.</p>
+	<p>Tooltip can be set up in two different ways:</p>
+    <p><strong>I. Positioned relatively to its immediate parent, which will launch Tooltip directly over the beginning of the target area (this is the default behavior).</strong></p>
+	<p> - <strong>NOTE:</strong> If no class is given within the anchor, or if there are classes but none begin with &quot;Tooltip_&quot;, no elements are relatively positioned via DOM scripting.  This scenario is desirable when none of the parents are positioned.</p>
+	<p> - To give the anchor an inline style that is relatively positioned (i.e. <code>style=&quot;position: relative;&quot;</code>) via DOM scripting.  In other words, the script dynamically places the inline style into the anchor, so the coder doesn't need to.</p>
+	<blockquote>
+	  <code>Tooltip_default</code>
+	</blockquote>
+	<p> - To relatively position an ID, i.e. document.getElementById(&quot;content&quot;), include the following class within the anchor that's launching Tooltip:</p>
+	<blockquote>
+	  <code>Tooltip_id-content</code>
+	</blockquote>
+	<p> - To relatively position an element(s) by its class, include the following class withing the anchor that's launching Tooltip:</p>
+	<blockquote>
+	  <code>Tooltip_class.myClassName</code>
+	</blockquote>
+	<p> - To relatively position one or more node elements within a block element that has an ID, include the following class withing the anchor that's launching Tooltip:</p>
+	<blockquote>
+	  <code>Tooltip_nav-li</code>
+	</blockquote>
+	<p>This example would be appropriate if there were a menu contained in an unordered list (&lt;ul&gt;) that had &quot;nav&quot; as its ID, and you wished to drill down into it and relatively position all of the list items (&lt;li&gt;).</p>
+	<p> - To relatively position one or more classed node elements within a block element that has an ID, include the following class withing the anchor that's launching Tooltip:</p>
+	<blockquote>
+	  <code>Tooltip_nav.myClassName</code>
+	</blockquote>
+	<p>This example would be appropriate if there were a menu contained in an unordered list (&lt;ul&gt;) that had &quot;nav&quot; as its ID, and you wished to drill down into it and relatively position all of the classed node elements with the class &quot;myClassName&quot;.</p>
+	
+	<p><strong>II. Launched relative to where the target area is clicked with the mouse.</strong></p>
+	<p> - To launch Tooltip respective to where the mouse is clicked within the target (link) area, include the following class withing the anchor that's launching Tooltip:</p>
+	<blockquote>
+	  <code>Tooltip_mouse</code>
+	</blockquote>
+	</li>
+
+    <li><strong>Create a separate HTML document that will house the tooltips.</strong>
+	<p>This file has a twofold purpose: first, it will be the container for each tooltip, wrapped in its own &lt;div&gt; that Ajax will grab and use as the tooltip, and second, it will be the page seen by users who either have JavaScript turned off or have an ancient browser incapable of supporting JavaScript.  The latter is an example of graceful degradation.</p>
+	  <p>For this example I created another HTML document that I called "toolbox.html".  Note that it doesn't matter where the file is placed in the web directory filesystem as long as it's world-readable. That means that the path contained in the link could be either absolute or relative, and that Tooltip can handle different tooltips in different files.  In other words, there is no need to keep all tooltips in one file.</p>
+	  <p>In &quot;lib/toolbox.html&quot; I create my tooltips (or wherever you want).  The following is an example of how the tip should look:</p>
+	  <blockquote>
+	    <code>
+	    &lt;p&gt;&lt;a name=&quot;<strong>tooltip3</strong>&quot;&gt;My Super-cool Tooltip&lt;/a&gt;&lt;/p&gt;
+	    <br />&lt;div id=&quot;<strong>tooltip3</strong>&quot;&gt;
+        <br />&nbsp;&nbsp;&lt;p&gt;This space for rent.&lt;/p&gt;
+        <br />&lt;/div&gt;&lt;!--end div#<strong>tooltip3</strong>--&gt;
+		</code>
+      </blockquote>
+	  
+	  <p>There are several things to be aware of:</p>
+	  <ol>
+	    <li>The ID of the &lt;div&gt; must say &quot;tooltip&quot; and then match the tooltip number from the link that's launching Tooltip (i.e. tooltip3). Also, if a class is added to the &lt;div&gt; it <strong>MUST</strong> appear <em>after</em> the ID.  The only character allowed between the opening &lt;div&gt; and the id is a space (&quot; &quot;).</li>
+		<li>The comment after the closing &lt;div&gt; tag <strong>MUST</strong> appear as seen, character for character, space for space.</li>
+		<li>The anchor must be included above the tooltip within the HTML <em>with the same characters</em> that are in the &lt;div&gt; below it. This will serve those without the benefit of JavaScript, for they will be taken to this anchor after they click through the Tooltip link on the originating page.  Note that the paragraph that serves as its parent element was arbitrarily picked and pressed into service.  Any block element could be used here.</li>
+	  </ol>
+	</li>
+	
+	<li><strong>Link to the external Javascript files from within any page that has Tooltip.</strong>
+	<blockquote>
+	  <code>
+	    &lt;script type=&quot;text/javascript&quot; src=&quot;my/path/to/tooltip.js&quot;&gt;&lt;/script&gt;
+        <br />&lt;script type=&quot;text/javascript&quot; src=&quot;my/path/to/coords.js&quot;&gt;&lt;/script&gt;
+		<br />&lt;script type=&quot;text/javascript&quot; src=&quot;my/path/to/xhr.js&quot;&gt;&lt;/script&gt;
+      </code>
+	</blockquote>
+	</li>
+	
+	<li><strong>Link to the external CSS file from Toolbox.html and from within any page that has Tooltip.</strong>
+	<blockquote>
+	  <code>
+	    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;my/path/to/tooltip.css&quot; /&gt;
+      </code>
+	</blockquote>
+	</li>
+	
+	<li><strong><a href="lib/Tooltip.zip">Download</a> all of the files.</strong></li>
+	
+  </ol>
+  
+  <h3>3. <a name="link3">Known Issues</a></h3>
+    <ol>
+	  <li class="strike">Tooltip may not appear directly over the link when one or more of its parent elements are absolutely or relatively positioned.</li>
+	</ol>
+	  <p>*Seems* to have been resolved by positioning an immediate parent element to relative. Also, choosing to launch Tooltip according to its mouse coordinates will work everytime. Tooltip ver.4, April 18, 2007</p>
+	
+  <h3>4. <a name="link4">More Information</a></h3>
+
+  <p><a href="index.html">Demonstration</a>
+  <p>Email <a href="mailto:btoll@aessuccess.org">btoll@aessuccess.org</a> with any questions/comments.</p>
+  <p><a href="#">Back To Top</a></p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+var getElementsByClassName: function (sClassname, vRootElem, sSearchBy) {
+
+  if (!sClassname) return false; //exit the function if no classname is provided;
+
+  var aTemp = [];
+  var reTemp = new RegExp("\\b" + sClassname + "\\b");
+  if (vRootElem) {
+    var cElems = this.normalizeElement(vRootElem).getElementsByTagName(sSearchBy);
+  } else {
+    var cElems = document.getElementsByTagName("*") || document.all;
+  }
+  var cElemsLength = cElems.length;
+  for (var i = 0, j = cElemsLength; i < j; i++) {
+    if (reTemp.test(cElems[i].className)) {
+      aTemp.push(cElems[i]);
+    }
+  }
+  return aTemp;
+
+};

@@ -1,0 +1,5 @@
+theSpan.className = links[i].href.substring(links[i].href.indexOf("#")+1); //if so, chop off everything after the hash mark;
+
+var preClass = cn.replace(cn, cn.match(/Tooltip_.+[.\-]{1}[a-zA-Z]+/)); //first chop off everything but the "Tooltip_content-li" (or something similar) class name;
+
+var theClass = preClass.substring(preClass.indexOf("_")+1); //then chop off "Tooltip_";

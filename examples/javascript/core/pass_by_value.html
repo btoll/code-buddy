@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>JavaScript - pass by value</title>
+<link rel="stylesheet" type="text/css" href="../../../lib/css/blog_template.css" />
+</head>
+
+<body>
+
+  <div id="content">
+
+    <h1>JavaScript - pass by value</h1>
+    <h2>What's in this post?</h2>
+    <ul>
+      <li><a href="#item1">Does JavaScript pass values by reference or by value?</a></li>
+      <li><a href="#item2">Let's see some code!</a></li>
+    </ul>
+    
+    <h3 id="item1">Does JavaScript pass values by reference or by value?</h3>
+    <p>If you're thinking that JavaScript passes reference types by reference and primitive types by value to functions as parameters, you probably never have tried to delete the function argument within the function (i.e., mark for garbage collection). At that point, you may receive a surprise; you can't delete a reference type from within a function unless you have access to the reference type in the scope chain.</p>
+    <p>In reality, JavaScript passes all parameters by value. Within the function, a local copy is made of all passed variables. If the function argument (the copy) contains a primitive object, it treats it as such. Likewise, with reference types. The difference is that if the local variable contains a reference type, the location of the value in memory is what is stored in the local variable. So, the passed object variable can be manipulated, but it cannot be deleted.  Attempting to do that only deletes the local copy, effectually severing the pointer to the reference type. The function argument will be garbage collected like normal when the function context is left (if not held open by closure).</p>
+
+    <h3 id="item2">Let's see some code!</h3>
+    <blockquote>
+    var foo = {
+      bar: "baz"
+    };
+ 
+    function del(o) {
+      console.log(o.bar); //logs "baz";
+ 
+      o.bar = "foo"; //changes foo.bar;
+      console.log(o === foo); //logs true;
+ 
+      o = {}; //replace pointer with new object;
+ 
+      console.log(o === foo); //logs false b/c pointer was severed when function argument was overwritten;
+      o.bar = "blah"; //changes new local copy, NOT foo.bar;
+
+      o = null; //marks local variable for gc, NOT foo object;
+    }
+ 
+    del(foo);
+    console.log(foo.bar); //logs "foo";
+    </blockquote>
+
+  </div>
+  
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>JavaScript Compressor</title>
+<style type="text/css">
+body {
+  background: #EED;
+  text-align: center;
+}
+h1 {
+  background: #FFF;
+  border: 2px solid #999;
+  font-size: 22px;
+  margin: 0 auto;
+  padding: 4px 6px 4px 4px;
+  width: 125px;
+}
+h1 span {
+  color: olive;
+  font-family: cursive;
+  font-style: italic;
+}
+div {
+  margin: 0 auto;
+  width: 90%;
+}
+textarea {
+  border: 1px solid #789;
+  color: #789;
+  font-weight: bold;
+  margin: 20px auto;
+  height: 200px;
+  width: 100%;
+}
+textarea:focus {
+  outline: 2px solid invert;
+}
+textarea#treated {
+  background: #F0F0F0;
+}
+</style>
+<script type="text/javascript">
+String.prototype.has = function(c) {
+	return this.indexOf(c) > -1;
+};
+
+function jsmin(comment, input, level) {
+
+	if (input === undefined) {
+		input = comment;
+		comment = '';
+		level = 2;
+	} else if (level === undefined || level < 1 || level > 3) {
+		level = 2;
+	}
+
+	if (comment.length > 0) {
+		comment += '\n';
+	}
+
+	var a = '',
+		b = '',
+		EOF = -1,
+		LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+		DIGITS = '0123456789',
+		ALNUM = LETTERS + DIGITS + '_$\\',
+		theLookahead = EOF;
+
+
+	/* isAlphanum -- return true if the character is a letter, digit, underscore,
+			dollar sign, or non-ASCII character.
+	*/
+
+	function isAlphanum(c) {
+		return c != EOF && (ALNUM.has(c) || c.charCodeAt(0) > 126);
+	}
+
+
+	/* get -- return the next character. Watch out for lookahead. If the
+			character is a control character, translate it to a space or
+			linefeed.
+	*/
+
+	function get() {
+
+		var c = theLookahead;
+		if (get.i == get.l) { //the parser has reached the end of the string;
+			return EOF;
+		}
+		theLookahead = EOF; //set "theLookahead" back to -1 if "peek" was called and set "theLookahead" to something other than -1;
+		if (c == EOF) { //if "peek" has just been called, "c" will not equal -1;
+			c = input.charAt(get.i);
+			++get.i;
+		}
+		if (c >= ' ' || c == '\n') {
+			return c;
+		}
+		if (c == '\r') {
+			return '\n';
+		}
+		return ' ';
+	}
+
+	get.i = 0;
+	get.l = input.length;
+
+
+	/* peek -- get the next character without getting it.
+	*/
+
+	function peek() {
+		theLookahead = get(); //set theLookahead to the next char, therefore skipping the conditional starting line 91 (remember, usually theLookahead is equal to -1;
+		return theLookahead;
+	}
+
+
+	/* next -- get the next character, excluding comments. peek() is used to see
+			if a '/' is followed by a '/' or '*'.
+	*/
+
+	function next() {
+
+		var c = get();
+		if (c == '/') {
+			switch (peek()) { //check the next char;
+			case '/':
+				for (;;) {
+					c = get();
+					if (c <= '\n') {
+						return c;
+					}
+				}
+				break;
+			case '*':
+				get();
+				for (;;) {
+					switch (get()) {
+					case '*':
+						if (peek() == '/') {
+							get();
+							return ' ';
+						}
+						break;
+					case EOF:
+						throw 'Error: Unterminated comment.';
+					}
+				}
+				break;
+			default:
+				return c;
+			}
+		}
+		return c;
+	}
+
+
+	/* action -- do something! What you do is determined by the argument:
+			1   Output A. Copy B to A. Get the next B.
+			2   Copy B to A. Get the next B. (Delete A).
+			3   Get the next B. (Delete B).
+	   action treats a string as a single character. Wow!
+	   action recognizes a regular expression if it is preceded by ( or , or =.
+	*/
+
+	function action(d) {
+
+		var r = [];
+
+		if (d == 1) {
+			r.push(a); //free up "a" so "b" can be copied to "a";
+		}
+
+		if (d < 3) {
+			a = b; //free up "b" so "b" can receive the next character from the "next" method (see below);
+			if (a == '\'' || a == '"') {
+				for (;;) {
+					r.push(a);
+					a = get();
+					if (a == b) {
+						break;
+					}
+					if (a <= '\n') {
+						throw 'Error: unterminated string literal: ' + a;
+					}
+					if (a == '\\') {
+						r.push(a);
+						a = get();
+					}
+				}
+			}
+		}
+
+		b = next();
+
+		if (b == '/' && '(,=:[!&|'.has(a)) {
+			r.push(a);
+			r.push(b);
+			for (;;) {
+				a = get();
+				if (a == '/') {
+					break;
+				} else if (a =='\\') {
+					r.push(a);
+					a = get();
+				} else if (a <= '\n') {
+					throw 'Error: unterminated Regular Expression literal';
+				}
+				r.push(a);
+			}
+			b = next();
+		}
+
+		return r.join('');
+	}
+
+
+	/* m -- Copy the input to the output, deleting the characters which are
+			insignificant to JavaScript. Comments will be removed. Tabs will be
+			replaced with spaces. Carriage returns will be replaced with
+			linefeeds.
+			Most spaces and linefeeds will be removed.
+	*/
+
+	function m() {
+
+		var r = [];
+		a = '\n';
+
+		r.push(action(3)); //the first time the script runs a blank space will be pushed to "r" and "b" will contain the first char;
+
+		while (a != EOF) {
+			switch (a) {
+			case ' ':
+				if (isAlphanum(b)) {
+					r.push(action(1));
+				} else {
+					r.push(action(2));
+				}
+				break;
+			case '\n':
+				switch (b) {
+				case '{':
+				case '[':
+				case '(':
+				case '+':
+				case '-':
+					r.push(action(1));
+					break;
+				case ' ':
+					r.push(action(3));
+					break;
+				default:
+					if (isAlphanum(b)) {
+						r.push(action(1));
+					} else {
+						if (level == 1 && b != '\n') {
+							r.push(action(1));
+						} else {
+							r.push(action(2));
+						}
+					}
+				}
+				break;
+			default:
+				switch (b) {
+				case ' ':
+					if (isAlphanum(a)) {
+						r.push(action(1));
+						break;
+					}
+					r.push(action(3));
+					break;
+				case '\n':
+					if (level == 1 && a != '\n') {
+						r.push(action(1));
+					} else {
+						switch (a) {
+						case '}':
+						case ']':
+						case ')':
+						case '+':
+						case '-':
+						case '"':
+						case '\'':
+							if (level == 3) {
+								r.push(action(3));
+							} else {
+								r.push(action(1));
+							}
+							break;
+						default:
+							if (isAlphanum(a)) {
+								r.push(action(1));
+							} else {
+								r.push(action(3));
+							}
+						}
+					}
+					break;
+				default:
+					r.push(action(1));
+					break;
+				}
+			}
+		}
+
+		return r.join('');
+	}
+
+	jsmin.oldSize = input.length;
+	ret = m(input);
+	jsmin.newSize = ret.length;
+
+	return comment + ret;
+
+}
+
+window.onload = function() {
+
+  (function () {
+    document.getElementById("untreated").focus();
+    document.getElementsByTagName("a")[0].onfocus = function() { if(this.blur) this.blur(); };
+    var buttons = document.getElementsByTagName("button");
+    for (var i in buttons)
+      buttons[i].onfocus = function() { if(this.blur) this.blur(); };
+    document.getElementById("compress").onclick = function() { jscompress(); };
+    document.getElementById("clear").onclick = function() {
+      document.getElementById("untreated").value = "";
+	  document.getElementById("treated").value = "";
+	  document.getElementById("untreated").focus();
+    };
+    document.getElementById("selectAll").onclick = function() { document.getElementById("treated").select(); };
+    document.getElementById("theForm").onsubmit = function() { return false; };
+  })();
+  
+};
+</script>
+</head>
+
+<body>
+
+<h1>JS<span>Compress</span></h1>
+<p>The basic functionality for this JavaScript compressor was inspired by Douglas Crockford's <a href="http://fmarcia.info/jsmin/test.html">JSMin</a> and Dean Edward's <a href="http://dean.edwards.name/packer/">Packer</a>.</p>
+<form id="theForm" action="stripper.html">
+  <div>
+    <textarea id="untreated"></textarea>
+    <button id="compress">Compress</button>
+    <button id="clear">Clear</button>
+    <textarea id="treated"></textarea>
+	<button id="selectAll">Select All</button>
+  </div>
+</form>
+
+</body>
+</html>

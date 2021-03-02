@@ -1,0 +1,21 @@
+function yellowFade(oElem, iRed, iGreen, iBlue) {
+  if (oElem.fade) clearTimeout(oElem.fade);
+  oElem.style.backgroundColor = "rgb(" + iRed + ", " + iGreen + ", " + iBlue + ")";
+  if (iRed == 255 && iGreen == 255 && iBlue == 204) return;
+
+  var iNewred = iRed + Math.ceil((255 - iRed) / 10);
+  var iNewgreen = iGreen + Math.ceil((255 - iGreen) / 10);
+  var iNewblue = iBlue + Math.ceil((204 - iBlue) / 10);
+  var fnRepeat = function() {
+    yellowFade(oElem, iNewred, iNewgreen, iNewblue);
+  };
+
+  oElem.fade = setTimeout(fnRepeat, 100);
+}
+
+window.onload = function() {
+  document.getElementsByTagName("form")[0].onclick = function() {
+    yellowFade(document.getElementById("email"), 100, 100, 100);
+    return false;
+  };
+};

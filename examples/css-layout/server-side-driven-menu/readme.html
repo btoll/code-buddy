@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Pure CSS Menu With One or More Submenus</title>
+<style type="text/css">
+body { 
+	background-color: #DBDBDB; 
+	color: #000;
+	font: 12px Arial, Helvetica, sans-serif; 
+	margin: 20px 0; 
+	margin-left: 50%;
+	padding: 0; 
+	position: absolute;
+	top: 0;
+	left: -300px;
+	width: 600px;
+}
+body * {
+	margin: 0;
+	padding: 0;
+}
+h1 { 
+	border-bottom: 2px solid #333; 
+	color: #333; 
+	font-size: 16px; 
+	font-weight: bold; 
+	padding: 0 3px 3px 3px; 
+	margin: 0; 
+	margin-bottom: 10px; 
+}
+h2 { 
+	color: #999; 
+	font-size: 14px; 
+	font-weight: bold; 
+	margin: 0; 
+	margin-bottom: 10px; 
+}
+h3 { 
+	border-top: 1px solid #999;
+	border-bottom: 1px solid #999;
+	color: #666; 
+	font-size: 12px; 
+	font-weight: bold; 
+	margin: 0; 
+	margin-bottom: 10px; 
+	padding: 5px 0;
+}
+p, dl, ol {
+	margin-bottom: 15px;
+}
+dt {
+	color: #333;
+	font-weight: bold;
+	margin-top: 10px;
+}
+dd {
+	background: url(../Copy of ver-2/images/bullet.gif) no-repeat 0 6px;
+	margin-bottom: 5px;
+	margin-left: 10px;
+	padding-left: 8px;
+}
+ol {
+	margin-left: 25px;
+}
+blockquote {
+	background-color: #F1F1F1;
+	border: 1px solid #CCC;
+	margin: 15px 25px;
+	padding: 10px;
+}
+
+#content {
+	border: 1px solid #999;
+	background-color: #FFF;
+	margin-bottom: 40px;
+	padding: 20px;
+	float: left;
+}
+.bold {
+	font-weight: bold;
+}
+.center {
+	text-align: center;
+}
+.strike {
+	color: red;
+	text-decoration: line-through;
+}
+</style>
+</head>
+
+<body>
+
+<div id="content">
+<h1>Pure CSS Menu With One or More Submenus<span id="devNumber">#UI-NA-001</span></h1>
+<h2>This document serves four purposes:</h2>
+<ol>
+  <li><a href="#link1">A (very) brief explanation of the menu.</a></li>
+  <li><a href="#link2">Steps to implement the menu into your code.</a></li>
+  <li><a href="#link3">Known issues.</a></li>
+  <li><a href="#link4">More information.</a></li>
+</ol>
+
+  <h3>1. <a name="link1">A (very) brief explanation of the menu.</a></h3>
+  <p>The menu is pure CSS (no JavaScript). It relies on an ID in every &lt;body&gt; tag to work.</p>
+
+  <h3>2. <a name="link2">Steps to implement the menu into your code.</a></h3>
+  <ol>
+    <li><strong>Write your menu in valid XHTML, beginning with an unordered list &lt;ul&gt;.</strong>
+	<p>The only element that needs to have either a class or an ID is the root &lt;ul&gt;. I say 'root' because the menu could have zero or more submenus and therefore could contain more than one unordered list.</p>
+	<img src="images/menu.gif" alt="Menu" />
+	<p>You may use either a class or an ID as a hook into the menu, and you may name it anything you like. Note that the hashes in the href attributes are only there for reasons of simplicity and readibility. Also, none of the links have an ID attached to them (yet).</p></li>
+	  
+    <li><strong>Add a unique identifier to each link.</strong>
+    <p>Begin prepping the menu to work hand-in-glove with CSS by attaching an ID to each link. I prefer to use a descriptive word taken from the link text and prepend it to &quot;Href&quot;, as I'll always know that that particular ID resides in the navigation menu.</p>
+	<img src="images/menu_ids.gif" alt="Menu with IDs" />
+	<p>Each ID, in conjunction with an ID in the &lt;body&gt; tag, will act as a hook for the CSS to apply your styles to each link when selected. This will become clearer shortly.</p></li>
+
+    <li><strong>Add a unique identifier to each &lt;body&gt; element.</strong>
+	<p>This step is crucial to having a successful, working menu. While you're free to using any naming convention you'd like, I strongly recommend using one that is visibly similar to its "sister" ID in the navigational menu.  For instance, I'd use the following for details.html:</p>
+	<blockquote>
+	  <code>&lt;body id=&quot;detailsPage&quot;&gt;</code>	</blockquote>
+	<p>Remember, the ID for that particular link in the menu is <strong>#detailsHref</strong>. The similarities help me to get a good grasp of the behavorial aspect of the menu, even from just looking at the CSS. Later we'll see how using the two IDs together in a rule will highlight the selected link in the menu.</p>
+	<li><strong>Write the CSS rules for the menu.</strong>
+	<p>You can view all of the rules for the menu <a href="main.css">here</a>.</p>
+	<p>I'll quickly review the rules that influence the behavior of the menu. Note that these rules below may only be excerpts. Refer to the stylesheet itself to see the complete rules.</p>
+	<ol>
+	  <li>Ensure that any submenus are closed by default (in above case, just one).
+	  <blockquote>
+	    <code>ul#menu ul { display: none; }</code>	  </blockquote>
+	  </li>
+	  <li>Open a submenu when appropriate.
+	  <blockquote>
+	    <code>body#paymentsPage ul ul,
+          <br />body#historyPage ul ul,
+          <br />body#accountsPage ul ul,
+          <br />body#directPage ul ul,
+          <br />body#preferencesPage ul ul,
+          <br />body#postponePage ul ul { display: block; }        </code>      </blockquote>
+	  <p>For instance, if you need your submenu to open on a particular page, it <strong>MUST</strong> be included as a rule in the preceeding list. So, the submenu will be displayed when the user clicks on &quot;Make Payments&quot;, it will be displayed when &quot;History&quot; is clicked on, etc. on down the list.</p>
+	  </li>
+	  <li>Add the rules that will highlight the selected menu item.
+	  <blockquote>
+	    <code>#indexPage a#indexHref,
+          <br />#loanDetailPage a#loanDetailHref,
+          <br />#paymentPage a#paymentHref,
+          <br />#historyPage a#paymentHref,
+          <br />#historyPage a#historyHref,
+          <br />#bankingPage a#paymentHref,
+          <br />#bankingPage a#bankingHref,
+          <br />#directPage a#paymentHref,
+          <br />#directPage a#directHref,
+          <br />#billPage a#paymentHref,
+          <br />#billPage a#billHref,
+          <br />#postponePage a#paymentHref,
+          <br />#postponePage a#postponeHref,
+          <br />#applicationsPage a#applicationsHref,
+          <br />#accountPage a#accountHref,
+          <br />#toolsPage a#toolsHref {
+          <br />&nbsp;&nbsp;color: #333;
+          <br />&nbsp;&nbsp;font-weight: bold;
+          <br />&nbsp;&nbsp;text-decoration: none;
+          <br />}		</code>	  </blockquote>
+	  </li>
+	</ol>
+	</li>
+  </ol>
+  
+  <h3>3. <a name="link3">Known Issues</a></h3>
+    <p>None</p>
+	
+  <h3>4. <a name="link4">More Information</a></h3>
+  
+  <p><a href="index.html">Demonstration</a>
+  <p>Email <a href="mailto:btoll.consultant@aessuccess.org">btoll@aessuccess.org</a> with any questions/comments.</p>
+  <p><a href="#">Back To Top</a></p>
+</div>
+
+</body>
+</html>

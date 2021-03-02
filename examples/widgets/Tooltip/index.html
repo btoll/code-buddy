@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Ajax :: Tooltip</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="tooltip.css" />
+
+<script type="text/javascript" src="lib/housekeeping.js"></script>
+<script type="text/javascript" src="lib/tooltip.js"></script>
+<script type="text/javascript" src="lib/coords.js"></script>
+<script type="text/javascript" src="lib/xhr.js"></script>
+
+<style type="text/css">
+.relative {
+  border: 1px solid orange;
+  position: relative;
+  top: 40px;
+  left: 50px;
+}
+
+.absolute {
+  border: 1px solid blue;
+  position: absolute;
+  top: 100px;
+  left: 200px;
+}
+
+.relative2 {
+  border: 1px solid green;
+  position: relative;
+  top: 5px;
+  left: 200px;
+}
+
+ul li {
+  float: left;
+  margin: 0 10px;
+}
+
+</style>
+</head>
+
+<!--<body onload="load(event);">-->
+<body>
+
+<div class="relative">
+
+  <div class="absolute">
+  
+    <div class="relative">
+	
+	  <div class="relative2">
+
+	    <ul id="test">
+		  <li><a id="myHref" href="toolbox.html#tooltip4" class="eagles Tooltip_mouse test">message 4</a></li>
+		  <li><a href="toolbox.html#tooltip3" class="earth phillies Tooltip_test-li beagles">message</a></li>
+          <li><a href="toolbox.html#tooltip2">message 2</a></li>
+		  <li><a href="toolbox.html#tooltip1">message 3</a></li>
+		  <li><a href="toolbox.html#tooltip0">message 5</a></li>
+		</ul>
+
+	  </div>
+	  
+<br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+	<p>message 4 launches Tooltip according to where the mouse is clicked, while the others have their immediate parent relatively positioned.</p>
+	
+	</div>
+	
+  </div>
+  
+</div>
+  
+</body>
+</html>

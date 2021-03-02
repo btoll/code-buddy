@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Object-oriented JavaScript</title>
+<script type="text/javascript">
+function Employee(_id, _firstName, _lastName) {
+  this.id = _id;
+  this.firstName = _firstName;
+  this.lastName = _lastName;
+
+  this.getFullName = function() { return this.firstName + " " + this.lastName; };
+  this.setJobTitle = function(_jobTitle) { this.jobTitle = _jobTitle; };
+  this.getJobTitle = function() { return this.jobTitle; };
+}
+
+var bToll = new Employee(001, "Benjamin", "Toll");
+bToll.setJobTitle("Web Developer");
+alert(bToll.getFullName() + "'s current Job Title is " + bToll.getJobTitle());
+
+Employee.prototype.changeJobTitle = function(_oldTitle, _newTitle) {
+  if (this.jobTitle == _oldTitle)
+    this.jobTitle = _newTitle;
+};
+
+bToll.changeJobTitle("Web Developer", "Whit's Boss");
+alert(bToll.getFullName() + "'s current Job Title is " + bToll.getJobTitle());
+</script>
+</head>
+
+<body>
+
+</body>
+</html>

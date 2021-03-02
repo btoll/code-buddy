@@ -1,0 +1,42 @@
+div#accordion-menu {
+  border: 2px solid #789;
+  width: 380px;
+}
+div#accordion-menu div {
+  background-color: #EED;
+}
+#accordion-menu a {
+  background-color: #EFEFEF;
+  border-top: 2px solid #789;
+  display: block;
+  font-weight: bold;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+}
+#accordion-menu a:link,
+#accordion-menu a:visited,
+#accordion-menu a:hover,
+#accordion-menu a:active {
+  color: #369;
+  text-decoration: none;
+}
+#accordion-menu a:hover {
+  background-color: #EDD;
+}
+#accordion-menu .first {
+  border-top: 0;
+}
+#accordion-menu h4 {
+  background-color: #CCC;
+  border-top: 1px solid #789;
+  border-bottom: 1px solid #789;
+  margin: 0;
+  padding: 2px;
+}
+#accordion-menu p {
+  padding: 5px;
+}
+#accordion-menu ul {
+  list-style-type: circle;
+}

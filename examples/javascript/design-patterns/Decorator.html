@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Decorator design pattern</title>
+<script type="text/javascript">
+function extend(c, p) {
+  var F = function () {};
+  F.prototype = p.prototype;
+  c.prototype = new F();
+  c.prototype.constructor = c;
+  c.superclass = p.prototype;
+}
+
+var Car = function (make, model) {
+  this.make = make;
+  this.model = model;
+};
+Car.prototype.build = function () {
+  return "Currently building...";
+};
+Car.prototype.getMake = function () {
+  return this.make;
+};
+Car.prototype.getModel = function () {
+  return this.model;
+};
+Car.prototype.getPrice = function () {
+  return 24999;
+};
+
+var CarDecorator = function (car) {
+  this.car = car;
+};
+CarDecorator.prototype.build = function () {
+  return this.car.build();
+};
+CarDecorator.prototype.getMake = function () {
+  return this.car.getMake();
+};
+CarDecorator.prototype.getModel = function () {
+  return this.car.getModel();
+};
+CarDecorator.prototype.getPrice = function () {
+  return this.car.getPrice();
+};
+
+var CarDoor = function (car) {
+  CarDoor.superclass.constructor.call(this, car);
+};
+extend(CarDoor, CarDecorator);
+CarDoor.prototype.build = function () {
+  return this.car.build() + "a car door.";
+};
+CarDoor.prototype.getPrice = function () {
+  return this.car.getPrice() + 250;
+};
+
+var CarBumper = function (person) {
+  CarBumper.superclass.constructor.call(this, person);
+};
+extend(CarBumper, CarDecorator);
+CarBumper.prototype.getPrice = function () {
+  return this.car.getPrice() + 125;
+};
+var x = new Car("Ford", "Ranger");
+x = new CarDoor(x);
+x = new CarBumper(x);
+alert(x.getPrice());
+</script>
+</head>
+
+<body>
+<pre>
+<code>
+function extend(c, p) {
+  var F = function () {};
+  F.prototype = p.prototype;
+  c.prototype = new F();
+  c.prototype.constructor = c;
+  c.superclass = p.prototype;
+}
+
+var Car = function (make, model) {
+  this.make = make;
+  this.model = model;
+};
+Car.prototype.build = function () {
+  return &#34;Currently building...&#34;;
+};
+Car.prototype.getMake = function () {
+  return this.make;
+};
+Car.prototype.getModel = function () {
+  return this.model;
+};
+Car.prototype.getPrice = function () {
+  return 24999;
+};
+
+var CarDecorator = function (car) {
+  this.car = car;
+};
+CarDecorator.prototype.build = function () {
+  return this.car.build();
+};
+CarDecorator.prototype.getMake = function () {
+  return this.car.getMake();
+};
+CarDecorator.prototype.getModel = function () {
+  return this.car.getModel();
+};
+CarDecorator.prototype.getPrice = function () {
+  return this.car.getPrice();
+};
+
+var CarDoor = function (car) {
+  CarDoor.superclass.constructor.call(this, car);
+};
+extend(CarDoor, CarDecorator);
+CarDoor.prototype.build = function () {
+  return this.car.build() + &#34;a car door.&#34;;
+};
+CarDoor.prototype.getPrice = function () {
+  return this.car.getPrice() + 250;
+};
+
+var CarBumper = function (person) {
+  CarBumper.superclass.constructor.call(this, person);
+};
+extend(CarBumper, CarDecorator);
+CarBumper.prototype.getPrice = function () {
+  return this.car.getPrice() + 125;
+};
+var x = new Car(&#34;Ford&#34;, &#34;Ranger&#34;);
+x = new CarDoor(x);
+x = new CarBumper(x);
+alert(x.getPrice());
+</code>
+</pre>
+</body>
+</html>

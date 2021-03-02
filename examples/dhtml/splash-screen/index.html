@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Fade Out (the Splash Screen)</title>
+<style type="text/css">
+div#splashScreen {
+  background: #ffc url(../../../images/aes.gif) 10% 50% no-repeat;
+  border: 2px solid #999;
+  opacity: 1;
+  filter: alpha(opacity=100); /*IE*/
+  padding: 40px;
+  position: absolute;
+  top: 100px;
+  left: 250px;
+  width: 220px;
+  z-index: 100;
+}
+div#splashScreen h1 {
+  font-size: 18px;
+  margin-left: 100px;
+}
+div#splashScreen p {
+  margin-left: 100px;
+}
+</style>
+<script type="text/javascript">
+var FadeOut = {
+
+  getStyle: function (oElem, sName) {
+    //if the property exists in style[] then it's been set recently and is current;
+    if (oElem.style[sName]) {
+      return oElem.style[sName];
+    } else if (oElem.currentStyle) {
+      return oElem.currentStyle[sName]; //otherwise, try to use IE's method;
+    } else if (document.defaultView && document.defaultView.getComputedStyle) { //or the w3c's method, if it exists;
+      //it uses the traditional 'text-align' style of rule writing instead of 'textAlign';
+      sName = sName.replace(/([A-Z])/g, "-$1");
+      sName = sName.toLowerCase();
+	
+      //get the style object and get the value of the property if it exists;
+      var s = document.defaultView.getComputedStyle(oElem, "");
+      return s && s.getPropertyValue(sName);
+
+    //otherwise, we're using some other browser;
+    } else {
+      return null;
+    }
+  },
+
+  fadeOut: function (oElem) {
+
+    /*fade out the splash screen and remove it from the DOM*/
+    //var vOpaque = document.addEventListener ? FadeOut.getStyle(oElem, "opacity") : FadeOut.getStyle(oElem, "filter");
+    var vOpaque = FadeOut.getStyle(oElem, "opacity");
+    if (document.attachEvent) {
+      vOpaque = parseInt(vOpaque.replace(/.*=(.+)\)/g, function (a, b) { return b; }));
+    }
+
+    if (vOpaque > 0) { //fade the elem;
+      document.addEventListener ? oElem.style.opacity = vOpaque - .05 : oElem.style.filter = "alpha(opacity=" + (vOpaque - 5) + ")";
+      oElem.fade = setTimeout(function() { FadeOut.fadeOut(oElem); }, 120);
+    } else if (vOpaque <= 0) {
+      clearTimeout(oElem.fade);
+      document.body.removeChild(oElem);
+    }
+
+
+  },
+
+  splashScreen: function () {
+    setTimeout(function() { FadeOut.fadeOut(document.getElementById("splashScreen")); }, 2000);
+  }
+
+};
+
+window.onload = function() { FadeOut.splashScreen(); };
+</script>
+</head>
+
+<body>
+
+<h3>Fade out the splash screen and then remove it from the DOM.</h3>
+<div id="splashScreen">
+  <h1>Code Buddy</h1>
+  <p>&copy; Copyright 2007</p>
+</div>
+
+</body>
+</html>

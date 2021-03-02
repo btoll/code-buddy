@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>invoker() function</title>
+<style type="text/css">
+div {
+  background: #FFF;
+  border: 1px solid #CCC;
+  margin: 10px;
+  padding: 10px;
+}
+pre {
+  background: #EED;
+  border: 1px dotted #CCC;
+  margin: 5px;
+  overflow: auto;
+  padding: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<div>
+<h3>The invoker() method can be used to load up an array of functions that are invoked at once, as in when initializing an application on page load.</h3>
+
+<pre>
+<code>
+var invoker: function (vElem) {
+
+  /*invoke the functions, argument can either be an array of strings or a single string*/
+  /*each elem will be a namespaced string that's split by it's period, i.e. "events.setMenuHandle"*/
+  /*NOTE this example uses the BLUEBOY global symbol*/
+  var aNamespace = [];
+  if (vElem.constructor === Array) {
+    var iElemLength = vElem.length;
+    for (var i = 0; i < iElemLength; i++) {
+      aNamespace = vElem[i].split(".");
+      BLUEBOY[aNamespace[0]][aNamespace[1]](); //invoke the function;
+    }
+  } else { //it's just a string;
+    aNamespace = vElem.split(".");
+    BLUEBOY[aNamespace[0]][aNamespace[1]](); //invoke the function;
+  }
+
+};
+</code>
+</pre>
+
+<p>The invocation below would invoke the specified functions in the <code>BLUEBOY.utility</code>, <code>BLUEBOY.events</code>, and <code>BLUEBOY.global</code> namespaces.</p>
+
+<pre>
+<code>
+invoker([
+  "utility.targetBlank",
+  "events.setAccordion",
+  "events.setMenuHandle",
+  "events.setRegex",
+  "events.setSearchEngine",
+  "events.setSorting",
+  "global.createCategoriesList"
+]);
+</code>
+</pre>
+</div>
+
+</body>
+</html>

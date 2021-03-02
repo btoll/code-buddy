@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>JavaScript range function</title>
+<style type="text/css">
+body {
+  background: #EED;
+  margin: 20px;
+}
+h4 {
+  background: #FFA;
+  border: 2px solid #444;
+  border-left: 0;
+  border-right: 0;
+  margin: 0;
+  padding: 10px;
+}
+pre {
+  background: #FFF;
+  border: 1px solid #CCC;
+  padding: 0 20px;
+}
+</style>
+</head>
+
+<body>
+
+<h3>A JavaScript <code>range</code> method</h3>
+<p>Inspired by Ruby's <code>range</code> method. Since this method is based on Ruby's implementation, the syntax and functionality is very similar.</p>
+<p>This method will return both numeric and alphabetical arrays. The beginning range element must always be smaller than the ending range element. Note that even though numeric ranges are passed to the method as a string data type, i.e., "1..100", the array returned will contain numeric elements. Alphabetical ranges will of course return an array of strings.</p><p>Just as in Ruby, the ".." range is inclusive, while the "..." range is exclusive.</p>
+<ul>
+  <li>fnRange("-52..-5") //returns an array containing elements -52 through -5, <em>including</em> -5;</li>
+  <li>fnRange("-52...-5") //returns an array containing elements -52 through -5, <em>excluding</em> -5;</li>
+  <li>fnRange("-5..-52") //throws an exception;</li>
+  <li>fnRange("a..z") //returns an array containing elements "a" through "z", <em>including</em> "z";</li>
+  <li>fnRange("A...Z") //returns an array containing elements "A" through "Z", <em>excluding</em> "Z";</li>
+  <li>fnRange("E..A") //throws an exception;</li>
+</ul>
+
+<h4>Some examples:</h4>
+<pre>
+<code>
+var iTemp = 72;
+switch (true) {
+  case fnRange(&quot;-30..-1&quot;).contains(iTemp):
+    console.log(&quot;Sub-freezing&quot;);
+    break;
+
+  case fnRange(&quot;0..32&quot;).contains(iTemp):
+    console.log(&quot;Freezing&quot;);
+    break;
+
+  case fnRange(&quot;33..65&quot;).contains(iTemp):
+    console.log(&quot;Cool&quot;);
+    break;
+
+  case fnRange(&quot;66..95&quot;).contains(iTemp):
+    console.log(&quot;Balmy&quot;);
+    break;
+
+  case fnRange(&quot;96..120&quot;).contains(iTemp):
+    console.log(&quot;Hot, hot, hot!&quot;);
+    break;
+
+  default:
+    console.log(&quot;You must be very uncomfortable, wherever you are!&quot;);
+}
+
+//logs &quot;Balmy&quot;;
+
+//create and return the alphabet as a string;
+fnRange(&quot;A..Z&quot;).join(&quot;&quot;);
+</code>
+</pre>
+
+<h4>The code:</h4>
+<pre>
+<code>
+var fnRange = function (sRange) {
+
+  var re = /(\-?\w+)(\.{2,3})(\-?\w+)/;
+  if (re.test(sRange)) {
+    //NOTE !!(Number(&quot;0&quot;) evaluates to falsy for numeric ranges so specifically check for this condition;
+    var aChunks = re.exec(sRange), aRange = [], bIsNumeric = aChunks[1] === &quot;0&quot; || !!Number(aChunks[1]);
+    sRange = aChunks[2]; //re-assign the value of sRange to the actual range, i.e., &quot;..&quot; or &quot;...&quot;;
+
+    //if it's a numeric range cast the string into a number else get the Unicode value of the letter for alpha ranges;
+    var iBegin = bIsNumeric ? Number(aChunks[1]) : aChunks[1].charCodeAt();
+    var iEnd = bIsNumeric ? Number(aChunks[3]) : aChunks[3].charCodeAt();
+
+    //establish some exceptions;
+    if (iBegin &gt; iEnd) { throw new Error(&quot;The end range cannot be smaller than the start range.&quot;); }
+    if (bIsNumeric &amp;&amp; (iEnd - iBegin) &gt; 1000) { throw new Error(&quot;The range is too large, please narrow it.&quot;); }
+
+    for (var i = 0; iBegin &lt;= iEnd; i++, iBegin++) {
+      //if it's an alphabetical range then turn the Unicode value into a string (number to a string);
+      aRange[i] = bIsNumeric ? iBegin : String.fromCharCode(iBegin);
+    }
+    if (sRange === &quot;...&quot;) {
+      aRange.splice(-1); //if the range is exclusive, lop off the last index;
+    }
+    return aRange;
+  }
+
+};
+</code>
+</pre>
+
+</body>
+</html>

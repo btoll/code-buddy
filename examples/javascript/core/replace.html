@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Client-Side HTML Generation</title>
+<style type="text/css">
+label, input {
+  display: block;
+}
+pre {
+  background: #FFC;
+  border: 1px solid #CCC;
+  padding: 10px;
+}
+.defaultTable {
+  background: #FFC;
+  border: 2px solid #F00;
+}
+</style>
+<script type="text/javascript">
+String.prototype.supplant = function (o) {
+  return this.replace(/{([^{}]*)}/g,
+    function (a, b) {
+	  /*arguments passed to the function...
+	  -the first is the string that matches the pattern;
+	  -the second is the string(s) that matches the parenthesized subexpressions w/in the pattern (there may be zero or more of these arguments);
+	  -the third is an integer that specifies the position w/in the string that the supplant method was called on at which the match occurred;
+	  -the fourth is the string itself that the supplant method was called on;
+	  */
+	  var r = o[b];
+	  return typeof r === "string" ?
+	    r : a;
+	}
+  );
+};
+
+window.onload = function () {
+
+  (function () {
+
+    var template = '<table class="{className}">' +
+      '<tr><th>Last</th><td>{last}</td></tr>' +
+      '<tr><th>First</th><td>{first}</td></tr>' +
+	  '<tr><th>Occupation</th><td>{occupation}</td></tr>' +
+      '</table>';
+  
+    var form = document.getElementById("theForm");
+    form.onsubmit = function () {
+	  var data = {
+	    first: form.elements["first"].value,
+		last: form.elements["last"].value,
+		occupation: form.elements["occupation"].value,
+	    className: form.elements["className"].value
+	  };
+	  document.getElementById("myDiv").innerHTML = template.supplant(data);
+	  return false;
+	};
+
+  })();
+
+};
+</script>
+</head>
+
+<body>
+<p>The Object's <code>replace</code> method can be used as a client-side HTML generator.</p>
+<pre>
+String.prototype.supplant = function (o) {
+  return this.replace(/{([^{}]*)}/g,
+    function (a, b) {
+	  /*arguments passed to the function...
+	  -the first is the string that matches the pattern;
+	  -the second is the string(s) that matches the parenthesized subexpressions w/in the pattern (there may be zero or more of these arguments);
+	  -the third is an integer that specifies the position w/in the string that the supplant method was called on at which the match occurred;
+	  -the fourth is the string itself that the supplant method was called on;
+	  */
+	  var r = o[b];
+	  return typeof r === "string" ?
+	    r : a;
+	}
+  );
+};
+</pre>
+<form id="theForm" action="">
+  <div>
+    <label for="first">First Name:</label>
+	<input type="text" id="first" name="first" />
+	<label for="last">Last Name:</label>
+	<input type="text" id="last" name="last" />
+	<label for="occupation">Occupation:</label>
+	<input type="text" id="occupation" name="occupation" />
+	<label for="className">Class</label>
+	<input type="text" id="className" name="className" />
+	<input type="submit" id="submit" name="submit" value="Submit" />
+  </div>
+</form>
+
+<div id="myDiv">
+</div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+HTTP/1.1 200 OK
+Server: Microsoft-IIS/4.0
+Cache-Control: max-age=172800
+Expires: Sat, 06 Apr 2002 11:34:01 GMT
+Date: Thu, 04 Apr 2002 11:34:01 GMT
+Content-Type: text/html
+Accept-Ranges: bytes
+Last-Modified: Thu, 14 Mar 2002 12:06:30 GMT
+ETag: "0a7ccac50cbc11:1aad"
+Content-Length: 52282

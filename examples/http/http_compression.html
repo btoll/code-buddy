@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>HTTP Compression</title>
+<style type="text/css">
+body {
+  background-color: #EED;
+}
+/*punch-out for IE6 and below*/
+div.description {
+  background-color: #FFF;
+  border: 2px solid #999;
+  border-left-style: none;
+  color: #008080;
+  margin: 20px auto;
+  padding: 10px 80px 10px 0;
+  text-align: justify;
+  width: 80%;
+}
+div.description h3 { /* "punch-out" the headers*/
+  background-color: #EED;
+  border: 2px solid #999;
+  border-left-color: #EED;
+  padding: 8px 0 8px 30px;
+  width: 260px;
+}
+div.citation {
+  border-left: solid;
+  font: 11px Arial, Helvetica, sans-serif;
+}
+/*punch-out for modern browsers*/
+html > body div.description {
+  background-color: #FFF;
+  border: 2px solid #999;
+  color: #333;
+  margin: 20px auto;
+  padding: 10px 80px 10px 0;
+  text-align: justify;
+  width: 80%;
+}
+html > body div.description h3 {
+  background-color: #EED;
+  border: 2px solid #999;
+  border-left-color: #EED;
+  margin-left: -2px;
+  padding: 8px 0 8px 30px;
+  width: 260px;
+}
+div.description p {
+  padding-left: 30px;
+}
+div.description p:first-letter {
+  font: 1.2em cursive;
+}
+div.description ul {
+  font: 12px monospace;
+}
+blockquote {
+  background: #EDD;
+  border: 2px dashed #CCC;
+  color: #000;
+}
+.header {
+  border: 1px solid #000;
+  padding: 4px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="description">
+
+  <!--[if IE]>
+  <p>&nbsp;</p>
+  <![endif]-->
+  
+  <h3>HTTP Compression</h3>
+  <p>HTTP compression, or content encoding, has been supported by web servers for years. In addition, all of the five major browsers - Firefox, Safari, Chrome, Opera and IE - support client-side file decompression and have for quite some time. This means that files compressed on the web server can significantly reduce the wire weight, or the actual number of bytes sent from server to browser,  which in turn translates into bandwidth savings and download time.</p>
+
+  <h3>How Does It Work?</h3>
+  <p>When compression is enabled on the web server, a header is included in the server response indicating that the file has been compressed using a given format. The browser, looking at the headers, determines that the file has been compressed and then decompresses the file using the appropriate format.</p>
+  <p>For the Apache web server, there are two modules that make HTTP compression easy: <code>mod_gzip</code> (for Apache 1.3.x) and <code>mod_deflate</code> (for Apache 2.x.x). You can compress any textual files, i.e., (X)TML, .txt files, CSS and JavaScript (images are already compressed by a different means).</p>
+
+  <h3><code>mod_gzip</code></h3>
+  <p>For <code>mod_gzip</code>, you can enable automatic compression of JavaScript files by adding the following line to either your <code>httpd.conf</code> file or a <code>.htaccess</code> file:</p>
+  <blockquote>
+    <pre>
+    <code>
+    #Tell mod_gzip to include any file ending with .js
+    mod_gzip_item_include         file       \.js$
+    </code>
+    </pre>
+  </blockquote>
+  
+  <p>This line tells <code>mod_gzip</code> to compress any file ending with .js that is requested from the browser. Assuming that all of your JavaScript files end with .js, this will compress every request and apply the appropriate headers to indicate that the contents have been compressed.</p>
+
+  <h3><code>mod_deflate</code></h3>
+  <p>For <code>mod_deflate</code>, you can similarly include a single line to ensure that the JavaScript files are compressed before being sent.</p>
+  <p>This example will be compressing both CSS and JavaScript files, although you can compress any textual files you'd like by providing a space-delimited list of MIME types. Place the following line in either your <code>httpd.conf</code> file or a <code>.htaccess</code> file:</p>
+  <blockquote>
+    <pre>
+    <code>
+    #Tell mod_deflate to include all CSS and JavaScript files
+    AddOutputFilterByType DEFLATE text/css application/javascript
+
+    #note some headers will be application/x-javascript
+    </code>
+    </pre>
+  </blockquote>
+  
+  <p>Note that this line uses the MIME type of the response to determine whether or not to compress it. Remember that even though <code>text/javascript</code> is used for the type attribute of <code>&lt;script&gt;</code>, JavaScript files are typically served with a MIME type of <code>application/x-javascript</code> or <code>application/javascript</code>.</p>
+  
+  <h3>Is It Working?</h3>
+  <p>Crack open Firebug and view the Response Headers.  Look for <code class="header"><strong>Content-Encoding</strong> gzip</code>. Additionally, look for the <code class="header"><strong>Content-Length</strong> 5523</code> header to compare the byte size of the file before and after compression. Note also in the Request Headers that the browser sends a header alerting the server that it supports content encoding <code class="header"><strong>Accept-Encoding</strong> gzip,deflate</code>.</p>
+  <p>You can check any publicly-accessible document for compression by using an <a href="http://www.whatsmyip.org/http_compression/">online HTTP Compression Test</a> tool.</p>
+
+  <h3>In Conclusion</h3>
+  <p>Both <code>mod_gzip</code> and <code>mod_deflate</code> result in savings of around 70% of the original file size of JavaScript files. This is largely due to the fact that JavaScript files are plain text and can therefore be compressed very efficiently. Decreasing the wire weight of your files decreases the amount of time it takes to transmit to the browser. Keep in mind that there is a slight trade-off, because the server must spend time compressing the files on each request, and the browser must take some time to decompress the files once they arrive. Generally speaking, however, the trade-off is well worth it.</p>
+</div>
+
+<div class="description citation">
+  <p>Thanks to Nicholas C. Zakas and <a href="http://www.wrox.com/WileyCDA/WroxTitle/Professional-JavaScript-for-Web-Developers.productCd-047022780X.html" target="_blank">his excellent book</a>.</p>
+</div>
+</body>
+</html>

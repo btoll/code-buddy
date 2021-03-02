@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Using cookies to swap class names</title>
+<style type="text/css">
+#theDiv {
+  border: 1px solid #CCC;
+  padding: 10px;
+}
+.default {
+  background: #FFC;
+}
+.a {
+  background: green;
+}
+.b {
+  background: red;
+}
+.c {
+  background: blue;
+}
+</style>
+<script type="text/javascript">
+if (!document.cookie) { //if cookies aren't set then set some defaults (note that order doesn't matter);
+  document.cookie = encodeURI("firstName=jon");
+  document.cookie = encodeURI("classNumber=0");
+  document.cookie = encodeURI("lastName=bell");
+} else { //there are already cookies set;
+  window.onload = function () { //wait until the document is fully loaded so we have access to the DOM;
+	var classes = ["a", "b", "c"]; //define the array of classnames;
+	var cookieString = decodeURI(document.cookie);
+    var cookieArray = cookieString.split("; "); //split the cookies string into an array;
+    for (var i = 0; i < cookieArray.length; i++) {
+	  if (cookieArray[i].indexOf("classNumber") != -1) { //look for the cookies with "classNumber" as its name;
+	    var classNumber = parseInt(cookieArray[i].substring(cookieArray[i].indexOf("=") + 1, cookieArray[i].length)); //grab the value of the "classNumber" cookie and turn its data type from a string into a number;
+		if (classNumber < classes.length) { //this block runs as long as the "classNumber" value of the cookie is less than the total number of elements in the "classes" array (in this case the total number of array elements = 3);
+		  document.getElementById("theDiv").className = classes[classNumber]; //stuff the new classname into the awaiting element;
+		  document.cookie = encodeURI("classNumber=" + (++classNumber)); //increment and set the new cookie value;
+		} else { //when it gets here, theDiv isn't given a classname so it keeps it's default value;
+		  classNumber = 0; //reset the variable value...;
+		  document.cookie = encodeURI("classNumber=0"); //...and reset the cookie;
+		}
+	  }
+	}
+  };
+}
+</script>
+</head>
+
+<body>
+
+<div id="theDiv" class="default">
+  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?</p>
+</div>
+
+</body>
+</html>

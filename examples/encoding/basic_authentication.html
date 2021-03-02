@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Ajax and Basic HTTP Authentication</title>
+<style type="text/css">
+p {
+  margin: 0;
+}
+blockquote {
+  background: #FFC;
+  border: 1px solid #CCC;
+  padding: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<p>Need to send along authentication credentials when making a REST submission via Ajax?</p>
+<p>Want to avoid receiving a HTTP Error 401 and then the dreaded Basic HTTP Authentication dialog box?</p>
+<p>It's as easy as setting a header and encoding the username:password <a href="http://ostermiller.org/calc/encode.html" target="_blank">in Base64</a>.</p>
+
+<blockquote>
+<pre>
+<code>
+oXHR.open("GET", sURL, false);
+oXHR.setRequestHeader(&quot;Authorization&quot;, &quot;Basic YWRtaW4=&quot;); //&quot;YWRtaW4=&quot; is the Base64 encoded username:password;
+</code>
+</pre>
+</blockquote>
+
+<p>Note the <code>XMLHttpRequest</code> object's <code>open</code> method must be invoked before any headers are set.</p>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>JavaScript Call/Apply Methods and Context</title>
+<style type="text/css">
+p#tod {
+  font-weight: bold;
+}
+</style>
+<script type="text/javascript">
+function TimeOfDay(time, name) {
+  this.time = time;
+  this.name = name;
+  this.salutation = "Good " + this.time + ", " + this.name + ". " + this.message;
+}
+function Message(time, name, message) {
+  this.message = message;
+  //TimeOfDay.call(this, time, name);
+  TimeOfDay.apply(this, [time, name]); //same as Function.call() except that the second parameter is an array that contains all the arguments;
+}
+
+window.onload = function() {
+  document.getElementById("timeOfDay").onchange = function() {
+	switch (document.getElementById("timeOfDay").value) {
+	  case "morning":
+	    var x = new Message("morning", "Ginger", "How do you do?");
+	    document.getElementById("tod").innerHTML = x.salutation;
+	    break;
+		  
+	  case "afternoon":
+	    var x = new Message("afternoon", "Ben", "What's shaking?");
+		document.getElementById("tod").innerHTML = x.salutation;
+		break;
+		  
+	  case "night":
+		var x = new Message("night", "Suzy", "Don't let the bedbugs bite!");
+		document.getElementById("tod").innerHTML = x.salutation;
+		break;
+		  
+	  default:
+		document.getElementById("tod").innerHTML = "";
+		break;
+	}
+  };
+};
+</script>
+</head>
+
+<body>
+<select id="timeOfDay">
+  <option value="select">Select Time Of Day</option>
+  <option value="morning">Morning</option>
+  <option value="afternoon">Afternoon</option>
+  <option value="night">Night</option>
+</select>
+<p id="tod"></p>
+</body>
+</html>

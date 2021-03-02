@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>xhr.js</title>
+<style type="text/css">
+p {
+  border: 2px solid #CCC;
+  border-left: 0;
+  border-right: 0;
+  padding: 10px 5px;
+}
+</style>
+</head>
+
+<body>
+
+<p>Get the JavaScript <a href="../scripts/xhr.js">here</a></p>
+
+<div>
+<pre>
+<code>
+
+var getXHR = function () {
+
+  var aFactory = [
+		function () { return new XMLHttpRequest(); },
+	  function () { return new ActiveXObject("Msxml2.XMLHTTP"); },
+		function () { return new ActiveXObject("Microsoft.XMLHTTP"); }
+	];
+		
+	for (var i = 0, iLength = aFactory.length; i < iLength; i++) {
+		try {
+		  aFactory[i]();
+		} catch (e) {
+			continue;
+		}
+		getXHR = aFactory[i]; //memoize the function;
+		return aFactory[i]();
+	}
+		
+	/*if we get here than none of the methods worked*/
+	throw new Error("XMLHttpRequest object cannot be created.");
+		
+};
+
+//a generic function for performing Ajax requests;
+//it takes one argument, an object that contains a set of options;
+var ajax = function (options) {
+
+  //load the options object w/ defaults if no values were provided;
+  options = {
+    //the type of HTTP request;
+	  type: options.type || &quot;POST&quot;,
+	  postvars: options.postvars || &quot;&quot;,
+	
+	  //the header that will be returned (for HEAD requests only);
+	  header: options.header || &quot;&quot;,
+	
+	  //the url the request will be made to;
+	  url: options.url || &quot;&quot;,
+	
+	  //how long to wait before considering the request to be a timeout;
+	  timeout: options.timeout || 5000,
+	
+	  //functions to call when the request fails, succeeds, or completes (either fail or succeed);
+	  onComplete: options.onComplete || function (){},
+	  onError: options.onError || function (){},
+	  onSuccess: options.onSuccess || function (){},
+	
+	  //allow for the inclusion of a custom object;
+	  customObj: options.customObj || &quot;&quot;,
+	
+	  //allow for the inclusion of an animated gif to be displayed while readyState &gt; 4;
+	  image: options.image || &quot;&quot;,
+	  //and the elem to put it in;
+	  elem: options.elem || &quot;&quot;,
+	
+	  //the data type that'll be returned from the server;
+	  //the default is simply to determine what data was returned and act accordingly;
+	  data: options.data || &quot;&quot;,
+	
+	  /*i.e., Tooltip and the JavaScript library on page load need
+      a synchronous request, all others should default to asynchronous*/
+	  asynch: options.asynch === false ? false : true
+	
+  };
+
+  //create the request object;
+  var xml = TEST.portal.getXHR();
+
+  //open the asynchronous request (based upon the type of request);
+  options.type == &quot;HEAD&quot; ? xml.open(options.type, options.url) : xml.open(options.type, options.url, true);
+  
+  //we're going to wait for a request for 5 seconds before giving up;
+  var timeoutLength = options.timeout;
+  
+  //keep track of whent the request has been successfully completed;
+  var requestDone = false;
+  
+  //initialize a callback which will fire 5 seconds from now, canceling the request if it has not already occurred;
+  setTimeout(function () { requestDone = true;}, timeoutLength);
+  
+  //watch for when the state of the document gets updated;
+  xml.onreadystatechange = function () {
+    //wait until the data is fully loaded and make sure that the request hasn't already timed out;
+	if (options.image &amp;&amp; options.elem) { //display the image only if there's an image and a provided element to place it into;
+	  if (xml.readyState &lt;= 4) {
+		var myObj = options.elem.constructor === String ? document.getElementById(options.elem) : options.elem;
+	    myObj.innerHTML = &quot;&lt;img src=\&quot;&quot; + options.image + &quot;\&quot; alt=\&quot;\&quot; /&gt;&quot;;
+	  }
+    }
+
+	if (xml.readyState == 4 &amp;&amp; !requestDone) {
+	  //check to see if the request was successful;
+	  if (httpSuccess(xml)) {
+	    //execute the success callback w/ the data returned from the server;
+		options.onSuccess(httpData(xml, options.data));
+		
+	  //otherwise, an error occurred so execute the error callback;
+	  } else options.onError();
+
+	  //call the completion callback;
+	  options.onComplete();
+	  
+	  //clean up after ourselves to avoid memory leaks;
+	  xml = null;
+	}
+  };
+  
+  // Establish the connection to the server;
+  if (options.type == &quot;POST&quot;) {
+    var formData = &quot;&quot;;
+    for (var j = 0, theLength = options.postvars.length; j &lt; theLength; j++) {
+	  var oElem = options.postvars[j];
+	  switch (oElem.nodeName) {
+	    case &quot;INPUT&quot;:
+		  if (oElem.type == &quot;checkbox&quot;) {
+		    formData += oElem.name + &quot;=&quot; + escape(oElem.checked) + &quot;&amp;&quot;;
+		  } else if (oElem.type == &quot;radio&quot;) {
+			if (oElem.checked) {
+			  formData += oElem.name + &quot;=&quot; + escape(oElem.value) + &quot;&amp;&quot;;
+			}
+		  } else {
+			formData += options.postvars[j].name + &quot;=&quot; + escape(options.postvars[j].value) + &quot;&amp;&quot;;
+		  }
+		  break;
+		
+		case &quot;SELECT&quot;:
+		  if (oElem.multiple) {
+		    for (var k = 0, iLength = oElem.length; k &lt; iLength; k++) {
+              formData += oElem.value + &quot;=&quot; + escape(oElem.selected) + &quot;&amp;&quot;;
+		    }
+		  } else {
+			formData += oElem.name + &quot;=&quot; + escape(oElem.value) + &quot;&amp;&quot;;
+		  }
+		  break;
+		  
+		 default:
+		   formData += options.postvars[j].name + &quot;=&quot; + escape(options.postvars[j].value) + &quot;&amp;&quot;;
+	  } //end switch;
+    }
+    xml.setRequestHeader(&quot;Content-Type&quot;, &quot;application/x-www-form-urlencoded&quot;);
+    xml.send(formData);
+  } else {
+    xml.send(null);
+  }
+
+  //determine the success of the HTTP response;
+  function httpSuccess(r) {
+    try {
+	  //if no server status is provided and we're actually requesting a local file then it was successful;
+	  return !r.status &amp;&amp; location.protocol == &quot;file:&quot; ||
+	  
+	    //any status in the 200 range is good;
+		(r.status &gt;= 200 &amp;&amp; r.status &lt; 300) ||
+		
+		//successful if the document has not been modified;
+		r.status == 304 ||
+		
+		//Safari returns an empty status if the file has not been modified
+		navigator.userAgent.indexOf(&quot;Safari&quot;) &gt;= 0 &amp;&amp; typeof r.status == &quot;undefined&quot;;
+		
+	} catch(e) {}
+      //if checking the status failed then assume that the request failed;
+      return false;
+  
+  }
+  
+  //extract the correct data from the HTTP response;
+  function httpData(r, type) {
+
+    //get the content-type header;
+	var ct = r.getResponseHeader(&quot;content-type&quot;);
+
+    //if a HEAD request was made, determine which header name/value pair to return (or all of them) and exit function;
+    if (options.type == &quot;HEAD&quot; &amp;&amp; options.header)
+	  return options.header == &quot;all&quot; ? r.getAllResponseHeaders() : r.getResponseHeader(options.header);
+
+	//if no default data was provided determine if some form of xml was returned from the server;
+	var data = !options.data &amp;&amp; ct &amp;&amp; ct.indexOf(&quot;xml&quot;) &gt;= 0;
+
+	//get the xml document object if xml was returned from the server, otherwise return the text contents;
+	data = options.data == &quot;xml&quot; || data ? r.responseXML : r.responseText;
+
+	//if the specified type is &quot;script&quot;, execute the returned text response as if it were javascript;
+	if (options.data == &quot;json&quot;) {
+	  eval(&quot;var tmp = &quot; + data);
+	  return tmp;
+	}
+
+	//return the response data (either an xml document or a text string) &amp; pass the custom object along if one was defined (else the callback function, i.e. onSuccess, won't have access to any variables passed by the 'parent' for loop);
+	return options.customObj ? [data, options.customObj] : data;
+  }
+  
+}
+</code>
+</pre>
+</div>
+
+</body>
+</html>

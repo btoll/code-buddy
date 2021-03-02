@@ -1,0 +1,74 @@
+ul#menu {
+  list-style: none;
+  margin: 0;
+  padding: 15px 0 0 0;
+  width: 196px;
+}
+ul#menu a {
+  display: block;
+  width: 173px;
+  min-height: 16px;
+  padding: 7px 7px 7px 15px;
+  border-top: 1px solid #888;
+  font-size: 12px;
+  font-weight: bold;
+  text-decoration: none; 
+}
+ul#menu a:link, ul#menu a:visited {
+  color: #09d;
+}
+ul#menu a:hover { color: #565a5c; }
+ul#menu a.menuBottom { border-bottom: 1px solid #888; }
+ul#menu ul {
+  display: none;
+  margin: 0;
+  padding: 10px;
+  padding-left: 10px;
+  background-color: #fff;
+  border-left: 8px solid #7fd4ef;
+  border-top: 1px solid #888;
+  font-weight: normal;
+}
+ul#menu ul li {
+  line-height: 138%;
+  padding-left: 12px;
+  background: url(images/menu_bullet.gif) no-repeat 0 6px; 
+  list-style-position: outside;
+  list-style-type: none;
+  color: #d90;
+}
+ul#menu ul a {
+  display: inline;
+  height: auto;
+  margin: 0;
+  padding:0;
+  background-image: none;
+  background-color: transparent;
+  border: 0;
+  font-weight: normal;
+  text-decoration: underline;
+}
+body#paymentPage ul ul,
+body#historyPage ul ul,
+body#bankingPage ul ul,
+body#directPage ul ul,
+body#billPage ul ul,
+body#postponePage ul ul {
+  display: block;
+}
+#indexPage a#indexHref,
+#loanDetailPage a#loanDetailHref,
+#paymentPage a#paymentHref,
+#historyPage a#historyHref,
+#bankingPage a#bankingHref,
+#directPage a#directHref,
+#billPage a#billHref,
+#postponePage a#postponeHref,
+#applicationsPage a#applicationsHref,
+#accountPage a#accountHref,
+#toolsPage a#toolsHref
+ {
+  color: #333;
+  font-weight: bold;
+  text-decoration: none;
+}

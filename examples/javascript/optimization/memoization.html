@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>JavaScript memoization</title>
+<style type="text/css">
+p {
+  border: 0 solid #CCC;
+  border-width: 2px 0;
+  padding: 10px;
+}
+</style>
+<script type="text/javascript">
+function isPrime(n) {
+  var oCache = null,
+    bPrime = n !== 1;
+
+  if (!arguments.callee.cache) {
+    arguments.callee.cache = {}; //create a persistent internal cache;
+  }
+  oCache = arguments.callee.cache; //optimize;
+  if (oCache && oCache[n] !== undefined) {
+    return oCache[n];
+  }
+  for (var i = 2; i < n; i++) {
+    if (n % i === 0) {
+      bPrime = false;
+      break;
+    }
+  }
+  return oCache[n] = bPrime;
+}
+
+var x = isPrime(1),
+  y = isPrime(1),
+  z = isPrime(3),
+  a = isPrime(3),
+  b = isPrime(5),
+  d = isPrime(10),
+  e = isPrime(53),
+  f = isPrime(101);
+</script>
+</head>
+
+<body>
+<p>An example of memoization using a property of a function (since functions inherit from <code>Object.prototype</code> in JavaScript, after all).</p>
+<pre>
+<code>
+function isPrime(n) {
+  var oCache = null,
+    bPrime = n !== 1;
+
+  if (!arguments.callee.cache) {
+    arguments.callee.cache = {}; //create an persistent internal cache;
+  }
+  oCache = arguments.callee.cache; //optimize;
+  if (oCache &#38;&#38; oCache[n] !== undefined) {
+    return oCache[n];
+  }
+  for (var i = 2; i &#60; n; i++) {
+    if (n % i === 0) {
+      bPrime = false;
+      break;
+    }
+  }
+  return oCache[n] = bPrime;
+}
+
+var x = isPrime(1),
+  y = isPrime(1),
+  z = isPrime(3),
+  a = isPrime(3),
+  b = isPrime(5),
+  d = isPrime(10),
+  e = isPrime(53),
+  f = isPrime(101);
+</code>
+</pre>
+</body>
+</html>

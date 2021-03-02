@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>blur() method</title>
+<style type="text/css">
+div {
+  background: #FFF;
+  border: 1px solid #CCC;
+  margin: 10px;
+  padding: 10px;
+}
+pre {
+  background: #EED;
+  border: 1px dotted #CCC;
+  margin: 5px;
+  overflow: auto;
+  padding: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<div>
+<h3>The blur() method can be used for both <code>&lt;a&gt;</code> and <code>&lt;input&gt;</code> nodes.</h3>
+
+<pre>
+<code>
+var blur: function (aTemp) {
+
+  /* aTemp Array, arr[0] == elemType, arr[1] == parent;
+  if no argument is given, default to blurring all links;
+  if arr[0] == elemType == "input", blur all &lt;input&gt; types except "text" (i.e., &lt;input type="text"&gt;);
+  */
+  var aTemp = aTemp || []; //if no argument is passed, set arr to an empty array so the code doesn't bomb;
+  var cElems = aTemp[1] ? BLUEBOY.utility.normalizeElement(aTemp[1]).getElementsByTagName(aTemp[0] || "a") : document.getElementsByTagName(aTemp[0] || "a");
+  var iElemsLength = cElems.length;
+  for (var i = 0; i < iElemsLength; i++) {
+    if (cElems[i].type != "text") {
+      cElems[i].onfocus = function() { if(this.blur) this.blur(); };
+    }
+  }
+
+  if (arguments.length > 1) { //allow for method overriding;
+    for (var i = 0; arguments[i] != null; i++) {
+      arguments.callee(arguments[i]);
+    }
+  }
+
+}
+</code>
+</pre>
+
+<p>This can be used in the following manner:</p>
+
+<pre>
+<code>
+blur(["a", "results"]); //blur all the links w/in document.getElementById("results");
+</code>
+</pre>
+
+<p>or</p>
+
+<pre>
+<code>
+blur(["a"], ["input", "categoriesForm"]); //blur all links and all inputs w/in document.getElementById("categoriesForm");
+</code>
+</pre>
+
+<p>or</p>
+
+<pre>
+<code>
+blur(["input"]); //blur all inputs;
+</code>
+</pre>
+
+<p>or however you want (I think you get the point).</p>
+
+<p>What's really nice about this method is that the developer can attach the <code>focus</code> event handler to links and inputs created on-the-fly. Simply invoke the <code>blur()</code> method directly after the elements are created.</p>
+
+</div>
+
+</body>
+</html>

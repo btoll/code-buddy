@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Canceling Event Bubbling</title>
+<script type="text/javascript">
+window.onload = function() {
+  var elems = document.getElementsByTagName("*");
+  for (var i = 0; i < elems.length; i++) {
+    elems[i].onmouseover = function(e) {
+	  this.style.border = "1px solid #F00";
+	  e && e.stopPropagation ? e.stopPropagation() : window.event.cancelBubble = true;
+	};
+	elems[i].onmouseout = function(e) {
+	  this.style.border = "none";
+	  e && e.stopPropagation ? e.stopPropagation() : window.event.cancelBubble = true;
+	};
+  }
+};
+</script>
+</head>
+
+<body>
+
+<div id="test">
+  <p>This example shows the effects of canceling an event from bubbling up its parent elements.</p>
+  <p id="par"><a href="#">Click me</a>, after all that's what I'm here for!</p>
+</div>
+
+</body>
+</html>

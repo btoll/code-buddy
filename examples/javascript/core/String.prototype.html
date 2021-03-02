@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>augmenting String.prototype</title>
+<script type="text/javascript">
+/*
+String.prototype.trim = function () {
+  var re = /^\s+|\s+$/g;
+  return function () { return this.replace(re, ""); };
+}();
+*/
+String.prototype.trim = function () {
+  var re = /^\s+|\s+$/g;
+  return this.replace(re, "");
+};
+
+String.prototype.HTMLify = function () {
+  var oChars = {
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    '&': '&amp;'
+  };
+  return this.replace(/([<">&])/g, function (a, b) {
+    return oChars[b].constructor === String ? oChars[b] : a;
+  });
+};
+
+window.onload = function () {
+  document.getElementById("trimForm").onsubmit = function () {
+    document.getElementById("trimInput").value = document.getElementById("trimInput").value.trim();
+    return false;
+  };
+
+  document.getElementById("htmlForm").onsubmit = function () {
+    document.getElementById("htmlInput").value = document.getElementById("htmlInput").value.HTMLify();
+    return false;
+  };
+};
+</script>
+<style type="text/css">
+body {
+  background: #CCC;
+}
+h4 {
+  background: #EDD;
+  border: 2px solid #333;
+  margin: 10px 0;
+  padding: 10px 20px;
+}
+pre {
+  background: #FFC;
+  border: 1px solid #333;
+  margin: 10px;
+  padding: 10px;
+}
+input[type="input"],
+textarea {
+  background: #FFF;
+  color: blue;
+}
+hr {
+  margin: 40px 0;
+}
+</style>
+</head>
+
+<body>
+
+<h4>trim() :: Trims whitespace before and after a string.</h4>
+<div>
+  <pre>
+    <code>
+    String.prototype.trim = function () {
+      var re = /^\s+|\s+$/g;
+      return this.replace(re, "");
+    };
+    </code>
+  </pre>
+</div>
+
+<form id="trimForm">
+  <input type="input" id="trimInput" />
+  <input type="submit" value="Submit" />
+  <input type="reset" value="Clear" />
+</form>
+
+<hr />
+
+<h4>HTMLify(): Replaces &lt; &gt; &amp; &quot; with their respective HTML entities.</h4>
+<div>
+  <pre>
+    <code>
+    String.prototype.HTMLify = function () {
+      var oChars = {
+        '&lt;': '&amp;lt;',
+        '&gt;': '&amp;gt;',
+        '&quot;': '&amp;quot;',
+        '&amp;': '&amp;amp;'
+      };
+      return this.replace(/([&lt;&quot;&gt;&amp;])/g, function (a, b) {
+        return oChars[b].constructor === String ? oChars[b] : a;
+      });
+    };
+    </code>
+  </pre>
+</div>
+
+<form id="htmlForm">
+  <textarea id="htmlInput" cols="80" rows="15"></textarea>
+  <input type="submit" value="Submit" />
+  <input type="reset" value="Clear" />
+</form>
+
+</body>
+</html>

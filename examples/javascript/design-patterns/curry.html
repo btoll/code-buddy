@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Function Currying</title>
+<style type="text/css">
+p {
+  background: #CCD;
+  border: 0 solid #CCC;
+  border-width: 2px 0;
+  padding: 10px;
+}
+code {
+  color: #789;
+}
+</style>
+<script type="text/javascript">
+Function.prototype.curry = function () {
+  var fn = this, 
+    slice = Array.prototype.slice,
+    args = slice.call(arguments);
+
+  return function () {
+    return fn.apply(this, args.concat(slice.call(arguments)));
+  };
+};
+
+var curried = function (add1, add2) {
+  return add1 + add2;
+}.curry(5);
+//alert(curried(50));
+
+Function.prototype.partial = function () {
+  var fn = this,
+    args = Array.prototype.slice.call(arguments);
+
+  return function () {
+    var arg = 0;
+    for (var i = 0; i < args.length && arg < arguments.length; i++) {
+      if (args[i] === undefined) {
+        args[i] = arguments[arg++];
+      }
+    }
+    return fn.apply(this, args);
+  };
+};
+var delay = setTimeout.partial(undefined, 10);
+//delay(function () { alert("a call to this function will be temporarily delayed")});
+</script>
+</head>
+
+<body>
+<p>Function Currying</p>
+<pre>
+<code>
+Function.prototype.curry = function () {
+  var fn = this,
+    slice = Array.prototype.slice,
+    args = slice.call(arguments);
+
+  return function () {
+    return fn.apply(this, args.concat(slice.call(arguments)));
+  };
+};
+
+var curried = function (add1, add2) {
+  return add1 + add2;
+}.curry(5);
+curried(50); //returns 55;
+</code>
+</pre>
+
+<p>Function Currying with <code>undefined</code> parameters (compliments of Oliver Steele's <a href="http://osteele.com/sources/javascript/functional/">Functional library</a>).</p>
+<pre>
+<code>
+Function.prototype.partial = function () {
+  var fn = this, args = Array.prototype.slice.call(arguments);
+  return function () {
+    var arg = 0;
+    for (var i = 0; i &#60; args.length &#38;&#38; arg &#60; arguments.length; i++) {
+      if (args[i] === undefined) {
+        args[i] = arguments[arg++];
+      }
+    }
+    return fn.apply(this, args);
+  };
+};
+var delay = setTimeout.partial(undefined, 10);
+//delay(function () { alert(&#34;a call to this function will be temporarily delayed&#34;)});
+
+</body>
+</html>

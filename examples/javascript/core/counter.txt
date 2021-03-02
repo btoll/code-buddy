@@ -1,0 +1,9 @@
+function increment() {
+  var x = 1;
+  return function() { return x++; };
+}
+var z = increment();
+alert(z());
+alert(z());
+alert(z());
+alert(z());

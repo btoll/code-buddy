@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>John Resig's makeClass() method</title>
+<style type="text/css">
+pre {
+  background: #EED;
+  border: 1px solid #999;
+  margin: 10px;
+  padding: 10px;
+}
+p {
+  background: #FFA;
+  border: 1px dashed #CCC;
+  margin: 10px;
+  padding: 10px;
+}
+</style>
+<script type="text/javascript">
+function makeClass() {
+  return function (args) {
+    if (this instanceof arguments.callee) { //if User has been instantiated, args only refers to the first function parameter, in this case "John", thus it is not the arguments Object and has no property .callee that refers to the function itself; this.init will be called with the arguments Object (the "else" clause in the ternary operator); remember when you're inside a function, arguments.callee refers to the function itself;
+      if (typeof this.init == "function") {
+        this.init.apply(this, args.callee ? args : arguments); //test to see if "args" is the arguments Object (only the Object will have the callee property);
+      }
+    } else { //here we're instantiating an anonymous function from inside itself; when the function is called again, the sole function argument (the arguments Object) is passed into args and thus becomes the second argument to .apply when this.init is invoked (the "if" clause of the ternary operator);
+      return new arguments.callee(arguments);
+    }
+  };
+}
+
+var User = makeClass(); //at this point "User" is just a heavily-enhanced function;
+User.prototype.init = function (first, last) {
+  this.name = first + " " + last;
+};
+var user = User("John", "Resig");
+user.name; //"John Resig";
+</script>
+</head>
+
+<body>
+
+<h2>John Resig's makeClass() method</h2>
+
+<h4>This allows for successful "class" instantiation even if the <code>new</code> operator is forgotten.</h4>
+
+<pre>
+<code>
+function makeClass() {
+  return function (args) {
+    if (this instanceof arguments.callee) { <strong>(1)</strong>
+      if (typeof this.init == "function") {
+        this.init.apply(this, args.callee ? args : arguments); <strong>(2)</strong>
+      }
+    } else { <strong>(3)</strong>
+      return new arguments.callee(arguments);
+    }
+  };
+}
+
+var User = makeClass(); //at this point "User" is just a heavily-enhanced function;
+User.prototype.init = function (first, last) {
+  this.name = first + " " + last;
+};
+var user = User("John", "Resig");
+user.name; //"John Resig";
+</code>
+</pre>
+
+<p><strong>(1)</strong> If User has been instantiated, args only refers to the first function parameter, in this case "John", thus it is not the arguments Object and has no property .callee that refers to the function itself. this.init will be called with the arguments Object (the "else" clause in the ternary operator); remember when you're inside a function, arguments.callee refers to the function itself.</p>
+
+<p><strong>(2)</strong> Test to see if "args" is the arguments Object (only the Object will have the <code>callee</code> property).</p>
+
+<p><strong>(3)</strong> Here we're instantiating an anonymous function from inside itself; when the function is called again, the sole function argument (the arguments Object) is passed into args and thus becomes the second argument to <code>apply</code> when this.init is invoked (the "if" clause of the ternary operator).</p>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Dates</title>
+<script type="text/javascript">
+window.onload = function() {
+  (function() {
+    var dotm = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; //dotm = days of the month;
+    var theDate = new Date();
+	var curYear = theDate.getFullYear();
+	for (var i = curYear; i < curYear + 5; i++) {
+	  var opt = new Option(i, i, false, false);
+	  document.getElementById("years").options[document.getElementById("years").options.length] = opt;
+	}
+    document.getElementById("months").onchange = document.getElementById("years").onchange = function() {
+	  if (document.getElementById("days").value != null) var oldDay = document.getElementById("days").value; //if a date has already been selected then retain its value (stuff it into a variable b/c the list is rewritten below each time);
+      document.getElementById("days").length = 0; //remove all options;
+	  var numDays = parseInt(document.getElementById("years").value) % 4 == 0 && parseInt(document.getElementById("months").value) == 1 ? 29 : dotm[document.getElementById("months").value]; //account for the leap year;
+	  for (var i = 1; i <= numDays; i++) {
+		var opt = oldDay == i ? new Option(i, i, false, true) : new Option(i, i, false, false);//set the option as default if it matches their original selection;
+	    document.getElementById("days").options[document.getElementById("days").options.length] = opt;
+	  }
+    };
+  })();
+};
+</script>
+</head>
+
+<body>
+
+<select name="months" id="months">
+  <option value="select">Select Month</option>
+  <option value="0">January</option>
+  <option value="1">February</option>
+  <option value="2">March</option>
+  <option value="3">April</option>
+  <option value="4">May</option>
+  <option value="5">June</option>
+  <option value="6">July</option>
+  <option value="7">August</option>
+  <option value="8">September</option>
+  <option value="9">October</option>
+  <option value="10">November</option>
+  <option value="11">December</option>
+</select>
+<select name="days" id="days"></select>
+<select name="years" id="years"></select>
+
+<p>The number of days will adjust according to the month and year selected (will also account for leap years).</p>
+
+</body>
+</html>

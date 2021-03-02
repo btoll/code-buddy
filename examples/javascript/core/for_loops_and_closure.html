@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>For loops and closure</title>
+<style type="text/css">
+div {
+  background: #FFC;
+  border: 1px solid #CCC;
+  margin: 10px;
+  padding: 10px;
+}
+div p {
+  font-weight: bold;
+}
+ul {
+  background: #EED;
+  border: 1px solid #CCC;
+}
+</style>
+<script type="text/javascript">
+window.onload = function () {
+
+  var links = document.getElementById("menu").getElementsByTagName("a");
+  for (var i = 0; i < links.length; i++) {
+    var temp = links[i].className;
+    links[i].onclick = function () {
+	  alert(temp);
+	};
+  }
+  
+  var links2 = document.getElementById("menu2").getElementsByTagName("a");
+  for (var j = 0; j < links2.length; j++) {
+    //var temp = links[i].className;
+    links2[j].onclick = function (theID) {
+	  return function () {
+	    alert(theID);
+	  };
+	}(links2[j].className);
+  }
+
+};
+</script>
+</head>
+
+<body>
+
+<div>
+  <p>First example (doesn't work)</p>
+  <pre>
+    <code>
+  var links = document.getElementById("menu").getElementsByTagName("a");
+  for (var i = 0; i < links.length; i++) {
+    var temp = links[i].className;
+    links[i].onclick = function () {
+      alert(temp);
+    };
+  }
+	</code>
+  </pre>
+  <ul id="menu">
+    <li><a href="#" class="one">1</a></li>
+    <li><a href="#" class="two">2</a></li>
+    <li><a href="#" class="three">3</a></li>
+    <li><a href="#" class="four">4</a></li>
+    <li><a href="#" class="five">5</a></li>
+    <li><a href="#" class="six">6</a></li>
+  </ul>
+
+  <p>Second example (works)</p>
+  <pre>
+    <code>
+  var links2 = document.getElementById("menu2").getElementsByTagName("a");
+  for (var j = 0; j < links2.length; j++) {
+    //var temp = links[i].className;
+    links2[j].onclick = function (theID) {
+      return function () {
+        alert(theID);
+      };
+    }(links2[j].className);
+  }
+    </code>
+  </pre>
+  <ul id="menu2">
+    <li><a href="#" class="one">1</a></li>
+    <li><a href="#" class="two">2</a></li>
+    <li><a href="#" class="three">3</a></li>
+    <li><a href="#" class="four">4</a></li>
+    <li><a href="#" class="five">5</a></li>
+    <li><a href="#" class="six">6</a></li>
+  </ul>
+  
+</div>
+
+<p>The first example doesn't work because every object had the same id (the last id) and because of closure you get bound not to the value of that at the time you call it, you get bound to its current value, which can change over time.</p>
+<p>The second example works properly because of adding another function that creates another closure that is bound to its parent's argument variable.</p>
+
+</body>
+</html>

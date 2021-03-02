@@ -1,0 +1,74 @@
+body { 
+  background-color: #DBDBDB; 
+  color: #000;
+  font: 12px Arial, Helvetica, sans-serif; 
+  margin: 20px auto; 
+  padding: 0; 
+  width: 800px;
+}
+body * {
+  margin: 0;
+  padding: 0;
+}
+h1 { 
+  border-bottom: 2px solid #333; 
+  color: #333; 
+  font-size: 16px; 
+  font-weight: bold; 
+  padding: 0 3px 3px 3px; 
+  margin: 0 0 10px 0; 
+}
+h2 { 
+  color: #999; 
+  font-size: 14px; 
+  font-weight: bold; 
+  margin: 0 0 10px 0; 
+}
+h3 { 
+  border-top: 1px solid #999;
+  border-bottom: 1px solid #999;
+  color: #666; 
+  font-size: 12px; 
+  font-weight: bold; 
+  margin: 0 0 10px 0; 
+  padding: 5px 0;
+}
+p, dl, ol, ul {
+  margin-bottom: 15px;
+}
+dt {
+  color: #333;
+  font-weight: bold;
+  margin-top: 10px;
+}
+dd {
+  /*background: url(../Copy of ver-2/images/bullet.gif) no-repeat 0 6px;*/
+  margin: 0 0 5px 10px;
+  padding-left: 8px;
+}
+ol, ul {
+  margin-left: 25px;
+}
+blockquote {
+  background-color: #F1F1F1;
+  border: 1px solid #CCC;
+  margin: 15px 25px;
+  padding: 10px;
+  white-space: pre;
+}
+#content {
+  border: 1px solid #999;
+  background-color: #FFF;
+  margin-bottom: 40px;
+  padding: 20px;
+}
+.bold {
+  font-weight: bold !important;
+}
+.center {
+  text-align: center !important;
+}
+.strike {
+  color: red;
+  text-decoration: line-through;
+}

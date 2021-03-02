@@ -1,0 +1,13 @@
+var removeChildren: function (kids) {
+  /*kids can either be an array (remove multiple nodes at once) or an object or string (only remove one node)*/
+  if (kids.constructor === Array) {
+    var kidsLength = kids.length;
+    for (var i = 0; i < kidsLength; i++) {
+      var elem = this.normalizeElement(kids[i]);
+      elem.parentNode.removeChild(elem);
+    }
+  } else {
+    var elem = this.normalizeElement(kids);
+    elem.parentNode.removeChild(elem);
+  }
+}

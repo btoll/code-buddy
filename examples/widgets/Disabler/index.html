@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Disabler</title>
+<style type="text/css">
+body {
+  background: #EED;
+}
+a.noImage, a.noImageDisable {
+  background: #e9e0d1; 
+  border: 1px solid #565a5c;
+  color: #221E1F;
+  padding: 2px 20px;
+  text-align: center;
+  text-decoration: none;
+}
+a.noImageDisable {
+  border-color: #CCC;
+  color: #CCC;
+  cursor: default;
+}
+a.noImage:hover {
+  color: #221E1F;
+}
+a.generic, a.genericDisable {
+  background: #e9e0d1 url(images/generic.gif) repeat-x; 
+  border: 1px solid #565a5c;
+  color: #221E1F;
+  padding: 2px 20px;
+  text-align: center;
+  text-decoration: none;
+}
+a.genericDisable {
+  border-color: #CCC;
+  color: #CCC;
+  cursor: default;
+}
+a.generic:hover {
+  background: url(images/generic_hover.gif) repeat-x;
+}
+a.brand, a.brandDisable {
+  background: url(images/brandingBackNew.gif) no-repeat -5px 0; /* Moves background image to the left to hide left rounded corners */
+  border: 1px solid #585C5E;
+  border-top: 0;
+  color: #fff;
+  font-size: 15px;
+  font-weight: bold;
+  margin-right: 5px;
+  padding: 4px 10px;
+  text-decoration: none;
+}
+a.brandDisable {
+  background: url(images/brandingDisabled.jpg) repeat-x;
+  border: 1px solid black;
+  border-color: #CCC;
+  cursor: default;
+}
+a.brand:hover {
+  background-position: bottom;
+  border-top: 1px solid #585C5E;
+  border-bottom: 0;
+}
+form {
+  margin: 20px;
+  padding: 10px;
+}
+div {
+  margin: 20px;
+}
+h4 {
+  background: #EFF;
+  border: 1px solid #CCC;
+  font-family: 'Trebuchet MS';
+  margin-left: -20px;
+  padding: 5px;
+}
+</style>
+<script type="text/javascript">
+
+window.onload = function () {
+
+  (function () {
+  
+    /*this script works by passing around a keyword.  for example, the keyword 'generic' is found in the classnames, the DIV id, the link ID, and the radio button IDs (genericDisable and genericEnable)*/
+    var cLinks = document.getElementsByTagName("a");
+    var aIds = ["noImage", "generic", "brand"];
+
+    var iLinksLength = cLinks.length;
+    for (var i = 0; i < iLinksLength; i++) {
+      cLinks[i].onfocus = function () { if (this.blur) this.blur(); };
+    }
+
+    for (var j = 0; j < aIds.length; j++) {
+
+      document.getElementById(aIds[j]+"Disable").onclick = function () { //get the ID for the input and disable the link;
+        var oTemp = this.id.substr(0, this.id.indexOf("Disable")) + "Link"; //replace 'Disable' w/ 'Link' (ex. 'noImageLink');
+        document.getElementById(oTemp).className =  this.id; //get the classname, ex. genericDisable;
+        if (document.getElementById(oTemp).onclick) { //store the handler (if there was one);
+          document.getElementById(oTemp).oldHandler = oTemp.onclick; //store the old handler so it can be restored once the button is re-enabled;
+        }
+        document.getElementById(oTemp).onclick = function () { return false; };
+      };
+
+      document.getElementById(aIds[j]+"Enable").onclick = function () { //get the ID for the input and enable the link;
+        var oTemp = this.id.substr(0, this.id.indexOf("Enable")) + "Link"; //replace 'Enable' w/ 'Link' (ex. 'noImageLink');
+        document.getElementById(oTemp).className = this.id.substr(0, this.id.indexOf('Enable')); //strip off 'Enable' to get the classname (ex. 'generic');
+        if (document.getElementById(oTemp).oldHandler) { //restore the old handler (if there was one);
+          document.getElementById(oTemp).onclick = document.getElementById(oTemp).oldHandler; //restore the old handler;
+        } else { //else restore the browser's default behavior;
+          document.getElementById(oTemp).onclick = function () { return true; };
+        }
+      };
+
+    }
+	
+  })();
+
+};
+</script>
+</head>
+
+<body>
+<h1>Disabling Buttons</h1>
+<form action="index.html">
+  <div id="noImage">
+    <h4>No images were used for this button, purely CSS.</h4>
+    <a id="noImageLink" href="http://www.google.com/" class="noImage">click me</a>
+    <input type="radio" id="noImageDisable" name="disabler3" value="Disable" /> Disable
+    <input type="radio" id="noImageEnable" name="disabler3" value="Enable" checked="checked" /> Enable
+  </div>
+  
+  <div id="generic">
+    <h4>Only one image was used for this button (the enabled state).</h4>
+    <a id="genericLink" href="http://www.google.com/" class="generic">click me</a>
+    <input type="radio" id="genericDisable" name="disabler1" value="Disable" /> Disable
+    <input type="radio" id="genericEnable" name="disabler1" value="Enable" checked="checked" /> Enable
+  </div>
+  
+  <div id="brand">
+    <h4>Two images were used, one for the enabled state and another for the disabled state.</h4>
+    <a id="brandLink" href="http://www.google.com/" class="brand">click me</a>
+    <input type="radio" id="brandDisable" name="disabler2" value="Disable" /> Disable
+    <input type="radio" id="brandEnable" name="disabler2" value="Enable" checked="checked" /> Enable
+  </div>
+</form>
+</body>
+</html>

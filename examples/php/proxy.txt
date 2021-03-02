@@ -1,0 +1,15 @@
+<?php
+
+$url = "http://192.168.1.99:8080";
+$session = curl_init($url);
+
+header("Content-Type: text/html");
+$response = curl_exec($session);
+$header_size = curl_getinfo($session, CURLINFO_HEADER_SIZE);
+
+$result = substr($response, $header_size);
+echo $result;
+
+curl_close($session);
+
+?> 

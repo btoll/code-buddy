@@ -1,0 +1,3 @@
+var $ = function (sElem) {
+  return document.getElementById(sElem);
+};

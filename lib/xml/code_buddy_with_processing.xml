@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="code_buddy.xsl"?>
+
+<technologies>
+  <technology type="Ajax">
+	<document>
+	  <location>examples/ajax/HEAD.txt</location>
+	  <description>HEAD name/value pairs</description>
+    </document>
+	<document>
+	  <location>examples/ajax/xhr.html</location>
+	  <description>A collection of functions used to perform Ajax calls.  Based on a skeletal Ajax module by John Resig, author of the jQuery JavaScript library, it has since by augmented and expanded as needed.</description>
+    </document>
+  </technology>
+
+  <technology type="CSS">
+	<document>
+	  <location>examples/css/attribute_selectors.html</location>
+	  <description>Highlights various CSS2.1 attribute selectors</description>
+    </document>
+	<document>
+	  <location>examples/css/counters.txt</location>
+	  <description>Use CSS counters to increment any elements and custom number (or letter) infinite nested lists</description>
+    </document>
+	<document>
+	  <location>examples/css/CSS Bugs.doc</location>
+	  <description>A list of CSS bugs and their fixes</description>
+    </document>
+	<document>
+	  <location>examples/css/CSS Definitions.doc</location>
+	  <description>Miscellaneous CSS definitions</description>
+    </document>
+	<document>
+	  <location>examples/css/CSS Floating.doc</location>
+	  <description>All about floating elements with CSS</description>
+    </document>
+	<document>
+	  <location>examples/css/CSS Hacks.doc</location>
+	  <description>A list of CSS hacks and filters</description>
+    </document>
+	<document>
+	  <location>examples/css/CSS Lists.doc</location>
+	  <description>All about CSS and lists</description>
+    </document>
+	<document>
+	  <location>examples/css/hasLayout.html</location>
+	  <description>Explains IE's layout concept with an example</description>
+    </document>
+	<document>
+	  <location>examples/css/Inline Elements.doc</location>
+	  <description>All about replaced and nonreplaced inline elements</description>
+    </document>
+	<document>
+	  <location>examples/css/CSS Positioning.doc</location>
+	  <description>All about positioning elements with CSS</description>
+    </document>
+	<document>
+	  <location>examples/css/Styling The Body Tag.doc</location>
+	  <description>Styling the HTML tag to force the BODY tag to behave like a DIV</description>
+    </document>
+	<document>
+	  <location>examples/css/CSS Table Layout.doc</location>
+	  <description>All about CSS and table layout</description>
+    </document>
+    <document>
+	  <location>examples/css/CSS Terms and Properties.doc</location>
+	  <description>Notes on miscellaneous terms and properties</description>
+    </document>
+	<document>
+	  <location>examples/css/reset.txt</location>
+	  <description>reset.css by Eric Meyer</description>
+    </document>
+  </technology>
+  
+  <technology type="HTML">
+    <document>
+	  <location>examples/html/ie_conditional_comments.txt</location>
+	  <description>IE conditional comments</description>
+    </document>
+	<document>
+	  <location>examples/html/microformats.html</location>
+	  <description>An example of microformats</description>
+    </document>
+	<document>
+	  <location>examples/html/strict_doctype.txt</location>
+	  <description>A Strict DOCTYPE and partial header</description>
+    </document>
+  </technology>
+
+  <technology type="JavaScript">
+	<document>
+	  <location>examples/js/addLoadEvent.txt</location>
+	  <description>A function that allows for unlimited onload event handlers.</description>
+    </document>
+	<document>
+	  <location>examples/js/Arithmetic Unary Operators.doc</location>
+	  <description>All about JavaScript unary operators.</description>
+    </document>
+        <document>
+	  <location>examples/js/Array.prototype.html</location>
+	  <description>augmenting Array.prototype</description>
+    </document>
+	<document>
+	  <location>examples/js/blur.html</location>
+	  <description>A blur method that can be used for both links and inputs and is great for attaching event handlers on-the-fly.</description>
+    </document>
+	<document>
+	  <location>examples/js/capFirstLetter.txt</location>
+	  <description>Capitalize the first letter of each word in a given string.</description>
+    </document>
+	<document>
+	  <location>examples/js/cleanWhitespace.txt</location>
+	  <description>A function that strips out whitespace from a document.</description>
+    </document>
+	<document>
+	  <location>examples/js/closeTooltip.html</location>
+	  <description>Close a tooltip by clicking anywhere in the document.</description>
+    </document>
+        <document>
+	  <location>examples/js/custom_error_handling.html</location>
+	  <description>Exceptions and custom error handling</description>
+    </document>
+	<document>
+	  <location>examples/js/for_loops_and_closure.html</location>
+	  <description>An example of using a closure to ensure that a function is passed its correct value in a FOR loop.</description>
+    </document>
+	<document>
+	  <location>examples/js/Function.prototype.html</location>
+	  <description>augmenting Function.prototype</description>
+    </document>
+	<document>
+	  <location>examples/js/getting_value_from_radios.html</location>
+	  <description>How to determine which radio button was selected from a group.</description>
+    </document>
+	<document>
+	  <location>examples/js/Handler.html</location>
+	  <description>David Flanagan's Handler module :: portable event-handler registration functions.</description>
+    </document>
+	<document>
+	  <location>examples/js/id_name_confusion_in_ie.html</location>
+	  <description>id and Name attribute confusion in IE when using document.getElementById().</description>
+    </document>
+	<document>
+	  <location>examples/js/inheritance.html</location>
+	  <description>Inheritance in JavaScript.</description>
+    </document>
+	<document>
+	  <location>examples/js/RegExp.exec.html</location>
+	  <description>The powerful RegExp.exec() method.</description>
+    </document>
+	<document>
+	  <location>examples/js/setting_the_date.html</location>
+	  <description>Using the native JavaScript Date object to set a date one day in the future.</description>
+    </document>
+	<document>
+	  <location>examples/js/replace.html</location>
+	  <description>The String object's replace method and an example of how it can be used as a client-side HTML generator.</description>
+    </document>
+	<document>
+	  <location>examples/js/coords.txt</location>
+	  <description>A collection of functions that determines the mouse coordinates in the document. Thanks to John Resig.</description>
+    </document>
+	<document>
+	  <location>examples/js/counter.txt</location>
+	  <description>A closure that acts as a counter.</description>
+    </document>
+	<document>
+	  <location>examples/js/createElem.html</location>
+	  <description>A function that creates DOM element nodes on the fly.  Also, can optionally set ID and CLASS attributes and values. Multiple versions.</description>
+    </document>
+	<document>
+	  <location>examples/js/getStyle.txt</location>
+	  <description>A function that retrieves the computed style value of a CSS property.</description>
+    </document>
+	<document>
+	  <location>examples/js/getElementsByClassName.txt</location>
+	  <description>A function that creates a pseudo-array collection of the specified class name.</description>
+    </document>
+	<document>
+	  <location>examples/js/invoker.html</location>
+	  <description>A function that allows for invoking multiple functions at once, such as when initializing an application on page load.</description>
+    </document>
+	<document>
+	  <location>examples/js/removeElementsByClassName.txt</location>
+	  <description>A function that removes a specified class name from the document.</description>
+    </document>
+	<document>
+	  <location>examples/js/getElementById.txt</location>
+	  <description>Prototype's document.getElementById() shortcut.</description>
+    </document>
+	<document>
+	  <location>examples/js/Hungarian_notation.txt</location>
+	  <description>My version of Hungarian notation in which the name of a variable indicates its type or intended use.</description>
+    </document>
+	<document>
+	  <location>examples/js/innerHTML.doc</location>
+	  <description>A description and example of the innerHTML property.</description>
+    </document>
+	<document>
+	  <location>examples/js/innerHTML_safari.html</location>
+	  <description>Safari and innerHTML bug.</description>
+    </document>
+	<document>
+	  <location>examples/js/makeClass.html</location>
+	  <description>John Resig's makeClass() method explained.</description>
+    </document>
+	<document>
+	  <location>examples/js/millennium_problem.html</location>
+	  <description>A description of the millenium problem when using the Date object. Thanks to QuirksMode.</description>
+    </document>
+	<document>
+	  <location>examples/js/insertAfter.txt</location>
+	  <description>A function that allows for the insertion of a DOM element after the specified element. Thanks to Jeremy Keith.</description>
+    </document>
+	<document>
+	  <location>examples/js/sort.txt</location>
+	  <description>Custom functions that return case-insensitive alphabetical sorts and 'true' numeric sorts</description>
+    </document>
+        <document>
+	  <location>examples/js/String.prototype.html</location>
+	  <description>augmenting String.prototype</description>
+    </document>
+	<document>
+	  <location>examples/js/cookie_swap.html</location>
+	  <description>Using cookies to swap class names</description>
+    </document>
+	<document>
+      <location>examples/js/cookie_swap_alt.html</location>
+      <description>This examples uses an anonymous function that is invoked as the browsers parse the document and before it invokes its onload event handler</description>
+    </document>
+	<document>
+	  <location>examples/js/targetBlank.txt</location>
+	  <description>A function that replaces the deprecated "target='_blank'".</description>
+    </document>
+	<document>
+	  <location>examples/js/removeChildren.txt</location>
+	  <description>A function that allows the developer to remove all the children from a parent node in one fell swoop. Cool!</description>
+    </document>
+	<document>
+	  <location>examples/js/xslt.html</location>
+	  <description>JavaScript and XSLT processing.</description>
+    </document>
+  </technology>
+  
+  <technology type="PHP">
+    <document>
+	  <location>examples/php/file_upload.html</location>
+	  <description>Uploading files using PHP.</description>
+    </document>
+  </technology>
+
+  <technology type="CSS Layout" list="subgroup">
+    <item app="Borrower Portal Menu">
+	  <document>
+	    <location content="demonstration">examples/css-layout/bp-menu/index.html</location>
+	    <description>Classic drag &amp; drop behavior</description>
+	  </document>
+	  <document>
+	    <location content="readme">examples/css-layout/bp-menu/readme.html</location>
+		<description>READ ME</description>
+	  </document>
+	  <document>
+	    <location content="stylesheet">examples/css-layout/bp-menu/main.css</location>
+	    <description>The stylesheet</description>
+	  </document>
+	</item>
+	<item app="Layout via Absolute Positioning">
+	  <document>
+	    <location content="demonstration">examples/css-layout/layout_via_absolute_positioning.html</location>
+	    <description>Layout a page using absolute positioning</description>
+	  </document>
+	</item>
+  </technology>
+
+  <technology type="DHTML" list="subgroup">
+    <item app="Drag and Drop">
+	  <document>
+	    <location content="demonstration">examples/dhtml/drag-drop/index.html</location>
+	    <description>Classic drag &amp; drop behavior</description>
+	  </document>
+	  <document>
+	    <location content="javascript">examples/dhtml/drag-drop/code/drag_drop.txt</location>
+	    <description>The JavaScript code</description>
+	  </document>
+	</item>
+	<item app="Scroll Menu">
+	  <document content="Demonstration">
+	    <location content="demonstration">examples/dhtml/scroll-menu/index.html</location>
+	    <description>A cool scroll menu, inspired by the accordion menu.</description>
+	  </document>
+	  <document>
+	    <location content="javascript">examples/dhtml/scroll-menu/code/scroll-menu.txt</location>
+	    <description>The JavaScript code</description>
+	  </document>
+	</item>
+	<item app="Sliding Menu">
+	  <document content="Demonstration">
+	    <location content="demonstration">examples/dhtml/sliding-menu/index.html</location>
+	    <description>The sliding menu resides off-screen and then slides into view</description>
+	  </document>
+	  <document>
+	    <location content="javascript">examples/dhtml/sliding-menu/code/sliding_menu.txt</location>
+	    <description>The JavaScript code</description>
+	  </document>
+	</item>
+	<item app="Splash Screen">
+	  <document content="Demonstration">
+	    <location content="demonstration">examples/dhtml/splash-screen/index.html</location>
+	    <description>The splash screen behaves better in FF</description>
+	  </document>
+	  <document>
+	    <location content="javascript">examples/dhtml/splash-screen/code/splash_screen.txt</location>
+	    <description>The JavaScript code</description>
+	  </document>
+	</item>
+	<item app="Yellow Fade Technique">
+	  <document>
+	    <location content="demonstration">examples/dhtml/yellow-fade/index.html</location>
+	    <description>The Yellow Fade Technique inspired by 37signals</description>
+	  </document>
+	  <document>
+	    <location content="javascript">examples/dhtml/yellow-fade/code/yellow_fade.txt</location>
+	    <description>The JavaScript code</description>
+	  </document>
+	</item>
+  </technology>
+  
+  <technology type="Games" list="subgroup">
+    <item app="Greater Than">
+	  <document>
+	    <location content="demonstration">examples/games/greater-than/index.html</location>
+	    <description>Choose two cards at a time. If the second card's value is greater than the first, then you don't lose a point. Win fabulous prizes!</description>
+	  </document>
+	  <document>
+	    <location content="stylesheet">examples/games/greater-than/code/greater_than_css.txt</location>
+	    <description>The stylesheet</description>
+	  </document>
+	  <document>
+	    <location content="javascript">examples/games/greater-than/code/greater_than_js.txt</location>
+	    <description>The JavaScript code</description>
+	  </document>
+	</item>
+	<item app="Memory">
+	  <document>
+	    <location content="demonstration">examples/games/memory/index.html</location>
+	    <description>The classic game of memory</description>
+	  </document>
+	  <document>
+	    <location content="stylesheet">examples/games/memory/code/memory_css.txt</location>
+	    <description>The stylesheet</description>
+	  </document>
+	  <document>
+	    <location content="javascript">examples/games/memory/code/memory_js.txt</location>
+	    <description>The JavaScript code</description>
+	  </document>
+	</item>
+  </technology>
+  
+  <technology type="Tutorials" list="subgroup">
+	<item app="Context">
+	  <document>
+	    <location content="tutorial">examples/tutorials/context.doc</location>
+	    <description>Context and the &quot;this&quot; variable in JavaScript</description>
+      </document>
+	</item>
+	<item app="ECMAScript">
+	  <document>
+	    <location content="tutorial">examples/tutorials/ecmascript.html</location>
+	    <description>Ever wonder about the relationship between JavaScript and ECMAScript? So did I!</description>
+      </document>
+	</item>
+	<item app="Events">
+	  <document>
+	    <location content="tutorial">examples/tutorials/Events/events.doc</location>
+	    <description>All about JavaScript events and how to bind them to DOM elements</description>
+      </document>
+	</item>
+    <item app="OOP">
+	  <document>
+	    <location content="tutorial">examples/tutorials/OOP/OOP.doc</location>
+		<description>Object-oriented programming (OOP) with JavaScript</description>
+	  </document>
+	  <document>
+	    <location content="demonstration">examples/tutorials/OOP/OOP.html</location>
+		<description>See it in action</description>
+	  </document>
+	  <document>
+	    <location content="javascript">examples/tutorials/OOP/OOP.txt</location>
+		<description>The JavaScript code</description>
+	  </document>
+	</item>
+	<item app="Primitive Types and Reference Types">
+	  <document>
+	    <location content="tutorial">examples/tutorials/primitive_vs_reference_types.doc</location>
+	    <description>JavaScript data types: primitive versus reference</description>
+      </document>
+	</item>
+	<item app="(More) Primitive Types and Reference Types">
+	  <document>
+	    <location content="tutorial">examples/tutorials/reference_types.html</location>
+	    <description>Can't get enough about primitive types and reference types? Neither can I!</description>
+      </document>
+	</item>
+	<item app="Scope">
+	  <document>
+	    <location content="tutorial">examples/tutorials/scope.doc</location>
+	    <description>Scope in JavaScript</description>
+      </document>
+	</item>
+	<item app="Select and Option Elements">
+	  <document>
+	    <location content="tutorial">examples/tutorials/select-option/select_and_options.doc</location>
+	    <description>How to dynamically create select lists, remove a particular option, and more.</description>
+      </document>
+	</item>
+  </technology>
+  
+  <technology type="Widgets" list="subgroup">
+	<item app="Accordion">
+	  <document>
+	    <location content="demonstration">examples/widgets/Accordion/index.html</location>
+	    <description>A nifty DHTML script that mimics a windowshade being drawn/opened</description>
+	  </document>
+	  <document>
+	    <location content="stylesheet">examples/widgets/Accordion/code/accordion_css.txt</location>
+	    <description>The stylesheet</description>
+	  </document>
+	  <document>
+	    <location content="javascript">examples/widgets/Accordion/code/accordion_js.txt</location>
+		<description>The JavaScript code</description>
+	  </document>
+	</item>
+	<item app="Disabler">
+	  <document>
+	    <location content="demonstration">examples/widgets/Disabler/index.html</location>
+	    <description>Three different examples of disabling buttons</description>
+	  </document>
+	</item>
+	<item app="Scrubber">
+	  <document>
+	    <location content="demonstration">examples/widgets/Scrubber/index.html</location>
+	    <description>An object-oriented, fully configurable JavaScript validation script</description>
+	  </document>
+	  <document>
+	    <location content="stylesheet">examples/widgets/Scrubber/code/scrubber_css.txt</location>
+		<description>The stylesheet</description>
+	  </document>
+	  <document>
+	    <location content="javascript">examples/widgets/Scrubber/code/Scrubber.txt</location>
+		<description>The Scrubber class</description>
+	  </document>
+	  <document>
+	    <location content="javascript">examples/widgets/Scrubber/code/validate.txt</location>
+		<description>The configuration script</description>
+	  </document>
+	  <document>
+	    <location content="javascript">examples/widgets/Scrubber/code/housekeeping.txt</location>
+		<description>Setup and helper functions</description>
+	  </document>
+	</item>
+	<item app="Sliding Doors">
+	  <document>
+	    <location content="demonstration">examples/widgets/Sliding-Doors/index.html</location>
+	    <description>Sliding Doors, lifted from A List Apart.</description>
+	  </document>
+	  <document>
+	    <location content="stylesheet">examples/widgets/Sliding-Doors/code/sliding_doors_css.txt</location>
+		<description>The stylesheet</description>
+	  </document>
+	  <document>
+	    <location content="javascript">examples/widgets/Sliding-Doors/code/sliding_doors_js.txt</location>
+		<description>The JavaScript code</description>
+	  </document>
+	</item>
+	<item app="Tooltip">
+	  <document>
+	    <location content="demonstration">examples/widgets/Tooltip/index.html</location>
+	    <description>Tooltip provides cross-browser contextual help</description>
+	  </document>
+	  <document>
+	    <location content="readme">examples/widgets/Tooltip/readme.html</location>
+		<description>READ ME</description>
+	  </document>
+	  <document>
+	    <location content="stylesheet">examples/widgets/Tooltip/code/tooltip_css.txt</location>
+		<description>The stylesheet</description>
+	  </document>
+	  <document>
+	    <location content="javascript">examples/widgets/Tooltip/code/tooltip_js.txt</location>
+		<description>The JavaScript code</description>
+	  </document>
+	  <document>
+	    <location content="additional">examples/widgets/Tooltip/code/toolbox.txt</location>
+		<description>The Toolbox, the repository for each Tooltip</description>
+	  </document>
+	</item>
+  </technology>
+</technologies>

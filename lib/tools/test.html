@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Test Page</title>
+<style type="text/css">
+body {
+  background: #EED;
+  text-align: center;
+}
+h1 {
+  background: #FFF;
+  border: 2px solid #999;
+  font-size: 22px;
+  margin: 0 auto;
+  padding: 4px 6px 4px 4px;
+  width: 125px;
+}
+h1 span {
+  color: olive;
+  font-family: cursive;
+  font-style: italic;
+}
+p {
+  margin-bottom: 0;
+}
+p.warning {
+  font-weight: bold;
+  margin-top: 0;
+}
+p.warning span {
+  color: #F00;
+}
+div {
+  margin: 0 auto;
+  width: 90%;
+}
+textarea {
+  border: 1px solid #789;
+  color: #789;
+  font-weight: bold;
+  margin: 20px auto;
+  height: 170px;
+  width: 100%;
+}
+textarea:focus {
+  outline: 2px solid invert;
+}
+textarea#treated {
+  background: #F0F0F0;
+}
+div#stats {
+  margin-left: 80px;
+  text-align: left;
+  width: 200px;
+}
+div#stats label {
+  clear: left;
+  float: left;
+  width: 100px;
+}
+div#stats input {
+  float: left;
+}
+</style>
+<script type="text/javascript">
+/*
+OUTSTANDING ISSUES:
+1. Comments w/in quotes are still stripped out.
+2. Whitespace in regular expressions is stripped out.
+3. Keywords in regular expressions have spaces placed on either side of them.
+*/
+
+function jsCompress() {
+  var oldSize = document.getElementById("untreated").value.length;
+  var skinned = document.getElementById("untreated").value;
+  
+  //if (skinned.match(/\(\/(?!\\)/)) {
+  if (skinned.match(/\(\/(?=(?:[a-zA-Z]|\s))/g)) {
+    alert('got here');
+    skinned = skinned.replace(/\b(alert|boolean|catch|class|const|debugger|do|else|enum|eval|extends|finally|function|in|instanceof|new|return|super|switch|throw|try|typeof|var|while|with)\b/g, " $1 ");
+  }
+  
+  //display the results;
+  document.getElementById("treated").value = skinned;
+  document.getElementById("oldSize").value = oldSize;
+  document.getElementById("newSize").value = skinned.length;
+  document.getElementById("ratio").value = (Math.round(skinned.length / oldSize * 1000) / 10) + "%";
+  document.getElementById("stats").style.display = "block";
+}
+
+window.onload = function() {
+
+  (function () {
+    document.getElementById("untreated").focus();
+    var buttons = document.getElementsByTagName("button");
+    for (var i in buttons)
+      buttons[i].onfocus = function() { if(this.blur) this.blur(); };
+    document.getElementById("compress").onclick = function() { jsCompress(); };
+    document.getElementById("clear").onclick = function() {
+      document.getElementById("untreated").value = "";
+	  document.getElementById("treated").value = "";
+	  document.getElementById("untreated").focus();
+    };
+    document.getElementById("selectAll").onclick = function() { document.getElementById("treated").select(); };
+    document.getElementById("theForm").onsubmit = function() { return false; };
+  })();
+  
+};
+</script>
+</head>
+
+<body>
+
+<h1>TEST</h1>
+<form id="theForm" action="stripper.html">
+  <div>
+    <textarea id="untreated"></textarea>
+    <button id="compress">Compress</button>
+    <button id="clear">Clear</button>
+    <textarea id="treated"></textarea>
+	<button id="selectAll">Select All</button>
+  </div>
+  <div id="stats" style="display: none;">
+    <h2>Stats</h2>
+    <label for="oldSize">Old Size</label> <input type="text" id="oldSize" size="5" />
+	<label for="newSize">New Size</label> <input type="text" id="newSize" size="5" />
+	<label for="ratio">Ratio</label> <input type="text" id="ratio" size="5" />
+  </div>
+</form>
+
+</body>
+</html>

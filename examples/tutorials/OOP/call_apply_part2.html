@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>JavaScript Call/Apply Methods and Context, Part 2</title>
+<style type="text/css">
+#message {
+  background: #FFC;
+  border: 1px solid #CCC;
+  display: none;
+  font-weight: bold;
+  margin: 20px;
+  padding: 10px;
+}
+</style>
+<script type="text/javascript">
+var p = { 
+  birthplace: "Philadelphia",
+  home: "Where the heart is"
+};
+var q = {
+  birthplace: "Albuquerque",
+  home: "Harrisburg",
+  ask: function() {
+    document.getElementById("message").style.display = "block";
+    document.getElementById("message").innerHTML = "You were born in " + this.birthplace + " but your home is " + this.home + ".";
+  }
+};
+window.onload = function() {
+  (function() {
+    var buttons = document.getElementsByTagName("button");
+	buttons[0].onclick = function() { q.ask(); };
+	buttons[1].onclick = function() { q.ask.call(p); };
+	for (var i = 0; i < buttons.length; i++)
+	  buttons[i].onfocus = function() { if(this.blur)this.blur(); };
+  })();
+};
+</script>
+</head>
+
+<body>
+<button>Click me</button>
+<button>Change context</button>
+<div id="message">
+</div>
+</body>
+</html>

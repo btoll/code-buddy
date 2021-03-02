@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Id and Name attribute confusion in IE when using document.getElementById()</title>
+<style type="text/css">
+body {
+  background: #EED;
+}
+h3 {
+  background: #789;
+  border: 1px solid #CCC;
+  color: #FFF;
+  margin: 0 60px;
+  padding: 10px 0;
+  text-align: center;
+}
+p.intro {
+  border: 1px solid orange;
+  border-left: 0;
+  border-right: 0;
+  font: bold 14px "Trebuchet MS", Arial;
+  margin-top: 40px;
+  padding: 5px;
+}
+div {
+  background: #FFF;
+  border: 1px dashed #999;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+code, pre {
+  margin: 0;
+  padding: 0; 
+}
+blockquote {
+  background: #FFF;
+	border: 1px dashed #000;
+	padding: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<h3>Id and Name <code>attribute</code> confusion in IE when using document.getElementById()</h3>
+
+<p class="intro">The situation: I'm taking user input from an HTML form, sending it to the server via an Ajax request and inserting the data returned as JSON into the DOM.</p>
+
+<div>
+<pre>
+<code>
+<strong>The form (abbreviated):</strong>
+
+&lt;form action=&quot;&quot;&gt;
+  &lt;label&gt;State: &lt;input type=&quot;text&quot; name=&quot;state&quot; /&gt;&lt;/label&gt;
+  &lt;label&gt;Country: &lt;input type=&quot;text&quot; name=&quot;country&quot; /&gt;&lt;/label&gt;
+  &lt;label&gt;Phone: &lt;input type=&quot;text&quot; name=&quot;phone&quot; /&gt;&lt;/label&gt;
+  &lt;label&gt;Email: &lt;input type=&quot;text&quot; name=&quot;email&quot; /&gt;&lt;/label&gt;
+&lt;/form&gt;
+
+<strong>The &lt;table&gt; into which the return data will be inserted (abbreviated):</strong>
+
+&lt;table&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td id=&quot;state&quot;&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td id=&quot;country&quot;&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td id=&quot;phone&quot;&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td id=&quot;email&quot;&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+<span>(I really like this approach because I can map the form element names to the table ids.)</span>
+</code>
+</pre>
+</div>
+
+<p>Mozilla doesn't have a problem with this approach.  However, IE gets confused when the <code>name</code> inputs are before the <code>id</code> attributes in the source. Here is the reason, as explained on <a href="http://www.456bereastreet.com/archive/200802/beware_of_id_and_name_attribute_mixups_when_using_getelementbyid_in_internet_explorer/" target="_blank">456 Berea St.</a>:</p>
+  <blockquote>
+	The reason for that is that in IE, <code>getElementById</code> finds and returns the <code>meta</code> element whose <code>name</code> attribute has the value description before it gets to the div element.
+	</blockquote>
+<p>There is then a link to a <a href="http://www.sixteensmallstones.org/ie-javascript-bugs-overriding-internet-explorers-documentgetelementbyid-to-be-w3c-compliant-exposes-an-additional-bug-in-getattributes" target="_blank">solution</a>, which inspired my modified solution (mine does not override the native DOM API method <code>getElementById</code>). Here it is:</p>
+
+<div>
+<pre>
+<code>
+var fixIE = function (id) {
+  var elem = typeof id === "string" ? document.getElementById(id) : id;
+  if (!elem) return null;
+  if (/msie/i.test(navigator.userAgent)) {
+    if (elem) { //make sure that it is a valid match on id;
+      if (elem.id == id) {
+        return elem;
+      } else { //otherwise find the correct element;
+        for(var i = 1, iLength = document.all[id].length; i < iLength; i++) {
+          if (document.all[id][i].id == id) {
+            return document.all[id][i];
+          }
+        }
+      }
+    };
+    return null;
+  } else {
+    return elem;
+  }
+};
+
+<strong>In my script, I invoke it like this:</strong>
+
+if (oElem = fixIE(elems[i].name)) {
+  if (oElem.tagName === "TD") {
+    oElem.innerHTML = elems[i].value;
+  }
+}
+</code>
+</pre>
+</div>
+
+<p>Check out the <a href="id_name_confusion_test.html">demo</a>!</p>
+
+</body>
+</html>

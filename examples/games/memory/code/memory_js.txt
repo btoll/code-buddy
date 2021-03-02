@@ -1,0 +1,176 @@
+var games = {}; //declare a single global symbol;
+games.memory = {}; //create the namespace;
+
+games.memory.createElem = function (name, elem, id, classname) {
+  var name = document.createElement(elem);
+  if (id) name.setAttribute("id", id);
+  if (classname) name.className = classname;
+  return name;
+}
+
+games.memory.yellowFade = function (elem, red, green, blue) {
+  if (elem.fade) clearTimeout(elem.fade);
+  elem.style.backgroundColor = "rgb(" + red + ", " + green + ", " + blue + ")";
+  if (red == 238 && green == 238 && blue == 221) return;
+
+  var newred = red + Math.ceil((238 - red) / 10);
+  var newgreen = green + Math.ceil((238 - green) / 10);
+  var newblue = blue + Math.ceil((221 - blue) / 10);
+  var repeat = function() { games.memory.yellowFade(elem, newred, newgreen, newblue); };
+
+  elem.fade = setTimeout(repeat, 50);
+}
+
+games.memory.setMenu = function (id, coord) {
+  games.memory._elem = document.getElementById(id);
+  if (!games.memory._open) {
+    games.memory._x = coord;
+    games.memory._w = 0;
+    games.memory._open = true;
+  } else if (games.memory._open) {
+    games.memory._x = 0;
+    games.memory._w = coord;
+    games.memory._open = false;
+  }
+  games.memory.slideMenu(games.memory._x, games.memory._w);
+};
+
+games.memory.slideMenu = function (_x, _w) {
+  if (_x != _w) {
+    if (_x > _w) _x -= 10;
+    else if (_x < _w) _x += 10;
+    games.memory._elem.style.left = _x + "px";
+    setTimeout(function() { games.memory.slideMenu(_x, _w); }, 0);
+  }
+  return;
+};
+
+games.memory.getStyle = function (elem, name) {
+  //if the property exists in style[] then it's been set recently and is current;
+  if (elem.style[name]) return elem.style[name];
+  else if (elem.currentStyle) return elem.currentStyle[name]; //otherwise, try to use IE's method;
+  else if (document.defaultView && document.defaultView.getComputedStyle) { //or the w3c's method, if it exists;
+    //it uses the traditional 'text-align' style of rule writing instead of 'textAlign';
+	name = name.replace(/([A-Z])/g, "-$1");
+	name = name.toLowerCase();
+	
+	//get the style object and get the value of the property if it exists;
+	var s = document.defaultView.getComputedStyle(elem, "");
+    return s && s.getPropertyValue(name);
+
+  //otherwise, we're using some other browser;
+  } else return null;
+};
+
+games.memory.randOrd = function () {
+  return (Math.round(Math.random()) - 0.5);
+};
+
+window.onload = function() {
+
+  //set up the slide menu;
+  if (document.getElementById("menuHandle")) {
+    document.getElementById("menuHandle").onclick = function() {
+	  games.memory.setMenu("slideMenu", -parseInt(games.memory.getStyle(document.getElementById("rules"), "width")) - 20); //grab the width from the stylesheet (plus the additional width), convert to a negative number);
+	  return false;
+	}
+  }
+  
+  games.memory.memory = function () {
+  
+    document.getElementById("cardTable").innerHTML = "";
+    document.getElementById("chances").innerHTML = 15; //establish the total number of chances (i--);
+	document.getElementById("matches").innerHTML = 0;
+  
+    var cards = []; //an array that holds the newly created card divs;
+    var inTheHole = []; //an array that holds the 2 selected cards;
+    var overturned = []; //an array that holds the cards that have been successfully overturned;
+	
+	for (var i =0; i <= 11; i++) { //create an array that holds two of each number (array elements = [number displayed by the paragraph, div element]); REMEMBER that each div MUST have a unique id, hence the creation of an array that holds both the number and a unique id;
+	  cards.push([i, games.memory.createElem(i, "div", "card"+i+"a", "cardFace")]); //cardA;
+	  cards.push([i, games.memory.createElem(i, "div", "card"+i+"b", "cardFace")]); //cardB;
+	}
+	cards.sort(games.memory.randOrd); //randomly sort the array;
+
+    for (var x in cards) {
+      var p = document.createElement("p");
+	  //p.appendChild(document.createTextNode(cards[x][1].id.replace(/card/, ""))); //trim off the number from the id;
+	  p.appendChild(document.createTextNode(cards[x][0])); //trim off the number from the id;
+	  p.className = "cardValue";
+      cards[x][1].appendChild(p); //append the paragraph to each newly created div;
+	  document.all ? cards[x][1].attachEvent("onclick", showValue) : cards[x][1].addEventListener("click", showValue, false); //attach the event handlers;
+      document.getElementById("cardTable").appendChild(cards[x][1]);
+    }
+  
+    function showValue(e) {
+      var evt = window.event || e; //get the MouseEvent object;
+	  var elem = evt.srcElement || this; //get the element that the event was attached to;
+      elem.style.backgroundImage = "none";
+	  elem.firstChild.style.display = "block";
+	  document.all ? elem.detachEvent("onclick", showValue) : elem.removeEventListener("click", showValue, false); //remove the event listener;
+	  stash([elem.firstChild.firstChild.nodeValue, elem.id]); //send along the text from within the paragraph (it will a number) and the div id as an array;
+    }
+  
+    function stash(obj) { //this function determines if the two numbers are greater or less than each other;
+      inTheHole.push(obj);
+	  if (inTheHole.length == 2) {
+	
+	    if (parseInt(inTheHole[0][0]) == parseInt(inTheHole[1][0])) { //
+		  document.getElementById("matches").innerHTML = parseInt(document.getElementById("matches").innerHTML) + 1; //increment their "matches" score;
+	      for (var j = 0; j < inTheHole.length; j++) { //remove the event listeners so they can't be clicked again;
+	        document.all ? document.getElementById(inTheHole[j][1]).detachEvent("onclick", showValue) : document.getElementById(inTheHole[j][1]).removeEventListener("click", showValue, false);
+		  }
+		  overturned.push(inTheHole[0][1]);
+		  overturned.push(inTheHole[1][1]);
+		  if (overturned.length == 24) { //all the cards have been successfully overturned;
+		    if (confirm("Congratulations, you won! Play again?")) {
+		      clearTimeout(timer);
+		      games.memory.memory();
+		    }
+		  } else {
+		    games.memory.yellowFade(document.getElementById("scorer"), 0, 0, 221);
+		    document.getElementById("scorer").innerHTML = "Match!";
+		    inTheHole = []; //reset the array;
+		  }
+
+	    } else {
+	      games.memory.yellowFade(document.getElementById("scorer"), 238, 0, 0);
+		  document.getElementById("scorer").innerHTML = "Too bad, you lost a point!";
+	      for (var n = 0; n < cards.length; n++) //remove the event handlers so they can't be clicked on when the following code runs;
+		    document.all ? cards[n][1].detachEvent("onclick", showValue) : cards[n][1].removeEventListener("click", showValue, false);
+		  
+	      var timer = setTimeout(function() { // there was no match so reset their backgrounds images after 1.2 seconds;
+	        for (var i = 0; i < inTheHole.length; i++) {
+		      var a = inTheHole; //grab a reference to the inTheHole array and set the timeouts so the cards one after the other instead of simultaneously;
+		      var first = setTimeout(function() {
+			    document.getElementById(a[0][1]).style.backgroundImage = "url(../../../images/blue.gif)";
+			    document.getElementById(a[0][1]).firstChild.style.display = "none";
+			  }, 300);
+			  var second = setTimeout(function() {
+			    document.getElementById(a[1][1]).style.backgroundImage = "url(../../../images/blue.gif)";
+			    document.getElementById(a[1][1]).firstChild.style.display = "none";
+			  }, 600);
+		    }
+		    clearTimeout(first);
+		    clearTimeout(second);
+		    inTheHole = []; //reset the array;
+		    for (var m = 0; m < cards.length; m++) {
+		      if (overturned.join().indexOf(cards[m][1].id) == -1) //restore the event listeners to those cards that are still unturned (i.e. if the value of cards[m][1].id is NOT contained within the array of already overturned cards, reattach the event listener);
+		        document.all ? cards[m][1].attachEvent("onclick", showValue) : cards[m][1].addEventListener("click", showValue, false);
+		    }
+		  }, 1200);
+		
+		  document.getElementById("chances").innerHTML = parseInt(document.getElementById("chances").innerHTML) - 1;
+		  if (parseInt(document.getElementById("chances").innerHTML) == 0) {
+		    if (confirm("You lost! Play again?")) {
+		      clearTimeout(timer);
+		      games.memory.memory();
+		    } else document.getElementById("cardTable").style.display = "none";
+		  }
+	    }
+	  }
+   }
+}
+
+games.memory.memory(); //initiate the game;
+};

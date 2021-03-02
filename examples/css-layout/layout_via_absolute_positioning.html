@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Layout via Absolutely Positioned Elements</title>
+<style type="text/css">
+body {
+  background: #ccc;
+}
+#masthead {
+  background: olive;
+  margin-bottom: 2px;
+  padding: 1em;
+  position: absolute;
+  top: 0;
+  left: 20%;
+  bottom: 80%;
+  right: 0;
+}
+#sidemenu {
+  background: blue;
+  margin-right: 2px;
+  padding: 1em;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 80%;
+}
+#content {
+  background: orange;
+  overflow: auto;
+  padding: 1em;
+  position: absolute;
+  top: 20%;
+  left: 20%;
+  bottom: 0;
+  right: 0;
+}
+#content h3 {
+  background: #fff;
+  position: fixed;
+  width: 60%;
+}
+#content p {
+  margin-top: 4em;
+}
+</style>
+</head>
+
+<body>
+<div id="masthead">
+  <h3>masthead</h3>
+</div>
+<div id="sidemenu">
+  <h3>sidemenu</h3>
+</div>
+<div id="content">
+  <h3>content</h3>
+<p>All excerpts are from CSS The Definitive Guide by Eric Meyer (O’Reilly)
+
+CSS Positioning
+
+Definitions:
+static: The element’s box is generated as normal.  Block-level elements generate a rectangular box that is part of the document’s flow, and inline-level boxes cause the creation of one or more line boxes that are flowed within their parent element.
+
+relative: The element’s box is offset by some distance.  The element retains the shape it would have had were it not positioned, and the space that it would ordinarily have occupied is preserved.
+
+absolute: The element’s box is completely removed from the flow of the document and positioned with respect to its containing block, which may be another element in the document or the initial containing block.  Whatever space the element might have occupied in the normal document flow is closed up, as though the element did not exist.  The positioned element generates a block-level box, regardless of the type of box it would have generated if it were in the normal flow.
+
+fixed: The element’s box behaves as though it were set to absolute, but its containing block is the viewport itself.
+
+The containing block:
+1.	The containing block of the “root element” (also called the initial containing block) is established by the user agent.  In HTML, the root element is the html element, although some browsers use body.  In most browsers, the initial containing block is a rectangle the size of the viewport.
+2.	For a non-root element whose position whose position is relative or static, the containing block is formed by the content edge of the nearest block-level, table cell or inline-block ancestor box.
+3.	For non-root elements that have a position value of absolute, the containing block is set to the nearest ancestor (of any kind) that has a position value other than static.  This happens as follows:
+a.	If the ancestor is block-level, the containing block is set to that element’s padding edge; in other words, the area that would be bounded by a border.
+b.	If the ancestor is inline-level, the containing block is set to the content edge of the ancestor.  In left-to-right languages, the top and left of the containing block are the top and left content edges of the first box in the ancestor, and the bottom and right edges are the bottom and right content edges of the last box.  In right-to-left languages, the right edge of the containing block corresponds to the right content edge of the first box, and the left is taken from the last box.  The top and bottom are the same.
+c.	If there are no ancestors, the element’s containing block is defined as the initial containing block.
+
+
+Notes:	
+
+1.	The idea behind positioning is fairly simple.  It allows you to define exactly where element boxes will appear relative to where they would ordinarily be – or relative to a parent element, another element, or even to the browser window itself.
+2.	Elements can be positioned outside their containing block.  This is similar to the way in which floated elements can use negative margins to float outside of their parent’s content area.  It also suggests that the term “containing block” should really be “positioning context”.
+3.	The four distinct properties to describe the offset of a positioned element’s sides with respect to its containing block are top, right, bottom and left.
+4.	Positive values cause inward offsets, moving the edges toward the center of the containing block, and negative values cause outward offsets.
+5.	In addition to length and percentage values, the offset properties can also be set to auto, which is the default value.  There is no single behavior for auto; it changes based on the type of positioning used.
+6.	Although it is sometimes important to set the width and height of an element, it is not always necessary when positioning elements.  For example, if the placement of the four sides of the element is described using top, right, bottom and left, then the height and width of the element are implicitly determined by the offsets.
+Examples:
+You want an absolutely positioned element to fill:
+a.	The left half of its containing block:
+top: 0; bottom: 0; left: 0; right: 50%;
+
+b.	The right half of its containing block:
+top: 0; bottom: left: 50%; right: 0;
+
+c.	The lower-left quarter of its containing block:
+top: 50%; bottom: 0; left: 0; right: 50%;
+
+d.	The lower-right quarter of its containing block:
+top: 50%; bottom: 0; left: 50%; right: 0;
+
+e.	The upper-left quarter of its containing block:
+top: 0; bottom: 50%; left: 0; right: 50%;
+
+f.	The upper-right quarter of its containing block:
+top: 0; bottom: 50%; left: 50%; right: 0;
+
+7.	When an element is positioned absolutely, it is completely removed from the document flow.  It is then positioned with respect to its containing block, and its edges are placed using the offset properties (top, left, etc.).  The positioned element does not flow around the content of other elements, or vice versa.  This implies that an absolutely positioned element may overlap other elements or be overlapped by them.
+8.	The containing block for an absolutely positioned element is the nearest ancestor element that has a position value other than static.
+9.	It is common for an author to pick an element that will serve as the containing block for the absolutely positioned element and give it a position of relative with no offsets.
+10.	Relatively positioned elements with specified offsets and absolutely positioned elements (with offsets specified or not) will overlap their containing block’s content unless it is positioned outside of it (by using a negative value for right or one of the other offset properties) or by specifying a padding for the containing block that is wide enough to accommodate the positioned element.
+11.	An important point to highlight is that when an element is absolutely positioned, it also establishes a containing block for its descendant elements.  For example, you could absolutely position an element and then absolutely position one of its children relative to its absolutely positioned parent.
+12.	Remember that if the document is scrolled, the positioned elements will scroll right along with it.  This is true of all absolutely positioned elements that are not descendants of fixed-position elements.  It happens because, eventually, the elements are positioned in relation to something that’s part of the normal flow.
+13.	When an element is absolutely positioned, a special behavior applies when any of the offset properties other than bottom are set to auto.  For example, if an element is absolutely positioned with specified offsets of top: auto; left: 0;, the left edge of the element should be placed against the left edge of its containing block., but the top of the positioned element should line up with the place where its top would have been if it were not positioned at all.  In other words, imagine where the element would have been if its position value were static; this is its static position – where its top edge should be calculated to sit.  You can view an example here.  However, this auto-placement only works in certain situations, generally wherever there are few constraints on the other dimensions of a positioned elements, such as height or width.
+14.	CSS2.1 elaborates on this concept:  “the term ‘static position’ (of an element) refers, roughly, to the position an element would have had in the normal flow.  More precisely, the static position for ‘top’ is the distance from the top edge of the containing block to the top margin edge of a hypothetical box that would have been the first box of the element if its ‘position’ property had been ‘static’.  The value is negative if the hypothetical box is above the containing block.
+15.	
+</p>
+</div>
+
+</body>
+</html>
